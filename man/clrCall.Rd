@@ -1,0 +1,38 @@
+\name{clrCall}
+\alias{clrCall}
+\title{Call a method on an object}
+\usage{
+  clrCall(obj, methodName, ...)
+}
+\arguments{
+  \item{obj}{an object}
+
+  \item{methodName}{the name of a method of the object}
+
+  \item{...}{additional method arguments passed to
+  .External}
+}
+\value{
+  an object resulting from the call. May be a CLR object,
+  or a native R object for common types. Can be NULL.
+}
+\description{
+  Call a method on an object
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+(testObj <- clrNew(testClassName))
+clrCall(testObj, 'GetFieldIntegerOne')
+## derived from unit test for matching the right method (function) to call.
+f <- function(...){ paste( 'This called a method with arguments:', paste(clrCallStatic('Rclr.TestMethodBinding', 'SomeStaticMethod', ...), collapse=', ')) }
+f(1:3)
+f(3)
+f('a')
+f('a', 3)
+f(3, 'a')
+f(list('a', 3))
+}
+}
+

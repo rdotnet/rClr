@@ -1,0 +1,179 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{An Introduction to the rClr package}
+-->
+
+An Introduction to the **rClr** package
+=======================================
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(out.extra='style="display:block; margin: auto"', fig.align="center")
+```
+
+Introduction
+------------
+
+The **rClr** package is a low-level interoperability bridge between R and a Common Language Runtime (CLR), the Microsoft .NET CLR or the Mono implementation. **rClr** is to a CLR the equivalent of what **rJava** is to a Java runtime.
+
+A few overarching principles in the design of **rClr** are:
+* Limit the syntactic tedium
+* Stay as close as possible to the expected behaviors of R code and R data structures
+* Have transparent bi-directional data conversion for commonly used data types e.g. numeric vectors
+* Avoid requiring changes and additions to the .NET code (C#, F#, etc.) for it to be used from R
+* The Common Language Runtime should behave as it usually does, so long as the behavior does not clash with expected R behaviors.
+
+Getting Started
+----------------------------
+
+On loading the package, attempts are made to detect and initialise the CLR. 
+
+* On Windows the package looks by default for the Microsoft .NET runtime. If not available the Mono CLR is sought. Note that at the time of writing, the Mono installer for Windows includes only 32 bits binaries and will not be available from a 64 bits R application. It is however feasible to compile and install a 64 bit Mono runtime. If both CLR implementations are present, it is possible to force the use of Mono with "Sys.setenv(RCLR='Mono')" prior to loading the library.
+
+* On Unix-alike, Mono is the only supported runtime
+
+To start with, the customary "Hello" example follows:
+
+```{r methods, tidy=TRUE}
+library(rClr)
+clrCallStatic('Rclr.HelloWorld', 'Hello')
+# TODO: change that to a nicer prepackaged forms example. Or, allow for shorter forms for assembly names. Careful not to allow for ambiguity however.
+# Also TODO a simpler Hello World for Mono... following is problematic as of Mono 3.0.9
+if ( clrGetInnerPkgName() == 'rClrMs' ) {
+  clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+  f <- clrNew('System.Windows.Forms.Form')
+  clrSet(f, 'Text', "Hello from the '.NET' framework")
+  clrCall(f, 'Show')
+}
+```
+
+Main functions
+-----------------------------
+
+Most functions in the package are prefixed with `"clr"` for mnemonic. `clrNew` creates a new object, and returns an R object, either of (S4) class `cobjRef` or one of the common R data structures if a natural conversion is found, e.g. a System.String to an R character vector.
+
+```{r clrNew}
+testClassName <- "Rclr.TestObject";
+(testObj <- clrNew(testClassName))
+```
+
+It is possible to dynamically inspect the CLR object "members": properties, fields and methods of an object.
+
+```{r clrReflect}
+clrGetProperties(testObj)
+clrGetMemberSignature(testObj, 'GetMethodWithParameters')
+```
+
+Calling the instance methods on objects is done by specifying the method name as a string - convenience R functions may appear when the package is more mature. Static methods are called by specifying the type name, at least namespace qualified. We can determine the parameters necessary for calling the public method `CreateDateArray` on the class Rclr.TestCases. The method signature is expressed using CLR types, not R types.  The .NET method expects a `String` and an `Int32`.
+
+```{r}
+clrCall(testObj, "GetFieldIntegerOne")
+clrGetMemberSignature('Rclr.TestCases', 'CreateDateArray')
+```
+
+Two arguments are passed to the function `clrCallStatic`: a string in an ISO date time format, and a numeric cast as an integer. **rClr** will transparently convert these to CLR types. Note that if the last argument had just been `4`, the mode of the R vector would have been `numeric`, not `integer`. To avoid ambiguity in method calls you must pass an integer vector. The returned value of the .NET method is a `DateTime[]` i.e. an array of `System.DateTime` objects. Again **rClr** transparently converts these to a standard R vector with a 'Date' class attribute.
+
+```{r}
+dates <- clrCallStatic('Rclr.TestCases', 'CreateDateArray', '2001-01-01', as.integer(4))
+str(dates)
+class(dates)
+```
+
+`clrGet` and `clrSet` are used to get/set public fields and properties of CLR objects. The argument type must match the expected type; observe what happens if a `numeric` is passed instead of an `integer`
+
+```{r clrGet}
+clrGet(testObj, "PropertyIntegerOne")
+# clrSet(testObj, "PropertyIntegerOne", 1) # this would currently fail
+clrSet(testObj, "PropertyIntegerOne", as.integer(1))
+```
+
+There are functions to list static members (a.k.a. class members). `clrGet` and `clrSet` can also set static fields and properties.
+
+```{r clrGetStatic}
+clrGetStaticMembers('Rclr.TestObject')
+clrGetStaticMembers(testObj)
+# clrGet(testObj,  "StaticFieldIntegerOne") # would fail: do not induce the users into mistake
+clrGet('Rclr.TestObject',  "StaticFieldIntegerOne")
+clrSet('Rclr.TestObject',  "StaticFieldIntegerOne", as.integer(3))
+```
+
+Data conversion
+-----------------------------
+
+Where there is an obvious and natural conversion between CLR and R data types, the conversion is done in preference to passing pointer to external data structures. Most of the basic modes in R (`character`,`numeric`,`integer` etc.) have relatively obvious equivalents in the CLR. For basic these basic modes, a bijection (i.e. round-trip) with these CLR conterparts is defined if possible.
+
+The notion of time is important for many application, notably for the processing of time series. In order to facilitate the mapping of more complex types by packages that depend on **rClr**, it supports the conversion of some chosen R date and time types. A choice was made to convert R date and time in the **base** package (REF Murdoch 2001). Note that the R classes `Date` and `POSIXct` both map to a `System.DateTime` in the CLR, and a strict bijection is not possible. `DateTime` in the CLR is converted to a `POSIXct` object, as this is the most appropriate to retain the original information.
+
+The rationale for converting data to native types at the boundary of R and the CLR is that this limits the leakage of concepts and behaviors between the two systems. This is particularly important when the expect behavior differs significantly between systems e.g. copying objects versus passing references to objects. Things behave 'as expected' on each side of the boundary.
+
+Objects in R are vectors, and single values are just a particular case of vectors of length one. In the CLR, scalar values and arrays are different types. An R vector will be translated to two different types in the CLR depending on its length. Any length other than one results in an array in the CLR, a length of one becomes a scalar value. This is a choice based on the expected behavior of .NET code, and on the typical code available for reuse. See the section on method bindings below.
+
+```{r cache = F, tidy = TRUE, comment = NA, results = "asis"}
+r_types = list(
+  letters[1:3],
+  as.integer(1:3),
+  1:3 * 1.1,
+  1:3 == 2,
+  as.Date('2001-01-01') + 0:2,
+  as.POSIXct('2001-01-01') + 0:2,
+  as.difftime(3, units='secs') + 0:2
+)
+
+conversion = lapply(r_types, rToClrType)
+
+result = as.data.frame(conversion[[1]])
+for (i in 2:length(conversion))
+  result <- rbind(result, as.data.frame(conversion[[i]]))
+
+r_vec_len_one = lapply(r_types, `[`, 1)
+conversion = lapply(r_vec_len_one, rToClrType)
+
+for (i in 1:length(conversion))
+  result <- rbind(result, as.data.frame(conversion[[i]]))
+ 
+## Cannot seem to get the proper Rmarkdown with pander.
+# library(pander)
+# print(pander(result, style='rmarkdown'))
+library(xtable)
+print(xtable(result),type='html')
+```
+
+Method binding in the CLR
+------------------
+
+In the common language infrastructure methods can be overloaded, that is have the same names but varying types of arguments. The feature is common to other languages such as Java and C++. R has a partly similar behavior throught the use of default argument values.
+
+The **rClr** functions `clrCall` and `clrCallStatic` currently relies on the default behavior of the CLR to find the best method to call for the arguments passed to the `clrCallxyz` functions. The .NET lingo for this is "method binding". In the future, there may be additional behavior added to facilitate the operations from R. A typical case is that, in order to emulate the behavior expected by R users with respect to vectorized operations.
+
+### `params` keywords
+
+TODO Interplay with arrays and vectors as seen from R.
+
+### Default parameter values in CLR methods
+
+TODO Interplay with arrays and vectors as seen from R.
+
+### Generic methods
+
+TODO Not yet supported. Actually curious as to what happens when using reflection operations to access
+
+Runtime performance
+-----------------------------
+
+TODO Include the code to generate the graphs measuring the throughput of data marshalled. Aim to illustrate the cost of differnet operations/types, so that users have information to design sensible packages 
+
+Comment on the use of reflection operations: highly versatile but performance drawback: use wisely.
+
+Related work
+-----------------------------
+
+
+Acknowledgements
+-----------------------------
+
+Kosei ABE
+
+References
+-----------------------------
+
+

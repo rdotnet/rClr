@@ -1,0 +1,161 @@
+#!/bin/sh
+
+RCLR_SRC_DIR=./src
+if [ ! -e ${RCLR_SRC_DIR} ] 
+then
+	echo "error: no suitable package src dir found - last tried ${RCLR_SRC_DIR}"
+	CURDIR=`pwd`
+	echo "Current directory (pwd) is $CURDIR"	       
+	exit 1
+fi
+
+# On Windows the Mono installer contains the 32 bit architecture only. 
+# It is nevertheless possible to compile for 64 bits, including with Visual Studio,
+# but this is a manual process to set this up.
+MONO_INSTALL_PATH64=F:/bin/mono_built/x64
+
+# if this variable is defined, no Makefile.win will be generated, 
+# and the visual studio compilers are ignored even if installed.
+# IGNORE_VISUALSTUDIO=1
+
+./cleanup.win
+WINMAKE_FILE=$RCLR_SRC_DIR/Makefile.win
+WINMAKE_INFILE=$WINMAKE_FILE.in
+MAKEVARS_FILE=$RCLR_SRC_DIR/Makevars
+MAKEVARS_INFILE=$MAKEVARS_FILE.in
+RCLR_PROPS_INFILE=$RCLR_SRC_DIR/rClr.props.in
+RCLR_PROPS_FILE=$RCLR_SRC_DIR/rClr.props
+
+NOT_FOUND="not found"
+# In order to write dos-style paths to the generated Makefile.win and co, needs multiple backslashes...
+# R_HOME will be something like f:/path/to/R
+# bash has the option of R_HOME_BSLASH=${R_HOME//\//\\\\} and it works as expected
+# in ash behavior seems to differ from bash, hence the 8 backslashes needed for the substitution to work
+slash_to_eight_bslash() {
+	RESULT=`echo $1 | sed -e 's/\//\\\\\\\\/g'`
+}
+# slash_to_eight_bslash c:/tmp/blah
+# echo $RESULT
+# blah=$RESULT
+# echo $blah
+
+# A substitute for cygpath, not present in RTools
+# does not work as function (??): sed: -e expression #1, char 8: unterminated `s' command
+# dos_to_cyg() {
+	# RESULT=`echo $1 | sed -e 's/\\/\//g'`
+# }
+
+double_backslash() {
+	RESULT=`echo $1 | sed -e 's/\\/\\\\/g'`
+}
+
+## Find the location of the Mono binary installation on Windows.
+if [ ! -e ${RCLR_SRC_DIR}/get_monosdk.cmd ] 
+then
+	echo "error: batch file not found: ${RCLR_SRC_DIR}/get_monosdk.cmd"
+	exit 1
+fi
+GET_MONO_SDK_CMD=`echo ${RCLR_SRC_DIR}/get_monosdk.cmd | sed -e 's/\//\\\\/g'`
+#  echo "cmd /c $CREATE_LIB_CMD" > blah.txt 
+MONO_INSTALL_PATH=`cmd /c "$GET_MONO_SDK_CMD"`
+if [ "$MONO_INSTALL_PATH" = "$NOT_FOUND" ]
+then
+	echo "error: Path to the Mono SDK not found by querying the Windows registry"
+	exit 1
+fi
+
+
+## Location of the sources of the mono codebase
+# there is no way to detect a potential src installation of the Mono codebase. 
+# Likely to be too advanced for the vast majority - let this be set by the user.
+if [ "$MONO_SRC_PATH" = "" ]
+then
+	MONO_SRC_PATH="c:/path_to_be_set_manually"
+fi
+
+# Give info to the R pkg install log
+echo "R_HOME=$R_HOME"
+echo "MONO_INSTALL_PATH=$MONO_INSTALL_PATH"
+
+## Update the rClr.props file, so that the build process finds the correct R.dll and mono-2.0.dll
+
+# For debugging purposes of this script, you need to set R_HOME
+# R_HOME=c:/PROGRA~1/R/R-30~1.0
+
+slash_to_eight_bslash "$R_HOME" # quotes essential for spaces in paths
+R_HOME_BSLASH=$RESULT
+# echo "R_HOME_BSLASH=$R_HOME_BSLASH"
+
+slash_to_eight_bslash "$MONO_INSTALL_PATH" # quotes essential for spaces in paths
+MONO_INSTALL_PATH_BSLASH=$RESULT
+# echo $MONO_INSTALL_PATH_BSLASH
+
+slash_to_eight_bslash "$MONO_SRC_PATH" # quotes essential for spaces in paths
+MONO_SRC_PATH_BSLASH=$RESULT
+# echo $MONO_SRC_PATH_BSLASH
+
+sed -e "s/@R_INSTALL_PATH@/$R_HOME_BSLASH/" -e "s/@MONO_SRC_PATH@/$MONO_SRC_PATH_BSLASH/" \
+	-e "s/@MONO_INSTALL_PATH@/$MONO_INSTALL_PATH_BSLASH/" $RCLR_PROPS_INFILE > $RCLR_PROPS_FILE
+	
+USE_GCC=0
+if [ "$IGNORE_VISUALSTUDIO" -ne "" ]
+then
+	USE_GCC=1
+	echo "note: Found the flag IGNORE_VISUALSTUDIO. Build will be made with gcc, Mono and xbuild"
+fi
+
+if [ "${VS110COMNTOOLS}" = "" ]
+then
+	USE_GCC=1
+	echo "note: No VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
+fi
+
+if [ $USE_GCC = 1 ]
+then
+	subst_1="s|@MONO_INSTALL_PATH@|$MONO_INSTALL_PATH|g"
+	subst_2="s|@MONO_INSTALL_PATH64@|$MONO_INSTALL_PATH64|g"
+	sed -e "$subst_1" -e "$subst_2" $MAKEVARS_INFILE > $MAKEVARS_FILE
+	echo "Created $MAKEVARS_FILE"
+	exit 0
+fi
+
+	
+## Detect if a sufficient toolchain is present to compile with visual studio
+
+## Find the location of the MSBuild.exe executable. Typically:
+# C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe or
+# C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
+GET_MSBUILD_CMD=`echo ${RCLR_SRC_DIR}/get_msbuildpath.cmd | sed -e 's/\//\\\\/g'`
+# echo $GET_MSBUILD_CMD
+
+# Do note that this one returns a slashified path already. See get_msbuildpath
+MSBUILD_EXE_SLASH=`cmd /c "$GET_MSBUILD_CMD"`
+# MSBUILD_EXE=`${RCLR_SRC_DIR}/get_msbuildpath.cmd`
+# echo "$MSBUILD_EXE_SLASH"
+if [ ! -e $MSBUILD_EXE_SLASH ]
+# if [ "" != "" ]
+then
+	echo "error: Msbuild.exe not found at required location ${MSBUILD_TOOLS_PATH}"
+	exit 1
+else
+	# Check the compiler and dependencies required for buliding on Windows
+	# VS2012 Express edition
+	# Note: == seems not supported in sh (ash??)
+	if [ "${VS110COMNTOOLS}" = "" ]
+	then
+		echo "Visual Studio 2012 common tools directory not found (VS110COMNTOOLS environment variable expected)"
+		echo "Build will be made with gcc, Mono and xbuild"
+		# exit 1
+	else
+		# echo $WINMAKE_FILE
+		subst="s|@MSBUILD_EXE_PATH@|$MSBUILD_EXE_SLASH|"
+		# echo $subst
+		sed -e $subst $WINMAKE_INFILE > $WINMAKE_FILE
+		#################
+		# create the RDll.lib and Mono.lib files for compiling with VC++. Do not assume they are set up (even if very likely for the CRAN winbuilder)
+		# Thanks to http://cygwin.com/ml/cygwin/2011-09/msg00232.html for how to call cmd files from sh.
+		CREATE_LIB_CMD=`echo ${RCLR_SRC_DIR}/create_lib.cmd | sed -e 's/\//\\\\/g'`
+		cmd /c "$CREATE_LIB_CMD"
+	fi # if [ "${VS110COMNTOOLS}" = "" ]
+fi # end check on "${MSBUILD_EXE}"
+

@@ -1,0 +1,28 @@
+\name{clrGetFields}
+\alias{clrGetFields}
+\title{List the instance fields of a CLR object}
+\usage{
+  clrGetFields(clrobj, contains = "")
+}
+\arguments{
+  \item{clrobj}{CLR object}
+
+  \item{contains}{a string that the field names returned
+  must contain}
+}
+\value{
+  a list of names of the fields of the CLR object
+}
+\description{
+  List the instance fields of a CLR object
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrGetFields(testObj)
+clrGetFields(testObj, 'ieldInt')
+}
+}
+

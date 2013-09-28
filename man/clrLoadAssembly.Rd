@@ -1,0 +1,36 @@
+\name{clrLoadAssembly}
+\alias{clrLoadAssembly}
+\title{Loads a Common Language assembly.}
+\usage{
+  clrLoadAssembly(name)
+}
+\arguments{
+  \item{name}{a character vector of length one. It can be
+  the full file name of the assembly to load, or a fully
+  qualified assembly name, or as a last resort a partial
+  name.}
+}
+\description{
+  Loads an assembly. Note that this is loaded in the single
+  application domain that is created by rClr, not a
+  separate application domain.
+}
+\examples{
+\dontrun{
+library(rClr)
+clrGetLoadedAssemblies()
+f <- file.path(getNativeLibsPath('rClr'), 'RDotNetDataConverter.dll')
+f <- path.expand(f)
+stopifnot( file.exists(f) )
+clrLoadAssembly(f)
+# Load an assembly from the global assembly cache (GAC)
+clrLoadAssembly("System.Windows.Presentation, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+# The use of partial assembly names is discouraged; nevertheless it is supported
+clrLoadAssembly("System.Web.Services")
+clrGetLoadedAssemblies()
+}
+}
+\seealso{
+  \code{\link{.C}} which this function wraps
+}
+

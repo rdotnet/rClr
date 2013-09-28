@@ -1,0 +1,36 @@
+\name{clrSet}
+\alias{clrSet}
+\title{Sets the value of a field or property of an object or class}
+\usage{
+  clrSet(obj_or_typename, name, value)
+}
+\arguments{
+  \item{obj_or_typename}{a CLR object, or type name,
+  possibly namespace and assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+
+  \item{name}{the name of a field/property of the object}
+
+  \item{value}{the value to set the field with}
+}
+\description{
+  Sets the value of a field or property of an object or
+  class
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrReflect(testObj)
+clrSet(testObj, 'FieldIntegerOne', 42)
+clrSet(testClassName, 'StaticPropertyIntegerOne', 42)
+
+# Using 'good old' Windows forms to say hello:
+clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+f <- clrNew('System.Windows.Forms.Form')
+clrSet(f, 'Text', "Hello from '.NET'")
+clrCall(f, 'Show')
+}
+}
+

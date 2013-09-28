@@ -1,0 +1,34 @@
+\name{clrGetMemberSignature}
+\alias{clrGetMemberSignature}
+\title{Gets the signature of a CLI object member}
+\usage{
+  clrGetMemberSignature(clrobj, memberName)
+}
+\arguments{
+  \item{clrobj}{CLR object}
+
+  \item{memberName}{The exact name of the member (i.e.
+  field, property, method) to search for}
+}
+\value{
+  a character vector with summary information on the
+  method/member signatures
+}
+\description{
+  Gets a string representation of the signature of a member
+  (i.e. field, property, method). Mostly used to
+  interactively search for what arguments to pass to a
+  method.
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrReflect(testObj)
+clrGetMemberSignature(testObj, 'set_PropertyIntegerOne')
+clrGetMemberSignature(testObj, 'FieldIntegerOne')
+clrGetMemberSignature(testObj, 'PropertyIntegerTwo')
+}
+}
+

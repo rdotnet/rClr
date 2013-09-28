@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# TODO: can cleanup.win just call clean (avoid duplications)
+if ["$RCLR_SRC_DIR" = ""]
+then
+	RCLR_SRC_DIR=./src
+	if [ ! -e ${RCLR_SRC_DIR} ] 
+	then
+		echo "error: no suitable package src dir found - last tried ${RCLR_SRC_DIR}"
+		CURDIR=`pwd`
+		echo "Current directory (pwd) is $CURDIR"	       
+		exit 1
+	fi
+fi
+
+MAKEVARS_FILE=$RCLR_SRC_DIR/Makevars
+
+if [ -e $MAKEVARS_FILE ] 
+then
+	echo "note: removing existing $MAKEVARS_FILE"
+	rm $MAKEVARS_FILE
+fi
+
+rm -f $RCLR_SRC_DIR/*.o
+rm -f $RCLR_SRC_DIR/*.rds
+rm -f $RCLR_SRC_DIR/rClr.dll
+rm -rf $RCLR_SRC_DIR/x64
+rm -rf $RCLR_SRC_DIR/Debug
+rm -rf $RCLR_SRC_DIR/MonoInstall
+rm -rf $RCLR_SRC_DIR/MonoInstallDebug
+rm -rf $RCLR_SRC_DIR/Release
+rm -rf $RCLR_SRC_DIR/RDotNetDataConverter/obj
+rm -rf $RCLR_SRC_DIR/ClrFacade/obj
+rm -rf $RCLR_SRC_DIR/rdotnet/RDotNet.NativeLibrary/bin
+rm -rf $RCLR_SRC_DIR/rdotnet/RDotNet.NativeLibrary/obj
+rm -rf $RCLR_SRC_DIR/rdotnet/R.NET/bin
+rm -rf $RCLR_SRC_DIR/rdotnet/R.NET/obj

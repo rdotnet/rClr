@@ -1,0 +1,28 @@
+\name{clrGetLoadedAssemblies}
+\alias{clrGetLoadedAssemblies}
+\title{List the names of loaded CLR assemblies}
+\usage{
+  clrGetLoadedAssemblies(fullname = FALSE,
+    filenames = FALSE)
+}
+\arguments{
+  \item{fullname}{should the full name of the assemblies be
+  returned}
+
+  \item{filenames}{if TRUE, return a data frame where the
+  second column is the URI (usually file path) of the
+  loaded assembly.}
+}
+\value{
+  the names of loaded CLR assemblies
+}
+\description{
+  List the names of loaded CLR assemblies
+}
+\examples{
+\dontrun{
+library(rClr)
+clrGetLoadedAssemblies()
+}
+}
+

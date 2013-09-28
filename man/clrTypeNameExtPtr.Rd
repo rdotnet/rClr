@@ -1,0 +1,26 @@
+\name{clrTypeNameExtPtr}
+\alias{clrTypeNameExtPtr}
+\title{Gets the type name of an object}
+\usage{
+  clrTypeNameExtPtr(ext_ptr)
+}
+\arguments{
+  \item{ext_ptr}{external pointer to a CLR object (not a
+  cobjRef S4 object)}
+}
+\value{
+  a character string, the type name
+}
+\description{
+  Gets the type name of an object, given the SEXP external
+  pointer to this CLR object.
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrTypeNameExtPtr(clrGetExtPtr(testObj))
+}
+}
+

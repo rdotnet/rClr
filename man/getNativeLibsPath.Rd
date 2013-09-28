@@ -1,0 +1,20 @@
+\name{getNativeLibsPath}
+\alias{getNativeLibsPath}
+\title{Architecture dependent path to the rClr native library}
+\usage{
+  getNativeLibsPath(pkgName)
+}
+\arguments{
+  \item{pkgName}{the name of a package, e.g. 'rClr'}
+}
+\value{
+  the prospective path in which a native library would be
+  found, e.g. c:/R/library/rClr/libs/x64
+}
+\description{
+  Guess the directory where to expect the architecture
+  dependent native library of a specified package e.g. for
+  the package rClr, ${R_HOME}/library/rClr/libs/x64 This is
+  a utility that is not specific to the rClr package
+}
+

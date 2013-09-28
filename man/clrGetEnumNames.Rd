@@ -1,0 +1,24 @@
+\name{clrGetEnumNames}
+\alias{clrGetEnumNames}
+\title{Gets the names of a CLR Enum value type}
+\usage{
+  clrGetEnumNames(enumType)
+}
+\arguments{
+  \item{enumType}{a CLR object, System.Type or type name,
+  possibly namespace and assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+}
+\value{
+  a character vector of the names for the enum
+}
+\description{
+  Gets the names of a CLR Enum value type
+}
+\examples{
+\dontrun{
+library(rClr)
+clrGetEnumNames('Rclr.TestEnum')
+}
+}
+

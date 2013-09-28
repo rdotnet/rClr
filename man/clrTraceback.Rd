@@ -1,0 +1,17 @@
+\name{clrTraceback}
+\alias{clrTraceback}
+\title{Prints the last CLR exception}
+\usage{
+  clrTraceback()
+}
+\description{
+  Prints the last CLR exception. This is roughly the
+  equivalent of the traceback function of R.
+}
+\examples{
+\dontrun{
+clrCallStatic("Rclr.TestCases", "ThrowException", 10L) # will be truncated by the Rf_error API
+clrTraceback() # prints the full stack trace
+}
+}
+

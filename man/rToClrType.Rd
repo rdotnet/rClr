@@ -1,0 +1,19 @@
+\name{rToClrType}
+\alias{rToClrType}
+\title{Gets the type of a CLR object resulting from converting an R object}
+\usage{
+  rToClrType(x)
+}
+\arguments{
+  \item{x}{An R objects}
+}
+\value{
+  A list, with columns including mode, type,class,length
+  and the string of the corresponding CLR type.
+}
+\description{
+  Gets the type of a CLR object resulting from converting
+  an R object. This function is mostly for documentation
+  purposes, but may be of use to end users.
+}
+

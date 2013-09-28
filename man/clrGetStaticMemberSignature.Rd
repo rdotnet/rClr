@@ -1,0 +1,18 @@
+\name{clrGetStaticMemberSignature}
+\alias{clrGetStaticMemberSignature}
+\title{Gets the signature of a static member of a type}
+\usage{
+  clrGetStaticMemberSignature(typename, memberName)
+}
+\arguments{
+  \item{typename}{type name, possibly namespace and
+  assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+
+  \item{memberName}{The exact name of the member (i.e.
+  field, property, method) to search for}
+}
+\description{
+  Gets the signature of a static member of a type
+}
+

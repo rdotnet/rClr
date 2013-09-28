@@ -1,0 +1,28 @@
+\name{clrGetMethods}
+\alias{clrGetMethods}
+\title{List the instance methods of a CLR object}
+\usage{
+  clrGetMethods(clrobj, contains = "")
+}
+\arguments{
+  \item{clrobj}{CLR object}
+
+  \item{contains}{a string that the methods names returned
+  must contain}
+}
+\value{
+  a list of names of the methods of the CLR object
+}
+\description{
+  List the instance methods of a CLR object
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrGetMethods(testObj)
+clrGetMethods(testObj, 'Get')
+}
+}
+

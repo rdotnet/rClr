@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>An Introduction to the <strong>rClr</strong> package</title>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+<style type="text/css">
+/* adapted from the markdown package; redefined some elements like the body/pre/img width */
+body,td{font-size:14px;width:800px;margin:auto;}
+tt,code,pre{font-family:'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;}
+h1{font-size:2.2em;}
+h2{font-size:1.8em;}
+h3{font-size:1.4em;}
+h4{font-size:1em;}
+h5{font-size:.9em;}
+h6{font-size:.8em;}
+a:visited{color:purple;}
+pre{margin-top:0;border:1px solid #EEE;white-space:pre-wrap;}
+pre code{display:block;padding:.5em;}
+code.r,code.cpp{background-color:#F8F8F8;}
+table,td,th{border:none;}
+blockquote{color:#666;padding-left:1em;border-left:.5em #EEE solid;margin:0;}
+hr{height:0;border-bottom:none;border-top-width:thin;border-top-style:dotted;border-top-color:#999;}
+img{max-width:100%;display:block;margin:auto;}
+@media print {
+*{background:transparent!important;color:#000!important;filter:none!important;-ms-filter:none!important;}
+body{font-size:12pt;max-width:100%;}
+a,a:visited{text-decoration:underline;}
+hr{visibility:hidden;page-break-before:always;}
+pre,blockquote{padding-right:1em;page-break-inside:avoid;}
+tr,img{page-break-inside:avoid;}
+img{max-width:100%!important;}
+@page :left{margin:15mm 20mm 15mm 10mm;}
+@page :right{margin:15mm 10mm 15mm 20mm;}
+p,h2,h3{orphans:3;widows:3;}
+h2,h3{page-break-after:avoid;}
+}
+</style>
+
+
+
+</head>
+
+<body>
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{An Introduction to the rClr package}
+-->
+
+<h1>An Introduction to the <strong>rClr</strong> package</h1>
+
+<h2>Introduction</h2>
+
+<p>The <strong>rClr</strong> package is a low-level interoperability bridge between R and a Common Language Runtime (CLR), the Microsoft .NET CLR or the Mono implementation. <strong>rClr</strong> is to a CLR the equivalent of what <strong>rJava</strong> is to a Java runtime.</p>
+
+<p>A few overarching principles in the design of <strong>rClr</strong> are:</p>
+
+<ul>
+<li>Limit the syntactic tedium</li>
+<li>Stay as close as possible to the expected behaviors of R code and R data structures</li>
+<li>Have transparent bi-directional data conversion for commonly used data types e.g. numeric vectors</li>
+<li>Avoid requiring changes and additions to the .NET code (C#, F#, etc.) for it to be used from R</li>
+<li>The Common Language Runtime should behave as it usually does, so long as the behavior does not clash with expected R behaviors.</li>
+</ul>
+
+<h2>Getting Started</h2>
+
+<p>On loading the package, attempts are made to detect and initialise the CLR. </p>
+
+<ul>
+<li><p>On Windows the package looks by default for the Microsoft .NET runtime. If not available the Mono CLR is sought. Note that at the time of writing, the Mono installer for Windows includes only 32 bits binaries and will not be available from a 64 bits R application. It is however feasible to compile and install a 64 bit Mono runtime. If both CLR implementations are present, it is possible to force the use of Mono with &ldquo;Sys.setenv(RCLR=&#39;Mono&#39;)&rdquo; prior to loading the library.</p></li>
+<li><p>On Unix-alike, Mono is the only supported runtime</p></li>
+</ul>
+
+<p>To start with, the customary &ldquo;Hello&rdquo; example follows:</p>
+
+<pre><code class="r">library(rClr)
+clrCallStatic(&quot;Rclr.HelloWorld&quot;, &quot;Hello&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;Hello, World!&quot;
+</code></pre>
+
+<pre><code class="r"># TODO: change that to a nicer prepackaged forms example. Or, allow for
+# shorter forms for assembly names. Careful not to allow for ambiguity
+# however.  Also TODO a simpler Hello World for Mono... following is
+# problematic as of Mono 3.0.9
+if (clrGetInnerPkgName() == &quot;rClrMs&quot;) {
+    clrLoadAssembly(&quot;System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089&quot;)
+    f &lt;- clrNew(&quot;System.Windows.Forms.Form&quot;)
+    clrSet(f, &quot;Text&quot;, &quot;Hello from the &#39;.NET&#39; framework&quot;)
+    clrCall(f, &quot;Show&quot;)
+}
+</code></pre>
+
+<pre><code>## NULL
+</code></pre>
+
+<h2>Main functions</h2>
+
+<p>Most functions in the package are prefixed with <code>&quot;clr&quot;</code> for mnemonic. <code>clrNew</code> creates a new object, and returns an R object, either of (S4) class <code>cobjRef</code> or one of the common R data structures if a natural conversion is found, e.g. a System.String to an R character vector.</p>
+
+<pre><code class="r">testClassName &lt;- &quot;Rclr.TestObject&quot;
+(testObj &lt;- clrNew(testClassName))
+</code></pre>
+
+<pre><code>## An object of class &quot;cobjRef&quot;
+## Slot &quot;clrobj&quot;:
+## &lt;pointer: 0x0000000005f1a6f0&gt;
+## 
+## Slot &quot;clrtype&quot;:
+## [1] &quot;Rclr.TestObject&quot;
+</code></pre>
+
+<p>It is possible to dynamically inspect the CLR object &ldquo;members&rdquo;: properties, fields and methods of an object.</p>
+
+<pre><code class="r">clrGetProperties(testObj)
+</code></pre>
+
+<pre><code>## [1] &quot;PropertyIntegerOne&quot; &quot;PropertyIntegerTwo&quot;
+</code></pre>
+
+<pre><code class="r">clrGetMemberSignature(testObj, &quot;GetMethodWithParameters&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;Method: Int32 GetMethodWithParameters, Int32, String&quot;
+</code></pre>
+
+<p>Calling the instance methods on objects is done by specifying the method name as a string - convenience R functions may appear when the package is more mature. Static methods are called by specifying the type name, at least namespace qualified. We can determine the parameters necessary for calling the public method <code>CreateDateArray</code> on the class Rclr.TestCases. The method signature is expressed using CLR types, not R types.  The .NET method expects a <code>String</code> and an <code>Int32</code>.</p>
+
+<pre><code class="r">clrCall(testObj, &quot;GetFieldIntegerOne&quot;)
+</code></pre>
+
+<pre><code>## [1] 0
+</code></pre>
+
+<pre><code class="r">clrGetMemberSignature(&quot;Rclr.TestCases&quot;, &quot;CreateDateArray&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;Static, Method: DateTime[] CreateDateArray, String, Int32&quot;
+</code></pre>
+
+<p>Two arguments are passed to the function <code>clrCallStatic</code>: a string in an ISO date time format, and a numeric cast as an integer. <strong>rClr</strong> will transparently convert these to CLR types. Note that if the last argument had just been <code>4</code>, the mode of the R vector would have been <code>numeric</code>, not <code>integer</code>. To avoid ambiguity in method calls you must pass an integer vector. The returned value of the .NET method is a <code>DateTime[]</code> i.e. an array of <code>System.DateTime</code> objects. Again <strong>rClr</strong> transparently converts these to a standard R vector with a &#39;Date&#39; class attribute.</p>
+
+<pre><code class="r">dates &lt;- clrCallStatic(&quot;Rclr.TestCases&quot;, &quot;CreateDateArray&quot;, &quot;2001-01-01&quot;, as.integer(4))
+str(dates)
+</code></pre>
+
+<pre><code>##  POSIXct[1:4], format: &quot;2000-12-31 13:00:00&quot; &quot;2001-01-01 13:00:00&quot; ...
+</code></pre>
+
+<pre><code class="r">class(dates)
+</code></pre>
+
+<pre><code>## [1] &quot;POSIXct&quot; &quot;POSIXt&quot;
+</code></pre>
+
+<p><code>clrGet</code> and <code>clrSet</code> are used to get/set public fields and properties of CLR objects. The argument type must match the expected type; observe what happens if a <code>numeric</code> is passed instead of an <code>integer</code></p>
+
+<pre><code class="r">clrGet(testObj, &quot;PropertyIntegerOne&quot;)
+</code></pre>
+
+<pre><code>## [1] 0
+</code></pre>
+
+<pre><code class="r"># clrSet(testObj, &#39;PropertyIntegerOne&#39;, 1) # this would currently fail
+clrSet(testObj, &quot;PropertyIntegerOne&quot;, as.integer(1))
+</code></pre>
+
+<p>There are functions to list static members (a.k.a. class members). <code>clrGet</code> and <code>clrSet</code> can also set static fields and properties.</p>
+
+<pre><code class="r">clrGetStaticMembers(&quot;Rclr.TestObject&quot;)
+</code></pre>
+
+<pre><code>## $Methods
+## [1] &quot;get_StaticPropertyIntegerOne&quot;  &quot;get_StaticPropertyIntegerTwo&quot; 
+## [3] &quot;set_StaticPropertyIntegerOne&quot;  &quot;set_StaticPropertyIntegerTwo&quot; 
+## [5] &quot;StaticGetFieldIntegerOne&quot;      &quot;StaticGetFieldIntegerTwo&quot;     
+## [7] &quot;StaticGetMethodWithParameters&quot; &quot;StaticGetPublicInt&quot;           
+## 
+## $Fields
+## [1] &quot;StaticFieldIntegerOne&quot; &quot;StaticFieldIntegerTwo&quot; &quot;StaticPublicInt&quot;      
+## 
+## $Properties
+## [1] &quot;StaticPropertyIntegerOne&quot; &quot;StaticPropertyIntegerTwo&quot;
+</code></pre>
+
+<pre><code class="r">clrGetStaticMembers(testObj)
+</code></pre>
+
+<pre><code>## $Methods
+## [1] &quot;get_StaticPropertyIntegerOne&quot;  &quot;get_StaticPropertyIntegerTwo&quot; 
+## [3] &quot;set_StaticPropertyIntegerOne&quot;  &quot;set_StaticPropertyIntegerTwo&quot; 
+## [5] &quot;StaticGetFieldIntegerOne&quot;      &quot;StaticGetFieldIntegerTwo&quot;     
+## [7] &quot;StaticGetMethodWithParameters&quot; &quot;StaticGetPublicInt&quot;           
+## 
+## $Fields
+## [1] &quot;StaticFieldIntegerOne&quot; &quot;StaticFieldIntegerTwo&quot; &quot;StaticPublicInt&quot;      
+## 
+## $Properties
+## [1] &quot;StaticPropertyIntegerOne&quot; &quot;StaticPropertyIntegerTwo&quot;
+</code></pre>
+
+<pre><code class="r"># clrGet(testObj, &#39;StaticFieldIntegerOne&#39;) # would fail: do not induce the
+# users into mistake
+clrGet(&quot;Rclr.TestObject&quot;, &quot;StaticFieldIntegerOne&quot;)
+</code></pre>
+
+<pre><code>## [1] 2
+</code></pre>
+
+<pre><code class="r">clrSet(&quot;Rclr.TestObject&quot;, &quot;StaticFieldIntegerOne&quot;, as.integer(3))
+</code></pre>
+
+<h2>Data conversion</h2>
+
+<p>Where there is an obvious and natural conversion between CLR and R data types, the conversion is done in preference to passing pointer to external data structures. Most of the basic modes in R (<code>character</code>,<code>numeric</code>,<code>integer</code> etc.) have relatively obvious equivalents in the CLR. For basic these basic modes, a bijection (i.e. round-trip) with these CLR conterparts is defined if possible.</p>
+
+<p>The notion of time is important for many application, notably for the processing of time series. In order to facilitate the mapping of more complex types by packages that depend on <strong>rClr</strong>, it supports the conversion of some chosen R date and time types. A choice was made to convert R date and time in the <strong>base</strong> package (REF Murdoch 2001). Note that the R classes <code>Date</code> and <code>POSIXct</code> both map to a <code>System.DateTime</code> in the CLR, and a strict bijection is not possible. <code>DateTime</code> in the CLR is converted to a <code>POSIXct</code> object, as this is the most appropriate to retain the original information.</p>
+
+<p>The rationale for converting data to native types at the boundary of R and the CLR is that this limits the leakage of concepts and behaviors between the two systems. This is particularly important when the expect behavior differs significantly between systems e.g. copying objects versus passing references to objects. Things behave &#39;as expected&#39; on each side of the boundary.</p>
+
+<p>Objects in R are vectors, and single values are just a particular case of vectors of length one. In the CLR, scalar values and arrays are different types. An R vector will be translated to two different types in the CLR depending on its length. Any length other than one results in an array in the CLR, a length of one becomes a scalar value. This is a choice based on the expected behavior of .NET code, and on the typical code available for reuse. See the section on method bindings below.</p>
+
+<pre><code class="r">r_types = list(letters[1:3], as.integer(1:3), 1:3 * 1.1, 1:3 == 2, as.Date(&quot;2001-01-01&quot;) + 
+    0:2, as.POSIXct(&quot;2001-01-01&quot;) + 0:2, as.difftime(3, units = &quot;secs&quot;) + 0:2)
+
+conversion = lapply(r_types, rToClrType)
+
+result = as.data.frame(conversion[[1]])
+for (i in 2:length(conversion)) result &lt;- rbind(result, as.data.frame(conversion[[i]]))
+
+r_vec_len_one = lapply(r_types, `[`, 1)
+conversion = lapply(r_vec_len_one, rToClrType)
+
+for (i in 1:length(conversion)) result &lt;- rbind(result, as.data.frame(conversion[[i]]))
+
+## Cannot seem to get the proper Rmarkdown with pander.  library(pander)
+## print(pander(result, style=&#39;rmarkdown&#39;))
+library(xtable)
+print(xtable(result), type = &quot;html&quot;)
+</code></pre>
+
+<!-- html table generated in R 3.0.1 by xtable 1.7-1 package -->
+
+<!-- Sat Sep 21 16:12:03 2013 -->
+
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> mode </TH> <TH> type </TH> <TH> class </TH> <TH> length </TH> <TH> clrType </TH>  </TR>
+  <TR> <TD align="right"> 1 </TD> <TD> character </TD> <TD> character </TD> <TD> character </TD> <TD align="right">   3 </TD> <TD> System.String[] </TD> </TR>
+  <TR> <TD align="right"> 2 </TD> <TD> numeric </TD> <TD> integer </TD> <TD> integer </TD> <TD align="right">   3 </TD> <TD> System.Int32[] </TD> </TR>
+  <TR> <TD align="right"> 3 </TD> <TD> numeric </TD> <TD> double </TD> <TD> numeric </TD> <TD align="right">   3 </TD> <TD> System.Double[] </TD> </TR>
+  <TR> <TD align="right"> 4 </TD> <TD> logical </TD> <TD> logical </TD> <TD> logical </TD> <TD align="right">   3 </TD> <TD> System.Boolean[] </TD> </TR>
+  <TR> <TD align="right"> 5 </TD> <TD> numeric </TD> <TD> double </TD> <TD> Date </TD> <TD align="right">   3 </TD> <TD> System.DateTime[] </TD> </TR>
+  <TR> <TD align="right"> 6 </TD> <TD> numeric </TD> <TD> double </TD> <TD> POSIXct </TD> <TD align="right">   3 </TD> <TD> System.DateTime[] </TD> </TR>
+  <TR> <TD align="right"> 7 </TD> <TD> numeric </TD> <TD> double </TD> <TD> POSIXt </TD> <TD align="right">   3 </TD> <TD> System.DateTime[] </TD> </TR>
+  <TR> <TD align="right"> 8 </TD> <TD> numeric </TD> <TD> double </TD> <TD> difftime </TD> <TD align="right">   3 </TD> <TD> System.Double[] </TD> </TR>
+  <TR> <TD align="right"> 9 </TD> <TD> character </TD> <TD> character </TD> <TD> character </TD> <TD align="right">   1 </TD> <TD> System.String </TD> </TR>
+  <TR> <TD align="right"> 10 </TD> <TD> numeric </TD> <TD> integer </TD> <TD> integer </TD> <TD align="right">   1 </TD> <TD> System.Int32 </TD> </TR>
+  <TR> <TD align="right"> 11 </TD> <TD> numeric </TD> <TD> double </TD> <TD> numeric </TD> <TD align="right">   1 </TD> <TD> System.Double </TD> </TR>
+  <TR> <TD align="right"> 12 </TD> <TD> logical </TD> <TD> logical </TD> <TD> logical </TD> <TD align="right">   1 </TD> <TD> System.Boolean </TD> </TR>
+  <TR> <TD align="right"> 13 </TD> <TD> numeric </TD> <TD> double </TD> <TD> Date </TD> <TD align="right">   1 </TD> <TD> System.DateTime </TD> </TR>
+  <TR> <TD align="right"> 14 </TD> <TD> numeric </TD> <TD> double </TD> <TD> POSIXct </TD> <TD align="right">   1 </TD> <TD> System.DateTime </TD> </TR>
+  <TR> <TD align="right"> 15 </TD> <TD> numeric </TD> <TD> double </TD> <TD> POSIXt </TD> <TD align="right">   1 </TD> <TD> System.DateTime </TD> </TR>
+  <TR> <TD align="right"> 16 </TD> <TD> numeric </TD> <TD> double </TD> <TD> difftime </TD> <TD align="right">   1 </TD> <TD> System.Double </TD> </TR>
+   </TABLE>
+
+<h2>Method binding in the CLR</h2>
+
+<p>In the common language infrastructure methods can be overloaded, that is have the same names but varying types of arguments. The feature is common to other languages such as Java and C++. R has a partly similar behavior throught the use of default argument values.</p>
+
+<p>The <strong>rClr</strong> functions <code>clrCall</code> and <code>clrCallStatic</code> currently relies on the default behavior of the CLR to find the best method to call for the arguments passed to the <code>clrCallxyz</code> functions. The .NET lingo for this is &ldquo;method binding&rdquo;. In the future, there may be additional behavior added to facilitate the operations from R. A typical case is that, in order to emulate the behavior expected by R users with respect to vectorized operations.</p>
+
+<h3><code>params</code> keywords</h3>
+
+<p>TODO Interplay with arrays and vectors as seen from R.</p>
+
+<h3>Default parameter values in CLR methods</h3>
+
+<p>TODO Interplay with arrays and vectors as seen from R.</p>
+
+<h3>Generic methods</h3>
+
+<p>TODO Not yet supported. Actually curious as to what happens when using reflection operations to access</p>
+
+<h2>Runtime performance</h2>
+
+<p>TODO Include the code to generate the graphs measuring the throughput of data marshalled. Aim to illustrate the cost of differnet operations/types, so that users have information to design sensible packages </p>
+
+<p>Comment on the use of reflection operations: highly versatile but performance drawback: use wisely.</p>
+
+<h2>Related work</h2>
+
+<h2>Acknowledgements</h2>
+
+<p>Kosei ABE</p>
+
+<h2>References</h2>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+\name{clrInit}
+\alias{clrInit}
+\title{Initialize a new CLR application domain}
+\usage{
+  clrInit(debug = FALSE)
+}
+\arguments{
+  \item{debug}{If using Mono, should the CLR be initialised
+  to try to hook up to the mono soft debugger in
+  MonoDevelop. This parameter has no effect if using
+  MS.NET.}
+}
+\value{
+  nothing is returned by this function
+}
+\description{
+  Initialize a new CLR application domain
+}
+\examples{
+\dontrun{
+library(rClr)
+}
+}
+

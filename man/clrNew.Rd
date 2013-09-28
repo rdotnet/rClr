@@ -1,0 +1,34 @@
+\name{clrNew}
+\alias{clrNew}
+\title{Create a new CLR object}
+\usage{
+  clrNew(typename, ...)
+}
+\arguments{
+  \item{typename}{type name, possibly namespace and
+  assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+
+  \item{...}{additional method arguments passed to the
+  object constructor via the call to .External}
+}
+\value{
+  a CLR object
+}
+\description{
+  Create a new CLR object
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+(testObj <- clrNew(testClassName))
+# object with a constructor that has parameters
+(testObj <- clrNew(testClassName, as.integer(123)))
+clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+f <- clrNew('System.Windows.Forms.Form')
+clrSet(f, 'Text', "Hello from '.NET'")
+clrCall(f, 'Show')
+}
+}
+

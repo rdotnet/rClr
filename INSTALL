@@ -1,0 +1,28 @@
+
+
+Requirements
+------------
+
+* On Windows you must have the RTools installed, see the R extensions manual
+* You need at least one of:
+** Visual Studio 2012 (Express for Windows, or the full version), with the C# and C++ compilers installed.
+** A recent Mono installation (www.mono-project.com). As of 2013-06-16 the latest Beta 3.0.x series is recommended
+
+Instructions
+-------------
+
+"cmd"
+```
+set R="c:\Program Files\R\R-3.0.1\bin\x64\R.exe"
+
+set BuildConfiguration=Debug
+set MonoBuildConfiguration=MonoInstallDebug
+
+%R% CMD check rClr
+%R% CMD REMOVE rClr
+%R% CMD INSTALL rClr
+:: or if you encounter some issues when testing the load, you may bypass it with
+%R% CMD INSTALL --no-test-load rClr
+```
+
+

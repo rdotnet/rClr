@@ -1,0 +1,57 @@
+#!/bin/sh
+
+if ["$RCLR_SRC_DIR" = ""]
+then
+	RCLR_SRC_DIR=./src
+	if [ ! -e ${RCLR_SRC_DIR} ] 
+	then
+		echo "error: no suitable package src dir found - last tried ${RCLR_SRC_DIR}"
+		CURDIR=`pwd`
+		echo "Current directory (pwd) is $CURDIR"	       
+		exit 1
+	fi
+fi
+
+WINMAKE_FILE=$RCLR_SRC_DIR/Makefile.win
+MAKEVARS_FILE=$RCLR_SRC_DIR/Makevars
+RCLR_PROPS_FILE=$RCLR_SRC_DIR/rClr.props
+
+if [ -e $MAKEVARS_FILE ] 
+then
+	echo "note: removing existing $MAKEVARS_FILE"
+	rm $MAKEVARS_FILE
+fi
+
+if [ -e $WINMAKE_FILE ] 
+then
+	echo "note: removing existing $WINMAKE_FILE"
+	rm $WINMAKE_FILE
+fi
+
+if [ -e $RCLR_PROPS_FILE ] 
+then
+	echo "note: removing existing $RCLR_PROPS_FILE"
+	rm $RCLR_PROPS_FILE
+fi
+
+if [ -e ${RCLR_SRC_DIR}/../inst/libs ] 
+then
+	rm -rf $RCLR_SRC_DIR/../inst/libs/*
+fi
+
+rm -f $RCLR_SRC_DIR/rClr.dll
+rm -f $RCLR_SRC_DIR/rClrMono*
+rm -f $RCLR_SRC_DIR/rClrMs*
+rm -rf $RCLR_SRC_DIR/x64
+rm -rf $RCLR_SRC_DIR/Debug
+rm -rf $RCLR_SRC_DIR/MonoInstall
+rm -rf $RCLR_SRC_DIR/MonoInstallDebug
+rm -rf $RCLR_SRC_DIR/Release
+rm -rf $RCLR_SRC_DIR/RDotNetDataConverter/obj
+rm -rf $RCLR_SRC_DIR/RDotNetDataConverter/DummyApp/bin/
+rm -rf $RCLR_SRC_DIR/RDotNetDataConverter/DummyApp/obj/
+rm -rf $RCLR_SRC_DIR/ClrFacade/obj
+rm -rf $RCLR_SRC_DIR/rdotnet/RDotNet.NativeLibrary/bin
+rm -rf $RCLR_SRC_DIR/rdotnet/RDotNet.NativeLibrary/obj
+rm -rf $RCLR_SRC_DIR/rdotnet/R.NET/bin
+rm -rf $RCLR_SRC_DIR/rdotnet/R.NET/obj

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+RCLR_SRC_DIR=./src
+if [ ! -e ${RCLR_SRC_DIR} ] 
+then
+	echo "error: no suitable package src dir found - last tried ${RCLR_SRC_DIR}"
+	CURDIR=`pwd`
+	echo "Current directory (pwd) is $CURDIR"	       
+	exit 1
+fi
+
+# if this variable is defined, no Makefile.win will be generated, 
+# and the visual studio compilers are ignored even if installed.
+# IGNORE_VISUALSTUDIO=1
+
+./cleanup
+MAKEVARS_FILE=$RCLR_SRC_DIR/Makevars
+MAKEVARS_INFILE=$MAKEVARS_FILE.in
+
+# In order to write dos-style paths to the generated Makefile.win and co, needs multiple backslashes...
+# R_HOME will be something like f:/path/to/R
+# bash has the option of R_HOME_BSLASH=${R_HOME//\//\\\\} and it works as expected
+# in ash behavior seems to differ from bash, hence the 8 backslashes needed for the substitution to work
+slash_to_eight_bslash() {
+	RESULT=`echo $1 | sed -e 's/\//\\\\\\\\/g'`
+}
+# slash_to_eight_bslash c:/tmp/blah
+# echo $RESULT
+# blah=$RESULT
+# echo $blah
+
+# A substitute for cygpath, not present in RTools
+# does not work as function (??): sed: -e expression #1, char 8: unterminated `s' command
+# dos_to_cyg() {
+	# RESULT=`echo $1 | sed -e 's/\\/\//g'`
+# }
+
+double_backslash() {
+	RESULT=`echo $1 | sed -e 's/\\/\\\\/g'`
+}
+
+MONO_CFLAGS=`pkg-config --cflags mono-2`
+GLIB_CFLAGS=`pkg-config --cflags glib-2.0`
+echo "MONO_CFLAGS=$MONO_CFLAGS"
+echo "GLIB_CFLAGS=$GLIB_CFLAGS"
+
+if [ ${#MONO_CFLAGS} -eq 0 ]
+then
+	echo "error: mono-2 not found"
+	exit 1
+fi
+
+if [ ${#GLIB_CFLAGS} -eq 0 ]
+then
+	echo "error: glib-2.0 not found"
+	exit 1
+fi
+	
+subst_1="s|@MONO_INSTALL_PATH@|$MONO_INSTALL_PATH|g"
+subst_2="s|@MONO_INSTALL_PATH64@|$MONO_INSTALL_PATH64|g"
+sed -e "$subst_1" -e "$subst_2" $MAKEVARS_INFILE > $MAKEVARS_FILE
+echo "Created $MAKEVARS_FILE"
+exit 0
+

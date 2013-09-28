@@ -1,0 +1,32 @@
+\name{clrCallStatic}
+\alias{clrCallStatic}
+\title{Call a static method on a CLR type}
+\usage{
+  clrCallStatic(typename, methodName, ...)
+}
+\arguments{
+  \item{typename}{type name, possibly namespace and
+  assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+
+  \item{methodName}{the name of a static method of the
+  type}
+
+  \item{...}{additional method arguments passed to
+  .External}
+}
+\value{
+  an object resulting from the call. May be a CLR object,
+  or a native R object for common types. Can be NULL.
+}
+\description{
+  Call a static method on a CLR type
+}
+\examples{
+\dontrun{
+library(rClr)
+cTypename <- "Rclr.TestCases"
+clrCallStatic(cTypename, "IsTrue", TRUE)
+}
+}
+

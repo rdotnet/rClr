@@ -1,0 +1,25 @@
+\name{setRDotNet}
+\alias{setRDotNet}
+\title{Turn on/off R.NET}
+\usage{
+  setRDotNet(setit = TRUE)
+}
+\arguments{
+  \item{setit}{if true enable, otherwise disable}
+}
+\description{
+  Turn on or off the usage of the R.NET assemblies to
+  convert CLR objects to R data structures
+}
+\examples{
+\dontrun{
+library(rClr)
+## R.NET is currently used to convert complicated CLR types to sensible R equivalents
+setRDotNet()
+cTypename <- "Rclr.TestCases"
+clrCallStatic(cTypename, "CreateStringDictionary")
+setRDotNet(FALSE)
+clrCallStatic(cTypename, "CreateStringDictionary")
+}
+}
+

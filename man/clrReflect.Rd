@@ -1,0 +1,26 @@
+\name{clrReflect}
+\alias{clrReflect}
+\title{List the instance members of a CLR object}
+\usage{
+  clrReflect(clrobj)
+}
+\arguments{
+  \item{clrobj}{CLR object}
+}
+\value{
+  a list of methods, fields and properties of the CLR
+  object
+}
+\description{
+  List the instance members of a CLR object, i.e. its
+  methods, fields and properties.
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrReflect(testObj)
+}
+}
+

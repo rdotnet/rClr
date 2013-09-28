@@ -1,0 +1,32 @@
+\name{clrGet}
+\alias{clrGet}
+\title{Gets the value of a field or property of an object or class}
+\usage{
+  clrGet(obj_or_typename, name)
+}
+\arguments{
+  \item{obj_or_typename}{a CLR object, or type name,
+  possibly namespace and assembly qualified type name, e.g.
+  'My.Namespace.MyClass,MyAssemblyName'.}
+
+  \item{name}{the name of a field/property of the object}
+}
+\value{
+  an object resulting from the call. May be a CLR object,
+  or a native R object for common types. Can be NULL.
+}
+\description{
+  Gets the value of a field or property of an object or
+  class
+}
+\examples{
+\dontrun{
+library(rClr)
+testClassName <- "Rclr.TestObject";
+testObj <- clrNew(testClassName)
+clrReflect(testObj)
+clrGet(testObj, 'FieldIntegerOne')
+clrGet(testClassName, 'StaticPropertyIntegerOne')
+}
+}
+

@@ -1,0 +1,29 @@
+NEWS/ChangeLog for rClr
+--------------------------
+
+0.5-2	2013-09-21  beta 5
+    o	Fix memory leaks for vectors created in R converted to .NET 
+	arrays. Proper memory release is confirmed for at least numeric, 
+	integer and character vector types. Part of this exercise, 
+	rClr has been accepted by Coverity Scan (https://scan.coverity.com).
+    I acknowledge Coverity for some helpful insights tracking defects in rClr.	
+    o	Useful exception handling on MS.NET CLR: print out the details 
+	of the innermost exception. This is a big improvement on the 
+	unhelpful HRESULT codes previously reported.
+    o	The hosting for the Mono runtime on Windows is included 
+	in this release. Do note that date-time handling is not 
+	passing many tests with the Mono CLR.
+	
+0.5-1	2013-06-16  beta 4
+    o	Adding package documentation using knitr and R-markdown
+    o	clrNew now with arguments
+    o	Some support for 'enum' types
+    o	Date-time handling is now using POSIXct classes instead of Date. 
+	The temporal resolution is thus much better, however beware that 
+	POSIXct is effectively a UTC time with a timezone conversion. 
+	A lot of unit tests are in place around it, but date and time
+	zone is a complicated topic.
+    o	This release does not include Mono support; unfortunately 
+	this is not yet usable as it is too unstable. There has 
+	actually been major progress, but some new issues still 
+	emerged.
