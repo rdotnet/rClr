@@ -1,0 +1,106 @@
+# Emacs please make this -*- mode: makefile; tab-width: 8 -*-
+#
+# rClr makefile specific for compilation on Windows, using the Visual CPP compiler.
+
+# defaults the build configurations to the 'release' ones (i.e. no debug symbols)
+ifeq "$(BuildConfiguration)" ""
+BuildConfiguration:=Release
+endif
+ifeq "$(MonoBuildConfiguration)" ""
+MonoBuildConfiguration:=MonoInstall
+endif
+
+SLN:= rClr.sln
+
+MSB:=@MSBUILD_EXE_PATH@
+
+INSTDIR:= ../inst
+
+# MODE:=Rebuild
+MODE:=Build
+
+# This can be helpful to diagnose the msbuild procedure
+DEBUG_BUILD_CMD=/v:d
+
+CLR_FACADE_BINS:=./$(BuildConfiguration)/ClrFacade.*
+RDOTNET_BINS:=./$(BuildConfiguration)/RDotNet.* ./$(BuildConfiguration)/RDotNet.NativeLibrary.* ./$(BuildConfiguration)/RDotNetDataConverter.*
+RCLRMS:=rClrMs
+
+CP_CMD:=cp -u -p
+CP_CMD:=cp -f
+
+all: winarch instdir rClrLib 
+
+winarch:
+	# -@echo Windows architecture "$(R_ARCH)"
+	-@echo Build configuration "$(BuildConfiguration)"
+	-@echo Mono Build configuration "$(MonoBuildConfiguration)"
+	#-@echo 	"env variable TEMP is $(TEMP)"
+	#-@echo 	"env variable TMP is $(TMP)"
+
+rClrLibComp: rClr.c
+	@for tgt_platform in x64 Win32; do \
+		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform"; \
+	done; \
+	$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32"
+
+instdir:
+	@for r_architecture in x64 i386; do \
+		rm -rf $(INSTDIR)/libs/$$r_architecture ; \
+		mkdir -p $(INSTDIR) 2>/dev/null ; \
+		mkdir -p $(INSTDIR)/libs/$$r_architecture 2>/dev/null ; \
+	done;
+
+# IMPORTANT: The option -u and -p are not a gratuitous fancy. For some odd reasons the 
+# files under /libs/ are copied with access rights such that they fail to load with dyn.load 
+# and R CMD check would fail with a misleading error message about not being a valid Win32 application.
+
+rClrLib: rClrLibComp 
+	r_architecture=x64;\
+	RCLRBINDIR=./x64/$(BuildConfiguration);\
+	bin_dir=$$RCLRBINDIR; \
+	RCLRBINS="$$bin_dir/$(RCLRMS).dll $$bin_dir/$(RCLRMS).exp $$bin_dir/$(RCLRMS).lib $$bin_dir/$(RCLRMS).pdb" ; \
+	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/$$r_architecture/ ;
+	r_architecture=i386;\
+	RCLRBINDIR=./$(BuildConfiguration);\
+	bin_dir=$$RCLRBINDIR; \
+	RCLRBINS="$$bin_dir/$(RCLRMS).dll $$bin_dir/$(RCLRMS).exp $$bin_dir/$(RCLRMS).lib $$bin_dir/$(RCLRMS).pdb" ; \
+	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/$$r_architecture/ ;
+	bin_dir=./$(MonoBuildConfiguration); \
+	RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
+	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ;
+	-$(CP_CMD) $(CLR_FACADE_BINS) $(INSTDIR)/libs
+	-$(CP_CMD) $(RDOTNET_BINS) $(INSTDIR)/libs
+	# CLR_FACADE_BINS_LOCAL="./$(CLR_FACADE_BINS)";\
+	# RDOTNET_BINS_LOCAL="./$(RDOTNET_BINS)";\
+	# $(CP_CMD) $$CLR_FACADE_BINS_LOCAL $(INSTDIR)/libs/  ; \
+	# $(CP_CMD) $$RDOTNET_BINS_LOCAL $(INSTDIR)/libs/  ; \
+	####################
+	# Below is an attempt at minimising code. Somehow ended up with 'Bad substitution' problems.
+	# Note: somehow need to create CLR_FACADE_BINS_LOCAL otherwise 'cp' complains about a missing operand, though the filename looks fine. Odd.
+	# r_architecture[1]=x64;\
+	# r_architecture[2]=i386;\
+	# RCLRBINDIR[1]=./x64/$(BuildConfiguration);\
+	# RCLRBINDIR[2]=./$(BuildConfiguration);\
+	# CLR_FACADE_BINS_LOCAL="./$(CLR_FACADE_BINS)";\
+	# RDOTNET_BINS_LOCAL="./$(RDOTNET_BINS)";\
+	# $(CP_CMD) $$CLR_FACADE_BINS_LOCAL $(INSTDIR)/libs/  ; \
+	# $(CP_CMD) $$RDOTNET_BINS_LOCAL $(INSTDIR)/libs/  ; \
+	# for index in 1 2; do \
+	# 	eval bin_dir=$${RCLRBINDIR[$$index]}; \
+	# 	RCLRBINS="$$bin_dir/rClr.dll $$bin_dir/rClr.exp $$bin_dir/rClr.lib $$bin_dir/rClr.pdb" ; \
+	# 	eval current_r_architecture=$${r_architecture[$$index]}; \
+	# 	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/$$current_r_architecture/ ; \
+	# done; 
+	# bin_dir=./$(MonoBuildConfiguration); \
+	# RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
+	# current_r_architecture=i386;\
+	# $(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/$$current_r_architecture/ ; \
+
+clean: 
+	$(MSB) $(SLN) /t:Clean
+
+distclean: clean
+	-rm -rf $(INSTDIR)
+
+.PHONY: all

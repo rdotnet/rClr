@@ -1,0 +1,119 @@
+# Emacs please make this -*- mode: makefile; tab-width: 8 -*-
+#
+#
+# Copyright (C) 2013      <jean-michel.perraud@csiro.au>
+#
+
+# WARNING: Makevars is generated from Makevars.in
+# You may loose direct modifications to the file Makevars!
+
+BUILDTYPE:=Release
+BUILDTYPE:=Debug
+
+TGTPLATFORM:=Any CPU
+
+MONO_INSTALL_PATH:=@MONO_INSTALL_PATH@
+MONO_INSTALL_PATH64:=@MONO_INSTALL_PATH64@
+OBJECTS=rClrMono.o
+ifeq "$(MONO_INSTALL_PATH)" ""
+XBUILD:=xbuild
+else
+XBUILD:=$(MONO_INSTALL_PATH)/bin/xbuild
+endif
+SLN:= rClr_monodev.sln
+# SLN:= rClr.sln
+
+######## O/S dependent config
+ifeq "$(R_OSTYPE)" "windows"
+
+ifeq "$(BUILDTYPE)" "Release"
+BuildConfiguration:=MonoInstall
+else
+BuildConfiguration:=MonoInstallDebug
+endif
+
+RCLR_LIBS:=rClrMono$(SHLIB_EXT)
+
+# On a Win7 machine,  'pkg-config --cflags mono-2 glib-2.0'   returns
+# -mno-cygwin -mms-bitfields -mwindows -IF:/bin/Mono/include/mono-2.0 -IF:/bin/Mono/include/glib-2.0 -IF:/bin/Mono/lib/glib-2.0/include
+# however 'which pkg-config' is in /cygdrive/f/bin/Mono/bin/pkg-config, something unusual for windows machines (?).
+# Not sure what is to be expected on CRAN winbuilder.
+# -mno-cygwin is a trouble flag somehow, not to be included.
+# pkg-config --libs mono-2 glib-2.0
+# -Wl,--export-all-symbols -mno-cygwin -mms-bitfields -mwindows -LF:/bin/Mono/lib
+# -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion -lgl
+# ib-2.0 -lintl
+PKG_CFLAGS = 	-mms-bitfields -mwindows -I"$(MONO_INSTALL_PATH)/include/mono-2.0" -I"$(MONO_INSTALL_PATH)/include/glib-2.0" -I"$(MONO_INSTALL_PATH)/lib/glib-2.0/include" -D MONO_CLR -D MONO_INST
+PKG_LIBS =		-mms-bitfields -mwindows -L"$(MONO_INSTALL_PATH)/lib" -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
+ifeq "$(R_ARCH)" "/x64"
+PKG_LIBS =		-mms-bitfields -mwindows -L"$(MONO_INSTALL_PATH64)/" -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
+# PKG_LIBS =		-mms-bitfields -mwindows -LF:/bin/mono_built/lib -LF:/bin/mono_built/bin -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
+endif
+RCLRBINDIRFACADE:= ./$(BuildConfiguration)
+
+else
+# the OS is not 'windows'
+ifeq "$(BUILDTYPE)" "Release"
+BuildConfiguration:=Unix
+else
+BuildConfiguration:=UnixDebug
+endif
+PKG_CFLAGS_LOCAL:=`pkg-config --cflags mono-2 glib-2.0`
+PKG_LIBS_LOCAL:=`pkg-config --libs mono-2 glib-2.0`
+PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
+PKG_LIBS:=$(PKG_LIBS_LOCAL)
+# TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
+RCLRBINDIRFACADE:= ./$(BUILDTYPE)
+endif    
+# i.e. end of conditional setup on ifeq "$(R_OSTYPE)" "windows"
+
+CLR_FACADE_BINS:=$(RCLRBINDIRFACADE)/*.dll*
+
+INSTDIR:= ../inst
+
+MODE:=Rebuild
+SLNPROPERTIES:=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)"
+
+
+RM = 		rm -f
+
+# .PHONY: 	all clean
+
+all:		printarch  rClrMono$(SHLIB_EXT) instdir rClrLib
+#all:		printarch  $(SHLIB) instdir rClrLib
+
+clean:
+	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
+
+rClrMono$(SHLIB_EXT): rClrMono.o
+	#gcc -std=gnu99 -shared -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
+	$(CC) -std=gnu99 -shared -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS) 
+
+rClrMono.o:
+	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.c -o rClrMono.o
+
+printarch:
+	-@echo R_ARCH=$(R_ARCH)
+	-@echo OBJECTS=$(OBJECTS)
+	-@echo SHLIB_EXT=$(SHLIB_EXT)
+
+instdir:
+	-@rm -rf $(INSTDIR)/libs$(R_ARCH)
+	-@mkdir -p $(INSTDIR) 2>/dev/null
+	-@mkdir -p $(INSTDIR)/libs$(R_ARCH) 2>/dev/null
+
+# Note: see explanation for -u -p in Makefile.win. May be unnecessary on Linux?
+rClrLib: rClrLibComp 
+	cp -u -p rClrMono$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
+	if [ -e symbols.rds ] ; then cp -u -p symbols.rds $(INSTDIR)/libs$(R_ARCH) ; fi
+	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
+	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
+	-rm -f $(INSTDIR)/libs/*.*
+	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
+
+rClrLibComp:
+	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
+	
+
+
+

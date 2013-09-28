@@ -1,0 +1,52 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<# 
+    var arrayTypes = new Dictionary<string, string> 
+    { 
+        { "object", "object[]" },
+        { "string", "string[]" },
+        { "double", "double[]" },
+        { "float", "float[]" },
+        { "int", "int[]" },
+        { "bool", "bool[]" },
+        { "DateTime", "DateTime[]" },
+        { "byte", "byte[]" },
+        { "char", "char[]" }
+    };
+//    "object[] obj","string[] x","double[] x","float[] x","int[] x","bool[] x","DateTime[] x","byte[] x", "char[] x",
+//    "object[,] obj","string[,] x","double[,] x","float[,] x","int[,] x","bool[,] x","DateTime[,] x","byte[,] x", "char[,] x",
+//    "object[][] obj","string[][] x","double[][] x","float[][] x","int[][] x","bool[][] x","DateTime[][] x","byte[][] x", "char[][] x"
+
+#>
+using System;
+using System.Reflection;
+using Rclr;
+
+namespace Rclr
+{
+    /// <summary>
+    /// Do not modify the .cs file: T4 generated class to support the unit tests for method binding
+    /// </summary>
+    /// <remarks>
+    /// Added as a basis for unit test for issue https://r2clr.codeplex.com/workitem/70
+    /// </remarks>
+    public class TestArrayMemoryHandling
+    {
+<#
+foreach (var item in arrayTypes)
+{
+#>
+        public <#=item.Value#> FieldArray_<#=item.Key#>;
+        public <#=item.Value#> CreateArray_<#=item.Key#>(int size) 
+        {
+            return (<#=item.Value#>)Array.CreateInstance(typeof(<#=item.Key#>), size);
+        }
+<#
+} // end foreach
+#>
+    }
+}

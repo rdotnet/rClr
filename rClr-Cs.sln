@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClrFacade", "ClrFacade\ClrFacade.csproj", "{024B0C26-BED0-467D-B332-E9796B756133}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		MonoDebug|Any CPU = MonoDebug|Any CPU
+		MonoDebug|Mixed Platforms = MonoDebug|Mixed Platforms
+		MonoDebug|Win32 = MonoDebug|Win32
+		MonoDebug|x64 = MonoDebug|x64
+		MonoDebug|x86 = MonoDebug|x86
+		MonoInstallDebug|Any CPU = MonoInstallDebug|Any CPU
+		MonoInstallDebug|Mixed Platforms = MonoInstallDebug|Mixed Platforms
+		MonoInstallDebug|Win32 = MonoInstallDebug|Win32
+		MonoInstallDebug|x64 = MonoInstallDebug|x64
+		MonoInstallDebug|x86 = MonoInstallDebug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|Win32.Build.0 = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|x64.Build.0 = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|Mixed Platforms.ActiveCfg = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|Mixed Platforms.Build.0 = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|Win32.ActiveCfg = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|x64.ActiveCfg = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|x64.Build.0 = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoDebug|x86.ActiveCfg = MonoDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|Any CPU.ActiveCfg = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|Any CPU.Build.0 = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|Mixed Platforms.ActiveCfg = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|Mixed Platforms.Build.0 = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|Win32.ActiveCfg = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|x64.ActiveCfg = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|x86.ActiveCfg = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.MonoInstallDebug|x86.Build.0 = MonoInstallDebug|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|Win32.ActiveCfg = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|x64.ActiveCfg = Release|Any CPU
+		{024B0C26-BED0-467D-B332-E9796B756133}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
