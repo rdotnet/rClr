@@ -1,41 +1,13 @@
-library(utils)
-
-library(testthat)
+# library(utils)
 library(ggplot2)
 # Sys.setenv(RCLR='Mono')
 
 library(rClr)
-# Load the library with the C# part of things.
-
-# context("rClrTestCases")
-
-# cTypename <- "Rclr.TestCases"
-# testClassName <- "Rclr.TestObject";
-# setRDotNet(TRUE)
-# rproffn <- 'f:/tmp/rproftests.txt'
-# Rprof(NULL)
-
-# Rprof(filename = rproffn, append=TRUE)
-
-# for (i in 1:1000) {
-  # expect_that( clrCallStatic(cTypename, "DoubleEquals", 123.0 ), is_true() );
-  # expect_that( clrCallStatic(cTypename, "CreateDouble"), equals(123.0) );
-# }
-  
-# Rprof(NULL)
-
-# summaryRprof(rproffn)
 
 profClassName <- 'Rclr.PerformanceProfiling'
 prof <- clrNew(profClassName)
-
-
-# s = Sys.time()
-# for (i in 1:(numReps*nIter)) {
-  # blah <- clrCall(prof, 'DoNothing')
-# }
-# e = Sys.time()
-# methCallDelta = (e-s)
+nRepsColname <- 'numReps'
+arrayLenColname <- 'arrLen'
 
 clrToRDataTransferFUNGEN <- function(numArray, arrLen) {
   stopifnot(length(numArray) == 1)
@@ -46,6 +18,7 @@ clrToRDataTransferFUNGEN <- function(numArray, arrLen) {
 
 rToClrDataTransferFUNGEN <- function(numArray, arrLen) {
   set.seed(0)
+  if(arrLen <= 1) {stop("Not designed to cope with array length less than two")}
   num_vec = rnorm(arrLen)
   rToClrDataTransfer <- function() { clrCall(prof, 'CallMethodWithArrayDouble', num_vec) }
   rToClrDataTransfer
@@ -86,9 +59,6 @@ measure <- function(numReps, FUN, normalize=TRUE) {
   delta
 }
 
-nRepsColname <- 'numReps'
-arrayLenColname <- 'arrLen'
-
 doMeasure <- function(trials, trow, FUNGEN, dataClass,direction,tag=NA) {
   nReps <- trials[trow,nRepsColname]
   innerReps <- 1
@@ -109,6 +79,7 @@ doMeasure <- function(trials, trow, FUNGEN, dataClass,direction,tag=NA) {
 }
 
 doMeasureFun <- function(trials, FUNGEN, dataClass,direction,tag=NA) {
+  clrCallStatic('Rclr.TestCases', 'CallGC') # minimize the risk of cases such that we end up with negative runtimes...
   res <- doMeasure(trials, 1, FUNGEN=FUNGEN, dataClass, direction, tag)
   for (trow in 2:nrow(trials)) {
     res <- rbind(res, doMeasure(trials, trow, FUNGEN=FUNGEN, dataClass, direction, tag))
@@ -120,10 +91,6 @@ doMeasureFun <- function(trials, FUNGEN, dataClass,direction,tag=NA) {
   res
 }
 
-plotRate <- function(bench, case = 'R->CLR') {
-  qplot(x=bench$arrayLen, y=bench$rate) + scale_x_log10() + ylab('Items/sec') + xlab('Array size') + ggtitle(paste('Numeric vector conversion rate', case))
-}
-
 # We want to obtain plots of effective transfer rates: X axis is the length of the arrays, Y axis is the transfer rate in MB/s
 # we may want to measure with/without R.NET loaded, so there is at least one category. 
 # We may as well have a single data frame for 
@@ -133,26 +100,72 @@ plotRate <- function(bench, case = 'R->CLR') {
 
 # repetitions,array_len
 
-mult <- c(1,2,5,7.5)
-cases <- expand.grid(mult, 10**(0:6))
-cases <- as.integer(cases[,1]*cases[,2]) # 1 2 5 10 20 50 etc.
-trials <- expand.grid ( numReps = 10, arrLen = cases )
+createCases <- function(numReps=10, maxArrayLen=7.5e6) {
+  # May want to tailor to whether this is 32 or 64 bits; use:
+  # clrGet('System.Environment', 'Is64BitProcess')
+  cases <- c(2,5,7.5)
+  trials <- expand.grid ( numReps = numReps, arrLen = as.integer(cases) )
+  mult <- c(1,2,5,7.5)
+  cases <- expand.grid(mult, 10**(1:7))
+  cases <- as.integer(cases[,1]*cases[,2]) # 1 2 5 10 20 50 etc.
+  trials <- rbind(trials, expand.grid ( numReps = numReps, arrLen = cases ))
+  return(subset(trials, arrLen <= maxArrayLen))
+}
 
-# on Kerala, fill in some interesting areas:
-# trials <- rbind( trials, expand.grid ( numReps = 10, arrLen = as.integer(c(3:4,6:9)*1e3) ) )
-# trials <- rbind( trials, expand.grid ( numReps = 10, arrLen = as.integer(c(3:4,6:9)*1e4) ) )
 
-options(error=recover)
+rclrNumericPerf <- function(trials, tag) {
+  fgen <- clrToRDataTransferFUNGEN
+  bench <- doMeasureFun(trials, FUNGEN=fgen, dataClass='numeric', direction="CLR->R",tag=tag)
+  bench <- rbind(bench, doMeasureFun(trials, FUNGEN=fgen, dataClass='numeric', direction="R->CLR",tag=tag))
+  bench
+}
 
-bench <- doMeasureFun(trials, FUNGEN=clrToRDataTransferFUNGEN, dataClass='numeric', direction="CLR->R",tag="no.r.net")
+rclrNumericPerfAll <- function(numReps=10, maxArrayLen=7.5e6) {
+  trials <- createCases(numReps=numReps, maxArrayLen=maxArrayLen)
+  setRDotNet(FALSE)
+  bench <- doMeasureFun(trials, FUNGEN=clrToRDataTransferFUNGEN, dataClass='numeric', direction="CLR->R",tag="no.r.net")
+  bench <- rbind(bench, doMeasureFun(trials, FUNGEN=rToClrDataTransferFUNGEN, dataClass='numeric', direction="R->CLR",tag="no.r.net"))
+  setRDotNet(TRUE)
+  bench <- rbind(doMeasureFun(trials, FUNGEN=clrToRDataTransferFUNGEN, dataClass='numeric', direction="CLR->R",tag="r.net"))
+  bench <- rbind(bench, doMeasureFun(trials, FUNGEN=rToClrDataTransferFUNGEN, dataClass='numeric', direction="R->CLR",tag="r.net"))
+}
+
+#####################################
+# Plotting
+plotRate <- function(bench, case = 'R->CLR', dataType='numeric', logy=TRUE) {
+  bench <- subset(bench, direction==case)
+  p <- qplot(x=bench$arrayLen, y=bench$rate) +
+    ylab('Items/sec') + xlab('Array size') +
+    ggtitle(paste(dataType, 'vector conversion rate', case))
+  p <- p + scale_x_log10() 
+  if(logy) {
+    p <- p + scale_y_log10() + annotation_logticks(sides='bl')
+  } else {
+    p <- p + annotation_logticks(sides='b')
+  }
+  p
+}
+#####################################
+
+
+# options(error=recover)
+# trials <- createCases(numReps=10, maxArrayLen=7.5e6)
+# bench <- rclrNumericPerf(trials, tag='no.r.net')
+
+## REPRO: this crashes Rgui. All in R.dll, and likely related to R.NET; unclear where/why
+# behaves for a length of 100000; above, trouble start.
+# trials <- createCases(maxArrayLen=50000)
+# setRDotNet(TRUE)
+# bench <- doMeasureFun(trials, FUNGEN=clrToRDataTransferFUNGEN, dataClass='numeric', direction="CLR->R",tag="r.net")
+## bench <- rbind(bench, doMeasureFun(trials, FUNGEN=rToClrDataTransferFUNGEN, dataClass='numeric', direction="R->CLR",tag="r.net"))
+
 #bench$measure = apply(measures, MARGIN=1,FUN=mean)
-plotRate(bench, case = 'CLR->R') + scale_y_log10() + annotation_logticks()
-plotRate(bench, case = 'CLR->R') + annotation_logticks(sides='b')
-
-bench <- doMeasureFun(trials, FUNGEN=rToClrDataTransferFUNGEN)
-rate <- getConversionRate(bench)
-plotRate(bench, rate, case = 'R->CLR')
-
+# plotRate(bench, case = 'CLR->R')
+#  + scale_y_log10() + annotation_logticks()
+# plotRate(bench, case = 'CLR->R') + annotation_logticks(sides='b')
+# 
+# bench <- doMeasureFun(trials, FUNGEN=rToClrDataTransferFUNGEN, dataClass='numeric', direction="R->CLR",tag="no.r.net")
+# plotRate(bench, case = 'R->CLR') + scale_y_log10() + annotation_logticks()
 
 
 # With the MS implementation (x64):

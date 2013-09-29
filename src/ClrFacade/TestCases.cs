@@ -571,6 +571,25 @@ namespace Rclr
         public static int StaticPropertyIntegerOne { get; set; }
         public static int StaticPropertyIntegerTwo { get; set; }
 
+        public string TestParams(string a, string b, params int[] c)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(a);
+            sb.Append(b);
+            foreach (var i in c)
+                sb.Append(i.ToString());
+            return sb.ToString();
+        }
+
+        public string TestDefaultValues(string a, int b, int c = 1, int d = 2)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(a);
+            sb.Append(b);
+            sb.Append(c);
+            sb.Append(d);
+            return sb.ToString();
+        }
     }
 
 
