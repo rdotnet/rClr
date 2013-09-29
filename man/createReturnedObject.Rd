@@ -2,10 +2,10 @@
 \alias{createReturnedObject}
 \title{Create if possible an S4 CLR object.}
 \usage{
-  createReturnedObject(ext_ptr)
+  createReturnedObject(extPtr)
 }
 \arguments{
-  \item{ext_ptr}{the external pointer.}
+  \item{extPtr}{the external pointer.}
 }
 \value{
   a cobjRef S4 object if the argument is indeed an external

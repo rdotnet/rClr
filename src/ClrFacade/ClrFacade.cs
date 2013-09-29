@@ -166,7 +166,7 @@ namespace Rclr
         /// <summary>
         /// Creates an instance of an object, given the type name
         /// </summary>
-        public static object CreateInstance(string typename, object[] arguments)
+        public static object CreateInstance(string typename, params object[] arguments)
         {
             object result = null;
             try
@@ -480,8 +480,10 @@ namespace Rclr
 
         private static object invokeMethod(object obj, object[] arguments, MethodInfo method)
         {
-            var numParameters = method.GetParameters().Length;
-            if(numParameters > arguments.Length) {
+            var parameters = method.GetParameters();
+            var numParameters = parameters.Length;
+            if (numParameters > arguments.Length)
+            {
                 // Assume this is because of parameters with default values, and handle as per:
                 // http://msdn.microsoft.com/en-us/library/x0acewhc.aspx
                 var newargs = new object[numParameters];
@@ -490,7 +492,49 @@ namespace Rclr
                     newargs[i] = Type.Missing;
                 arguments = newargs;
             }
+            else if (parameters.Length > 0)
+            {
+                // check whether we have a method with the last argument with a 'params' keyword
+                // This is not handled magically when using reflection.
+                var p = parameters[parameters.Length - 1];
+                if (p.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
+                    arguments = packParameters(arguments, numParameters, p);
+            }
             return marshallData(method.Invoke(obj, arguments));
+        }
+
+        private static object[] packParameters(object[] arguments, int np, ParameterInfo p)
+        {
+            var arrayType = p.ParameterType;
+            if (np < 1)
+                throw new ArgumentException("numParameters must be strictly positive");
+            if (!arrayType.IsArray)
+                throw new ArgumentException("Inconsistent - arguments should not be packed with a non-array method parameter");
+            return PackParameters(arguments, np, arrayType);
+        }
+
+        public static object[] PackParameters(object[] arguments, int np, Type arrayType)
+        {
+            // f(obj, string, params int[] integers) // numParameters = 3
+            int na = arguments.Length;
+            var tElement = arrayType.GetElementType(); // Int32 for an array int[]
+            var result = new object[np];
+            Array.Copy(arguments, result, np - 1); // obj, string
+            if ((np == na) && (arrayType == arguments[na - 1].GetType()))
+            {
+                // we already have an int[] pre-packed. 
+                // {obj, "methName", new int[]{p1, p2, p3})  length 3
+                    // NOTE Possible singular and ambiguous cases: params object[] or params Array[]
+                    Array.Copy(arguments, na - 1, result, na - 1, 1);
+            }
+            else
+            {
+                // {obj, "methName", p1, p2, p3)  length 5
+                Array paramParam = Array.CreateInstance(tElement, na - np + 1); // na - np + 1 = 5 - 3 + 1 = 3
+                Array.Copy(arguments, np - 1, paramParam, 0, na - np + 1); // np - 1 = 3 - 1 = 2 start index
+                result.SetValue(paramParam, np - 1);
+            }
+            return result;
         }
 
         private static object marshallData(object obj)

@@ -2,10 +2,10 @@
 \alias{clrTypeNameExtPtr}
 \title{Gets the type name of an object}
 \usage{
-  clrTypeNameExtPtr(ext_ptr)
+  clrTypeNameExtPtr(extPtr)
 }
 \arguments{
-  \item{ext_ptr}{external pointer to a CLR object (not a
+  \item{extPtr}{external pointer to a CLR object (not a
   cobjRef S4 object)}
 }
 \value{

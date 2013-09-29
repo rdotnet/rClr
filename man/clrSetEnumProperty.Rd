@@ -2,12 +2,11 @@
 \alias{clrSetEnumProperty}
 \title{Sets the value of an enum field or property of an object or class}
 \usage{
-  clrSetEnumProperty(obj_or_typename, name, enumtype,
-    enumval)
+  clrSetEnumProperty(objOrType, name, enumtype, enumval)
 }
 \arguments{
-  \item{obj_or_typename}{a CLR object, or type name,
-  possibly namespace and assembly qualified type name, e.g.
+  \item{objOrType}{a CLR object, or type name, possibly
+  namespace and assembly qualified type name, e.g.
   'My.Namespace.MyClass,MyAssemblyName'.}
 
   \item{name}{the name of a field/property of the object}

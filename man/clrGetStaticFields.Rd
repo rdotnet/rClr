@@ -2,11 +2,11 @@
 \alias{clrGetStaticFields}
 \title{Gets the static fields for a type}
 \usage{
-  clrGetStaticFields(obj_or_typename, contains = "")
+  clrGetStaticFields(objOrType, contains = "")
 }
 \arguments{
-  \item{obj_or_typename}{a CLR object, or type name,
-  possibly namespace and assembly qualified type name, e.g.
+  \item{objOrType}{a CLR object, or type name, possibly
+  namespace and assembly qualified type name, e.g.
   'My.Namespace.MyClass,MyAssemblyName'.}
 
   \item{contains}{a string that the property names returned

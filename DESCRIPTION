@@ -9,6 +9,7 @@ Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
     <http://www.codeplex.com/site/users/view/evolvedmicrobe> [ctb] (fix for
     finding the path to package libraries), R Core team [ctb] (showArgs
     extracted from R extension manual)
+Maintainer: J-M <jean-michel.perraud@csiro.au>
 Description: rClr is a package for low-level access from R to a Common Language
     Runtime (CLR). The supported CLR implementations are Microsoft '.NET'
     framework on Windows and Mono on several platforms, currently Windows and
@@ -29,3 +30,4 @@ Collate:
     'rClr-internal.R'
     'zzz.R'
     'rClr-package.r'
+    'rClr-exported.R'

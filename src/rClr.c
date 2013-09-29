@@ -998,6 +998,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	const char *val;
 	double * values;
 	int * intVals;
+	int element_type;
 	const char * tzone;
 	RCLR_BOOL is_date;
 	RCLR_BOOL is_POSIXct;
@@ -1009,8 +1010,8 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	CLR_OBJ * parameter;
 	void * result;
 #endif
-
-	switch(TYPEOF(el)) {
+	element_type = TYPEOF(el);
+	switch(element_type) {
 	case REALSXP:
 		lengthArg = LENGTH(el);
 		values = REAL(el);

@@ -2,11 +2,11 @@
 \alias{clrSet}
 \title{Sets the value of a field or property of an object or class}
 \usage{
-  clrSet(obj_or_typename, name, value)
+  clrSet(objOrType, name, value)
 }
 \arguments{
-  \item{obj_or_typename}{a CLR object, or type name,
-  possibly namespace and assembly qualified type name, e.g.
+  \item{objOrType}{a CLR object, or type name, possibly
+  namespace and assembly qualified type name, e.g.
   'My.Namespace.MyClass,MyAssemblyName'.}
 
   \item{name}{the name of a field/property of the object}

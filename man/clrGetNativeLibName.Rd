@@ -5,8 +5,8 @@
   clrGetNativeLibName()
 }
 \value{
-  the name of the native library currently loaded: rClr or
-  rClrMono
+  the name of the native library currently loaded: rClrMs
+  or rClrMono
 }
 \description{
   Gets the name of the native library currently loaded.

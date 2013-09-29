@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Rclr
 {
@@ -7,6 +8,13 @@ namespace Rclr
     /// </summary>
     public class PerformanceProfiling
     {
+        public static double GetElapsedSeconds(Stopwatch sw)
+        {
+            long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
+            var deltaNano = sw.ElapsedTicks * nanosecPerTick;
+            return deltaNano / 1e9;
+        }
+
         public void SetDoubleArrays(int seed, int length, int numArrays)
         {
             doubleArray = new double[numArrays][];

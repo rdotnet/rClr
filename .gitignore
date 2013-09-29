@@ -39,6 +39,9 @@ TestResults
 # Coverity scan folder (customizable - may need change)
 */cov-int/*
 
+# the .win and .props files in rClr are generated from .in files.
+*.win
+*.props
 
 # User-specific files
 *.suo

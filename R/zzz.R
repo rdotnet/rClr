@@ -1,5 +1,5 @@
 # An internal variable that is set ot the name of the native library depending on its use of the Mono or MS.NET CLR 
-rclr_pkg_name <- ''
+nativePkgName <- ''
 
 # An internal variable to buffer startup messages
 startupMsg <- ''
@@ -29,15 +29,15 @@ startupMsg <- ''
   srcPkgLibPath <- NULL
   if(!file.exists(archLibPath)) {
     # It may be because this is loaded through the 'document' and 'load_all' functions from devtools, 
-    # in which case libname is something like "f:/codeplex/r2clr/packages"
+    # in which case libname is something like "f:/codeplex"
     # try to cater for load_all behavior.
-    if(grep('r2clr/packages$', libname) == 1) {
+    if( 'rclr' %in% tolower(list.files(libname))) {
       libname <- file.path(rClrPkgDir, 'inst')
       archLibPath <- file.path(rClrPkgDir, 'inst/libs', Sys.getenv('R_ARCH'))
       srcPkgLibPath <- archLibPath
       if(!file.exists(archLibPath)) {stop(paste('Looked like rClr source code directory, but directory not found:', archLibPath))}
     } else {
-      stop(paste('Directory not found:', archLibPath))
+      stop(paste("Trying to work around devtools, but could not find a folder with lowercase name 'rclr' under ", archLibPath))
     }
   }
   dlls <- list.files(archLibPath, pattern=ext)
@@ -71,7 +71,7 @@ startupMsg <- ''
 }
 
 loadAndInit <- function(chname, pkgname, libname, srcPkgLibPath=NULL) {
-  assign("rclr_pkg_name", chname, inherits=TRUE) 
+  assign("nativePkgName", chname, inherits=TRUE) 
   # cater for devtools 'load_all'; library.dynam fails otherwise. 
   if(!is.null(srcPkgLibPath)) {
     ext <- .Platform$dynlib.ext
