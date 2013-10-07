@@ -461,7 +461,7 @@ namespace Rclr
 			if (field == null) {
 				var property = t.GetProperty (name, b);
 				if (property == null)
-					throw new ArgumentException (string.Format ("Public instance field or property name {0} not found", name));
+					throw new ArgumentException (string.Format ("Public instance field or property name '{0}' not found", name));
 				else
 					return property.GetValue (obj_or_null, null);
 			}

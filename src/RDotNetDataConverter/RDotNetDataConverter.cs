@@ -38,7 +38,8 @@ namespace Rclr
 
         public void Error(string msg)
         {
-            engine.Error(msg);
+            throw new NotSupportedException();
+            //engine.Error(msg);
         }
 
         /// <summary>
