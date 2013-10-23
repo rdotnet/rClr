@@ -386,7 +386,7 @@ namespace Rclr
             return new Exception("Depth: " + depth.ToString(), innerException);
         }
 
-		public static TestEnum GetTestEnum(string name)
+        public static TestEnum GetTestEnum(string name)
 		{
 			TestEnum result;
 			TestEnum.TryParse<TestEnum>(name, out result);
