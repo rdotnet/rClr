@@ -5,8 +5,8 @@ source(file.path(testDir, 'load_libs.r'))
 context("rClr wrappers using R references classes")
 
 test_that("Object constructors calls work", {
-  tName <- 'Rclr.TestObject'
-  i1 <- as.integer(23) ; i2 <- as.integer(42) 
+  tName <- testClassName
+  i1 <- 23L ; i2 <- 42L 
   d1 <- 1.234; d2 <- 2.345;
   obj <- clrNew(tName, i1)
   obj <- clrCobj(obj)

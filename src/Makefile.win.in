@@ -20,7 +20,14 @@ INSTDIR:= ../inst
 MODE:=Build
 
 # This can be helpful to diagnose the msbuild procedure
-DEBUG_BUILD_CMD=/v:d
+# DEBUG_BUILD_CMD=/v:diag
+DEBUG_BUILD_CMD=
+
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD)
+ifneq "$(VS120COMNTOOLS)" ""
+# work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0
+endif
 
 CLR_FACADE_BINS:=./$(BuildConfiguration)/ClrFacade.*
 RDOTNET_BINS:=./$(BuildConfiguration)/RDotNet.* ./$(BuildConfiguration)/RDotNet.NativeLibrary.* ./$(BuildConfiguration)/RDotNetDataConverter.*
@@ -40,9 +47,9 @@ winarch:
 
 rClrLibComp: rClr.c
 	@for tgt_platform in x64 Win32; do \
-		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform"; \
+		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
-	$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32"
+	$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA)
 
 instdir:
 	@for r_architecture in x64 i386; do \
