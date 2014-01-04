@@ -306,6 +306,18 @@ namespace Rclr
 			return GetEnumNames(e.GetType());
 		}
 
+        public static string[] GetInterfacesFullnames(Type type)
+        {
+            var ifaces = type.GetInterfaces();
+            return Array.ConvertAll(ifaces, x => x.FullName);
+        }
+
+        public static string[] GetDeclaredMethodNames(Type type, BindingFlags bindings = BindingFlags.DeclaredOnly | BindingFlags.Public  | BindingFlags.Instance )
+        {
+            var methods = type.GetMethods(bindings);
+            return Array.ConvertAll(methods, x => x.Name);
+        }
+
         private static string[] getFields(Type type, string pattern, BindingFlags flags)
         {
             var fieldNames =

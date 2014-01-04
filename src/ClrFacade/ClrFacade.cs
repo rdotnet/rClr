@@ -439,7 +439,7 @@ namespace Rclr
             Type t = ClrFacade.GetType(typename);
 			if (t == null)
                 throw new ArgumentException(String.Format("Type not found: {0}", typename));
-			return GetFieldOrProperty(t, name);
+			return GetFieldOrPropertyType(t, name);
         }
 
         public static object GetFieldOrProperty (object obj, string name)
@@ -449,7 +449,7 @@ namespace Rclr
 			return internalGetFieldOrProperty (t, name, b, obj);
 		}
 
-        public static object GetFieldOrProperty (Type type, string name)
+        private static object GetFieldOrPropertyType(Type type, string name)
 		{
 			var b = BindingFlags.Public | BindingFlags.Static;
 			return internalGetFieldOrProperty (type, name, b, null);
