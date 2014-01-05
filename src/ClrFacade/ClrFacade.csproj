@@ -100,6 +100,7 @@
     <Compile Include="Tests\RefClasses\BaseAbstractClassOne.cs" />
     <Compile Include="Tests\RefClasses\InterfaceOne.cs" />
     <Compile Include="Tests\RefClasses\LevelOneClass.cs" />
+    <Compile Include="Tests\RefClasses\LevelThreeClass.cs" />
     <Compile Include="Tests\RefClasses\LevelTwoClass.cs" />
   </ItemGroup>
   <ItemGroup>

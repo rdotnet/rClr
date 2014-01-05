@@ -1,7 +1,7 @@
-#' Full type name of the reflection helper the interop code written in C#
+# Full type name of the reflection helper the interop code written in C#
 reflectionHelperTypeName <- 'Rclr.ReflectionHelper'
 
-#' Full type name of the main facade to the interop code written in C#
+# Full type name of the main facade to the interop code written in C#
 clrFacadeTypeName <- 'Rclr.ClrFacade'
 
 #' Initialize a new CLR application domain

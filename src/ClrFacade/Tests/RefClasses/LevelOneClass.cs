@@ -9,12 +9,22 @@ namespace Rclr.Tests.RefClasses
     {
         public override string AbstractMethod()
         {
-            return "LevelOneClass:AbstractMethod()";
+            return "LevelOneClass::AbstractMethod()";
         }
 
         public override string AbstractMethod(string arg)
         {
-            return "LevelOneClass:AbstractMethod(string)";
+            return "LevelOneClass::AbstractMethod(string)";
+        }
+
+        string InterfaceOne.IfOneString
+        {
+            get ; set ;
+        }
+
+        string InterfaceOne.IfOneStringGetter
+        {
+            get { return "Explicit InterfaceOne.IfOneStringGetter on LevelOneClass"; }
         }
     }
 }

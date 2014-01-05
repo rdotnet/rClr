@@ -13,9 +13,10 @@ startupMsg <- ''
 #' Microsoft .NET runtime is an option. If the rClr native library for MS.NET is detected, 
 #' the Microsoft .NET runtime is loaded in preference to Mono.
 #' 
-#' @rdname dotOnLoad
 #' @param libname the path to the library from which the package is loaded
 #' @param pkgname the name of the package.
+#' @rdname dotOnLoad
+#' @name dotOnLoad
 .onLoad <- function(libname='~/R', pkgname='rClr') {
   rclr_env=Sys.getenv('RCLR')
   monoexepath <- Sys.which('mono')
@@ -108,6 +109,7 @@ getClrVersionString <- function() {
 #' Print startup messages from package onLoad (prevents a 'NOTE' on package check)
 #' 
 #' @rdname dotOnAttach
+#' @name dotOnAttach
 #' @param libname the path to the library from which the package is loaded
 #' @param pkgname the name of the package.
 .onAttach <- function(libname='~/R', pkgname='rClr') {

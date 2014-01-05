@@ -616,3 +616,92 @@ clrGetType <- function(typename) {
   return(clrCallStatic(clrFacadeTypeName, 'GetType',typename))
 }
 
+#' Create reference classes for an object hierarchy
+#'
+#' Create reference classes for an object hierarchy
+#'
+#' @return the object generator function
+#' @export
+setClrRefClass <- function(typeName,
+                            where=topenv(parent.frame()))
+{
+          isAbstract <- function(type) { clrGet(type, 'IsAbstract' ) }
+          isInterface <- function(type) { clrGet(type, 'IsInterface' ) }
+
+  tryCatch(getRefClass(typeName),
+        error=function(e) {
+          type <- clrGetType(typeName)
+          if(is.null(type)) stop(paste('CLR type not found for type name', typeName))
+
+          baseType <- clrGet(type, 'BaseType')
+          baseTypeName <- NULL
+          if (!is.null(baseType)) {
+            baseTypeName <- clrGet(baseType, 'FullName')
+            setClrRefClass(baseTypeName, where)
+          }
+
+          # interfaces <- Map(function(interface) interface$getName(),
+                           # as.list(class$getInterfaces()))
+                           
+          # If the type is the type for an interface, then GetInterfacesFullnames will not return 'itself', so no need to deal with infinite recursion here.
+          interfaces <- clrCallStatic(reflectionHelperTypeName, 'GetInterfacesFullnames', type)
+
+          for (ifname in interfaces)
+           setClrRefClass(ifname, where)
+
+          ## sort the interfaces lexicographically to avoid inconsistencies
+          contains <- c(baseTypeName,
+                       sort(as.character(unlist(interfaces))))
+
+          ## if an interface or an abstract type, need to contain VIRTUAL
+          if (isInterface(type) || isAbstract(type))
+           contains <- c(contains, "VIRTUAL")
+
+          declaredMethods <- clrCallStatic(reflectionHelperTypeName, 'GetDeclaredMethodNames', type)
+           # Map(function(method) method$getName(), 
+               # Filter(notProtected, as.list(class$getDeclaredMethods())))
+          declaredMethods <- unique(declaredMethods)
+
+          methods <- sapply(as.character(declaredMethods), function(method) {
+            eval(substitute(function(...) {
+              arguments <- Map(function(argument) {
+                if (is(argument, 'System.Object')) {
+                  argument$ref
+                } else
+                argument
+              }, list(...))
+              'TODO Here there should be the method description'
+              do.call(clrCall, c(.self$ref, method, arguments))
+            }, list(method=method)))
+          })
+
+          if (typeName == "System.Object")
+          setRefClass("System.Object",
+                      fields = list(ref = 'cobjRef'),
+                      methods = c(methods,
+                        initialize = function(...) {
+                          argu <- list(...)
+                          x <- argu[['ref']]
+                          if(!is.null(x)) {
+                            ref <<- x
+                          } else {
+                            ref <<- clrNew(class(.self), ...)
+                          }
+                          .self
+                        # },
+                        # copy = function(shallow = FALSE) {
+                          # ## unlike clone(), this preserves any
+                          # ## fields that may be present in
+                          # ## an R-specific subclass
+                          # x <- callSuper(shallow)
+                          # x$ref <- ref$clone()
+                          # x
+                        }),
+                      contains = contains,
+                      where = where)
+          else setRefClass(typeName,
+                          methods = methods,
+                          contains = contains,
+                          where = where)
+        })
+}

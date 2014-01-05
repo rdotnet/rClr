@@ -25,9 +25,3 @@ License: LGPL-2.1
 Depends:
     R (>= 2.15.0),
     methods
-Collate:
-    '00classDefinitions.R'
-    'rClr-internal.R'
-    'zzz.R'
-    'rClr-package.r'
-    'rClr-exported.R'
