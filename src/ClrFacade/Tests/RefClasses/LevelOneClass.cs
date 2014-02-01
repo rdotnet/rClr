@@ -24,7 +24,7 @@ namespace Rclr.Tests.RefClasses
 
         string InterfaceOne.IfOneStringGetter
         {
-            get { return "Explicit InterfaceOne.IfOneStringGetter on LevelOneClass"; }
+            get { return "Explicit LevelOneClass::InterfaceOne.IfOneStringGetter"; }
         }
     }
 }
