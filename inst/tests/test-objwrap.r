@@ -19,18 +19,14 @@ test_that("Object constructors calls work", {
   expect_equal( obj$FieldIntegerOne, i1 );
 })
 
-
-
-library(rClr)
-library(testthat)
-
 #' Create reference classes for an object hierarchy
 #'
 #' Create reference classes for an object hierarchy
 #'
 #' @return the object generator function
 #' @export
-setClrRefClassDev <- function(typeName,
+setClrRefClassDev <- function(typeName, # TODO: acknowledge rJavax inspired... http://cran.csiro.au/web/packages/rJavax/index.html
+
                             where=topenv(parent.frame()))
 {
           isAbstract <- function(type) { clrGet(type, 'IsAbstract' ) }

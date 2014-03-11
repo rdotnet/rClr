@@ -1,5 +1,6 @@
 export(clrCall)
 export(clrCallStatic)
+export(clrCobj)
 export(clrGet)
 export(clrGetEnumNames)
 export(clrGetExtPtr)

@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.5-2\cr
-#' Date: \tab 2013-09-21\cr
+#' Version: \tab 0.5-3\cr
+#' Date: \tab 2014-03-11\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'

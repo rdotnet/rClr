@@ -616,17 +616,30 @@ clrGetType <- function(typename) {
   return(clrCallStatic(clrFacadeTypeName, 'GetType',typename))
 }
 
+
+#' Create a reference object wrapper around a CLR object
+#'
+#' Create a reference object wrapper around a CLR object
+#'
+#' @param obj an object of S4 class clrObj
+#' @return the reference object.
+#' @export
+clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
+  refgen <- setClrRefClass(obj@clrtype, envClassWhere)
+  refgen$new(ref=obj)
+}
+
 #' Create reference classes for an object hierarchy
 #'
-#' Create reference classes for an object hierarchy
+#' Create reference classes for an object hierarchy. Gratefully acknowledge Peter D. and its rJavax work.
 #'
 #' @return the object generator function
 #' @export
 setClrRefClass <- function(typeName,
-                            where=topenv(parent.frame()))
+                            env=topenv(parent.frame()))
 {
-          isAbstract <- function(type) { clrGet(type, 'IsAbstract' ) }
-          isInterface <- function(type) { clrGet(type, 'IsInterface' ) }
+  isAbstract <- function(type) { clrGet(type, 'IsAbstract' ) }
+  isInterface <- function(type) { clrGet(type, 'IsInterface' ) }
 
   tryCatch(getRefClass(typeName),
         error=function(e) {
@@ -637,7 +650,7 @@ setClrRefClass <- function(typeName,
           baseTypeName <- NULL
           if (!is.null(baseType)) {
             baseTypeName <- clrGet(baseType, 'FullName')
-            setClrRefClass(baseTypeName, where)
+            setClrRefClass(baseTypeName, env)
           }
 
           # interfaces <- Map(function(interface) interface$getName(),
@@ -647,7 +660,7 @@ setClrRefClass <- function(typeName,
           interfaces <- clrCallStatic(reflectionHelperTypeName, 'GetInterfacesFullnames', type)
 
           for (ifname in interfaces)
-           setClrRefClass(ifname, where)
+           setClrRefClass(ifname, env)
 
           ## sort the interfaces lexicographically to avoid inconsistencies
           contains <- c(baseTypeName,
@@ -698,10 +711,10 @@ setClrRefClass <- function(typeName,
                           # x
                         }),
                       contains = contains,
-                      where = where)
+                      where = env)
           else setRefClass(typeName,
                           methods = methods,
                           contains = contains,
-                          where = where)
+                          where = env)
         })
 }
