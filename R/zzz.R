@@ -44,9 +44,9 @@ startupMsg <- ''
   dlls <- list.files(archLibPath, pattern=ext)
   if ( Sys.info()[['sysname']] == 'Windows') {
     if ( msDll %in% dlls && rclr_env!='Mono') {
-      if( Sys.which('msvcr110.dll') == '') {
-        stop(paste("'msvcr110.dll' was not found on this Windows system.",
-          "You are probably missing the Visual C++ Redistributable for Visual Studio 2012.",
+      if( Sys.which('msvcr120.dll') == '') {
+        stop(paste("'msvcr120.dll' was not found on this Windows system.",
+          "You are probably missing the Visual C++ Redistributable for Visual Studio 2013.",
           "Check instructions at https://r2clr.codeplex.com/wikipage?title=Installing%20R%20packages&referringTitle=Documentation", 
           sep="\n"))
       }

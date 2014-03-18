@@ -28,6 +28,7 @@ namespace Rclr
                 BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
                 var classType = obj.GetType();
                 MethodInfo method = findMethod(classType, methodName, bf, types);
+                arguments = changeArgumentTypes(arguments, method);
                 if (method != null)
                     result = invokeMethod(obj, arguments, method);
                 else
@@ -40,6 +41,28 @@ namespace Rclr
             }
             return result;
 
+        }
+
+        // https://rclr.codeplex.com/workitem/15
+        private static object[] changeArgumentTypes(object[] arguments, MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            var hasFloatArrays = parameters.Any(p => p.ParameterType == typeof(float[]));
+            if (!hasFloatArrays)
+                return arguments;
+            var result = (object[])arguments.Clone();
+            for (int i = 0; i < Math.Min(arguments.Length, parameters.Length); i++)
+            {
+                if (parameters[i].ParameterType == typeof(float[]))
+                {
+                    var dblArray = arguments[i] as double[];
+                    if (dblArray != null)
+                        result[i] = Array.ConvertAll(dblArray, a => (float)a);
+                    else
+                        throw new NotSupportedException("Only the conversion from arrays of double to single precision is transparently supported");
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -471,7 +494,7 @@ namespace Rclr
         /// <summary>
         /// A default binder for finding methods; a placeholder for a way to customize or refine the method selection process for rClr.
         /// </summary>
-        private static Binder methodBinder = System.Type.DefaultBinder;
+        private static Binder methodBinder = new RclrBinder();
 
         private static MethodInfo findMethod(Type classType, string methodName, BindingFlags bf, Type[] types)
         {

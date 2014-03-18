@@ -87,22 +87,7 @@ namespace Rclr
 
         private void SetupREngine()
         {
-			string dll = null;
-			switch (NativeUtility.GetPlatform())
-			{
-				case PlatformID.Win32NT:
-				case PlatformID.MacOSX:
-					break;
-				case PlatformID.Unix:
-					// trying to fix http://r2clr.codeplex.com/workitem/49
-					// but this is likely not to be enough (architecture dependent likely)
-					dll = "/usr/lib/libR.so"; 
-					break;
-				default:
-					throw new NotSupportedException();
-			}
-
-            engine = REngine.CreateInstance("RDotNetDataConverter", dll: dll);
+            engine = REngine.GetInstance(initialize: false);
             engine.Initialize(setupMainLoop: false);
         }
 

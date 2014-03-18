@@ -13,5 +13,9 @@ VERSION:
 CURRENTLY UNDER DEVELOPMENT
 
 remember to track the origin:e.g.
-hg branch:
-rClr                         227:5c9637fb2a84786c782f7e43bc6dc0f4e9c42684
+Revision: 259
+Changeset: 64e5c95cf2736c83870664509bb29da527b3fdd5 [64e5c95cf273]
+Parents: 231, 258
+Date: Thursday, 13 March 2014 9:16:48 AM
+Branch: rClr
+Labels: tip
