@@ -15,7 +15,7 @@ tzIdR_AUest = "Australia/Sydney"
 tzId_AUest <- ifelse(clrGetNativeLibName()=='rClrMono', tzIdR_AUest, "AUS Eastern Standard Time") # TODO: is 'Australia/Sydney' also OK for MS.NET?
 
 # Help with unit test labels
-pctToString <- function(d) { paste(as.character(d), attr(d, 'tzone')) }
+pctToString <- function(d) { paste(paste(as.character(d), attr(d, 'tzone')), collapse=';') }
 
 # Creates a POSIXct in the time zone of Canberra
 AUest <- function(dateStr) {

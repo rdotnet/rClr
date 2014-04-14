@@ -79,7 +79,8 @@ namespace Rclr
 
         public object ConvertFromR(IntPtr pointer, int sexptype)
         {
-            return new DataFrame(engine, pointer);
+            throw new NotImplementedException();
+            //return new DataFrame(engine, pointer);
         }
 
         public bool ConvertVectors { get; set; }

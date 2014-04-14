@@ -62,8 +62,15 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RDotNet">
+      <HintPath>..\packages\R.NET.1.5.9.1\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary">
+      <HintPath>..\packages\R.NET.1.5.9.1\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -80,14 +87,9 @@
       <Project>{024B0C26-BED0-467D-B332-E9796B756133}</Project>
       <Name>ClrFacade</Name>
     </ProjectReference>
-    <ProjectReference Include="..\rdotnet\R.NET\RDotNet.csproj">
-      <Project>{0923E1A0-2032-4997-AB73-49E42C4034A9}</Project>
-      <Name>RDotNet</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\rdotnet\RDotNet.NativeLibrary\RDotNet.NativeLibrary.csproj">
-      <Project>{2A089A59-0F22-4484-B442-0FE8BDA10879}</Project>
-      <Name>RDotNet.NativeLibrary</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
