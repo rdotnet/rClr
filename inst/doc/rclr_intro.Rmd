@@ -192,6 +192,7 @@ The following code and figures show the effective transfer rate for numeric vect
 perfMeasureFile <- list.files(system.file('tests', package='rClr'), pattern='performance_profiling', full.names=TRUE)
 stopifnot(file.exists(perfMeasureFile))
 source(perfMeasureFile)
+traceback()
 trials <- createCases(numReps=10, maxArrayLen=7.5e6)
 setRDotNet(FALSE)
 bench <- rclrNumericPerf(trials, tag='no.r.net')

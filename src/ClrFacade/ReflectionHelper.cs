@@ -130,7 +130,88 @@ namespace Rclr
                         return method;
                 }
             }
+            if (method == null)
+                method = findDefaultParameterMethod(classType, methodName, bf, binder, types);
+            if (method == null)
+                method = findVarargMethod(classType, methodName, bf, binder, types); ;
             return method;
+        }
+
+        private static MethodInfo findDefaultParameterMethod(Type classType, string methodName, BindingFlags bf, Binder binder, Type[] types)
+        {
+            var methods = classType.GetMethods(bf).Where(m => m.Name == methodName).Where(m => HasOptionalParams(m));
+            if (methods.Count() == 0) return null;
+            var mi = methods.FirstOrDefault(m => ExactTypeMatchesOptionalParams(m, types));
+            return mi;
+        }
+
+        private static MethodInfo findVarargMethod(Type classType, string methodName, BindingFlags bf, Binder binder, Type[] types)
+        {
+            var methods = classType.GetMethods(bf).Where(m => m.Name==methodName).Where(m => HasVarArgs(m));
+            if (methods.Count() == 0) return null;
+            var mi = methods.FirstOrDefault(m => ExactTypeMatchesVarArgs(m, types));
+            return mi;
+        }
+
+        private static bool ExactTypeMatchesOptionalParams(MethodInfo method, Type[] types)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0 && types.Length == 0) return true;
+            if (types.Length > parameters.Length) return false; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            if (types.Length < parameters.Length) 
+                if (!parameters[types.Length].IsOptional)
+                    return false; // there remains at least one non-optional parameters that is missing.
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (parameters[i].ParameterType != types[i])
+                    return false;
+            }
+            return true;
+        }
+        
+        private static bool ExactTypeMatchesVarArgs(MethodInfo method, Type[] types)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0 && types.Length == 0) return true;
+            if (types.Length < parameters.Length) return false; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            for (int i = 0; i < parameters.Length - 1; i++)
+            {
+                if (parameters[i].ParameterType != types[i])
+                    return false;
+            }
+            var arrayType = parameters[parameters.Length - 1].ParameterType;
+            Type t;
+            if (!arrayType.IsArray)
+                throw new ArgumentException("Inconsistent - arguments should not be packed with a non-array method parameter");
+            t = arrayType.GetElementType();
+            for (int i = parameters.Length - 1; i < types.Length; i++)
+            {
+                if (t != types[i])
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool HasOptionalParams(MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0) return false;
+            var p = parameters[parameters.Length - 1];
+            return p.IsOptional;
+        }
+
+        public static bool HasVarArgs(MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0) return false;
+            var p = parameters[parameters.Length - 1];
+            return IsVarArg(p);
+        }
+
+        public static bool IsVarArg(ParameterInfo p)
+        {
+            var pAttrib = p.GetCustomAttributes(typeof(ParamArrayAttribute), false);
+            return pAttrib.Length > 0;
         }
 
         /// <summary>

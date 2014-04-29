@@ -359,6 +359,16 @@ namespace Rclr
                 };
         }
 
+        public static Dictionary<string, double[]> CreateStringDoubleArrayDictionary()
+        {
+            return new Dictionary<string, double[]>
+                {
+                    {"a", new[]{1.0, 2.0, 3.0, 3.5, 4.3, 11} },
+                    {"b", new[]{1.0, 2.0, 3.0, 3.5, 4.3 } },
+                    {"c", new[]{2.2, 3.3, 6.5 } }
+                };
+        }
+
         public static void ThrowException(int stackDepth)
         {
             stackDepth = Math.Max(1, Math.Min(stackDepth, 100));

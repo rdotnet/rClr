@@ -28,9 +28,12 @@ namespace Rclr
                 BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
                 var classType = obj.GetType();
                 MethodInfo method = findMethod(classType, methodName, bf, types);
-                arguments = changeArgumentTypes(arguments, method);
                 if (method != null)
+                {
+                    // Reenable to address issue 15
+                    // arguments = changeArgumentTypes(arguments, method);
                     result = invokeMethod(obj, arguments, method);
+                }
                 else
                     throw new MissingMethodException(String.Format("Could not find method {0} on object", methodName));
             }
@@ -41,6 +44,58 @@ namespace Rclr
             }
             return result;
 
+        }
+
+        /// <summary>
+        /// Invoke a method on a type
+        /// </summary>
+        /// <param name="classType"></param>
+        /// <param name="methodName"></param>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        public static object CallStaticMethod(Type classType, string methodName, object[] arguments)
+        {
+            if (arguments.GetType() == typeof(string[])) // workaround https://r2clr.codeplex.com/workitem/11
+                arguments = new object[] { arguments };
+            // In order to handle the R Date and POSIXt conversion, we have to standardise on UTC in the C layer. 
+            // The CLR hosting API seems to only marshall to date-times to Unspecified (probably cannot do otherwise)
+            // We need to make sure these are Utc DateTime at this point.
+            arguments = makeDatesUtcKind(arguments);
+            Type[] types = getTypes(arguments);
+            BindingFlags bf = BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod;
+            MethodInfo method = findMethod(classType, methodName, bf, types);
+            if (method != null)
+            {
+                //if (method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(object[]))
+                //    arguments = new object[] { arguments }; // necessary for e.g. static void QueryTypes(params object[] blah)
+                return invokeMethod(null, arguments, method);
+            }
+            else
+                throw new MissingMethodException(String.Format("Could not find static method {0} on type {1}", methodName, classType.FullName));
+        }
+
+
+
+        /// <summary>
+        /// Invokes a static method given the name of a type.
+        /// </summary>
+        public static object CallStaticMethod(string typename, string methodName, object[] arguments)
+        {
+            object result = null;
+            try
+            {
+                LastCallException = string.Empty;
+                var t = GetType(typename);
+                if (t == null)
+                    throw new ArgumentException(String.Format("Type not found: {0}", typename));
+                result = CallStaticMethod(t, methodName, arguments);
+            }
+            catch (Exception ex)
+            {
+                if (!LogThroughR(ex))
+                    throw;
+            }
+            return result;
         }
 
         // https://rclr.codeplex.com/workitem/15
@@ -73,32 +128,6 @@ namespace Rclr
              return CallStaticMethod(typename, methodName, arguments);
         }
 
-        /// <summary>
-        /// Invokes a static method given the name of a type.
-        /// </summary>
-        public static object CallStaticMethod(string typename, string methodName, object[] arguments)
-        {
-            object result = null;
-            try
-            {
-                LastCallException = string.Empty;
-                var t = GetType(typename);
-                if (t == null)
-                    throw new ArgumentException(String.Format("Type not found: {0}", typename));
-                // In order to handle the R Date and POSIXt conversion, we have to standardise on UTC in the C layer. 
-                // The CLR hosting API seems to only marshall to date-times to Unspecified (probably cannot do otherwise)
-                // We need to make sure these are Utc DateTime at this point.
-                arguments = makeDatesUtcKind(arguments);
-                result = CallStaticMethod(t, methodName, arguments);
-            }
-            catch (Exception ex)
-            {
-                if (!LogThroughR(ex))
-                    throw;
-            }
-            return result;
-        }
-
         private static bool LogThroughR(Exception ex)
         {
             // Initially just wanted to print to R as below. HOWEVER
@@ -128,47 +157,6 @@ namespace Rclr
                 "\n", innermost.GetType(), innermost.Message, innermost.TargetSite, innermost.StackTrace);
             // See whether this helps with the Rgui prompt:
             return result.Replace("\r\n", "\n");
-        }
-
-        /// <summary>
-        /// Invoke a method on a type
-        /// </summary>
-        /// <param name="classType"></param>
-        /// <param name="methodName"></param>
-        /// <param name="arguments"></param>
-        /// <returns></returns>
-        public static object CallStaticMethod (Type classType, string methodName, object[] arguments)
-        {
-            if (arguments.GetType () == typeof(string[])) // workaround https://r2clr.codeplex.com/workitem/11
-                arguments = new object[]{arguments};
-            Type[] types = getTypes (arguments);
-            // the following code was to test issues with Mono (). Cannot reproduce as of Sept 2013
-            //for (int i = 0; i < types.Length; i++) {
-            //    if (types [i] == null)
-            //        try {
-            //        string s = (string) arguments [i];
-            //            Console.WriteLine ("arguments[i] = {0}", s);
-            //            Console.WriteLine ("arguments[i].GetType() = {0}", arguments [i].GetType ());
-            //        } catch (Exception ex) {
-                        
-            //        } finally {
-            //            throw new NullReferenceException ("Type is a null reference at index " + i +
-            //                " and arguments[i]==null is " + (arguments [i] == null).ToString ()
-            //            );
-            //        }
-            //}
-            BindingFlags bf = BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod;
-            var method = classType.GetMethod(methodName, bf, null, types, null);
-            if (method == null)
-                method = classType.GetMethod(methodName);
-            if (method != null)
-            {
-                //if (method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(object[]))
-                //    arguments = new object[] { arguments }; // necessary for e.g. static void QueryTypes(params object[] blah)
-                return invokeMethod(null, arguments, method);
-            }
-            else
-                throw new MissingMethodException(String.Format("Could not find static method {0} on type {1}", methodName, classType.FullName));
         }
 
         /// <summary>
@@ -494,7 +482,7 @@ namespace Rclr
         /// <summary>
         /// A default binder for finding methods; a placeholder for a way to customize or refine the method selection process for rClr.
         /// </summary>
-        private static Binder methodBinder = new RclrBinder();
+        private static Binder methodBinder = System.Type.DefaultBinder; // reverting; this causes problems for parameters with the params keyword
 
         private static MethodInfo findMethod(Type classType, string methodName, BindingFlags bf, Type[] types)
         {
@@ -520,7 +508,7 @@ namespace Rclr
                 // check whether we have a method with the last argument with a 'params' keyword
                 // This is not handled magically when using reflection.
                 var p = parameters[parameters.Length - 1];
-                if (p.GetCustomAttributes(typeof(ParamArrayAttribute), false).Length > 0)
+                if (ReflectionHelper.IsVarArg(p))
                     arguments = packParameters(arguments, numParameters, p);
             }
             return marshallData(method.Invoke(obj, arguments));
