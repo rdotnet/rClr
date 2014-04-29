@@ -1,6 +1,12 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
+0.6-1	2014-04-29  beta
+    o	Update to use R.NET 1.5.11. This brings lots of performance
+	improvements as well as fixes done over the past months to R.NET.
+	While not all benefits will be immediately apparent, this is a 
+	more solid foundation for future rClr versions.
+	
 0.5-2	2013-09-21  beta 5
     o	Fix memory leaks for vectors created in R converted to .NET 
 	arrays. Proper memory release is confirmed for at least numeric, 

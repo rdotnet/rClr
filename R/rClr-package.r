@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.5-4\cr
-#' Date: \tab 2014-04-11\cr
+#' Version: \tab 0.6-1\cr
+#' Date: \tab 2014-04-29\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'
@@ -15,7 +15,7 @@
 #' and a Common Language Runtime (.NET or Mono). 
 #' The supported CLR implementations are Microsoft '.NET' framework on Windows and Mono 
 #' on several platforms, currently Windows and Debian Linux. rClr has been used for 
-#' production work as of 2013-06-16. Running it on Mono is still experimental.
+#' production work as of 2013-06-16. Running it on Mono is possible, though less mature than on MS.NET.
 #' The approach is similar to that of rJava.
 #'
 #' Kosei Abe (https://www.codeplex.com/site/users/view/kos59125) is gratefully 

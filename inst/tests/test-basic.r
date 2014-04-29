@@ -75,6 +75,16 @@ test_that("Complex numbers do not crash things", {
 # TODO: test that passing an S4 object that is not a clr object converts to a null reference in the CLR
 
 
+test_that("Methods with variable number of parameters with c# 'params' keyword", {
+  testObj <- clrNew(testClassName)
+  actual <- clrCall(testObj, "TestParams", "Hello, ", "World!", 1L, 2L, 3L, 6L, 5L, 4L)
+  expected <- "Hello, World!123654"
+  expect_equal(actual, expected=expected)
+  actual <- clrCall(testObj, "TestParams", "Hello, ", "World!", as.integer(1:6))
+  expected <- "Hello, World!123456"
+  expect_equal(actual, expected=expected)
+})
+
 test_that("Correct method binding based on parameter types", {
   mkArrayTypeName <- function(typeName) { paste(typeName, '[]', sep='') }
   f <- function(...){ clrCallStatic('Rclr.TestMethodBinding', 'SomeStaticMethod', ...) }
@@ -146,7 +156,17 @@ test_that("Numerical bi-dimensional arrays are marshalled correctly", {
 
 test_that("CLI dictionaries are marshalled as expected", {
   # The definition of 'as expected' for these collections is not all that clear, and there may be some RDotNet limitations.
-  expect_that( clrCallStatic(cTypename, "CreateStringDictionary"), equals(c(a='A', b='B')));
+  expect_that( clrCallStatic(cTypename, "CreateStringDictionary"), equals(list(a='A', b='B')))
+  expect_that( clrCallStatic(cTypename, "CreateStringDoubleArrayDictionary"), 
+    equals(
+      list(
+      a=c(1.0, 2.0, 3.0, 3.5, 4.3, 11),
+      b=c(1.0, 2.0, 3.0, 3.5, 4.3 ),
+      c=c(2.2, 3.3, 6.5))
+      )
+    )
+  # d <- clrCallStatic(cTypename, "CreateObjectDictionary")
+  # expect_true
 })
 
 test_that("Basic objects are created correctly", {
