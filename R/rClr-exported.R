@@ -623,7 +623,6 @@ clrGetType <- function(typename) {
 #'
 #' @param obj an object of S4 class clrObj
 #' @return the reference object.
-#' @export
 clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
   refgen <- setClrRefClass(obj@clrtype, envClassWhere)
   refgen$new(ref=obj)
@@ -634,7 +633,6 @@ clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
 #' Create reference classes for an object hierarchy. Gratefully acknowledge Peter D. and its rJavax work.
 #'
 #' @return the object generator function
-#' @export
 setClrRefClass <- function(typeName,
                             env=topenv(parent.frame()))
 {
