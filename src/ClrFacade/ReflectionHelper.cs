@@ -142,6 +142,8 @@ namespace Rclr
             var methods = classType.GetMethods(bf).Where(m => m.Name == methodName).Where(m => HasOptionalParams(m));
             if (methods.Count() == 0) return null;
             var mi = methods.FirstOrDefault(m => ExactTypeMatchesOptionalParams(m, types));
+            if (mi == null)
+                mi = methods.FirstOrDefault(m => AssignableTypesMatchesOptionalParams(m, types));
             return mi;
         }
 
@@ -150,26 +152,48 @@ namespace Rclr
             var methods = classType.GetMethods(bf).Where(m => m.Name==methodName).Where(m => HasVarArgs(m));
             if (methods.Count() == 0) return null;
             var mi = methods.FirstOrDefault(m => ExactTypeMatchesVarArgs(m, types));
+            if(mi==null)
+                mi = methods.FirstOrDefault(m => AssignableTypesMatchesVarArgs(m, types));
             return mi;
+        }
+
+        private static bool AssignableTypesMatchesOptionalParams(MethodInfo method, Type[] types)
+        {
+            return TestTypeMatchesOptionalParams(method, types, (methodType, paramType) => methodType.IsAssignableFrom(paramType));
         }
 
         private static bool ExactTypeMatchesOptionalParams(MethodInfo method, Type[] types)
         {
+            return TestTypeMatchesOptionalParams(method, types, (methodType, paramType) => methodType == paramType);
+        }
+
+        private static bool ExactTypeMatchesVarArgs(MethodInfo method, Type[] types)
+        {
+            return TestTypeMatchesVarArgs(method, types, (methodType, paramType) => methodType == paramType);
+        }
+
+        private static bool AssignableTypesMatchesVarArgs(MethodInfo method, Type[] types)
+        {
+            return TestTypeMatchesVarArgs(method, types, (methodType, paramType) => methodType.IsAssignableFrom(paramType));
+        }
+
+        private static bool TestTypeMatchesOptionalParams(MethodInfo method, Type[] types, Func<Type,Type,bool> matchTest)
+        {
             var parameters = method.GetParameters();
             if (parameters.Length == 0 && types.Length == 0) return true;
             if (types.Length > parameters.Length) return false; // this may be an issue with mix of default values and params keyword. So be it; feature later.
-            if (types.Length < parameters.Length) 
+            if (types.Length < parameters.Length)
                 if (!parameters[types.Length].IsOptional)
                     return false; // there remains at least one non-optional parameters that is missing.
             for (int i = 0; i < types.Length; i++)
             {
-                if (parameters[i].ParameterType != types[i])
+                if (!matchTest(parameters[i].ParameterType, types[i]))
                     return false;
             }
             return true;
-        }
-        
-        private static bool ExactTypeMatchesVarArgs(MethodInfo method, Type[] types)
+        }        
+
+        private static bool TestTypeMatchesVarArgs(MethodInfo method, Type[] types, Func<Type,Type,bool> matchTest)
         {
             var parameters = method.GetParameters();
             if (parameters.Length == 0 && types.Length == 0) return true;
@@ -186,7 +210,7 @@ namespace Rclr
             t = arrayType.GetElementType();
             for (int i = parameters.Length - 1; i < types.Length; i++)
             {
-                if (t != types[i])
+                if (!matchTest(t, types[i]))
                     return false;
             }
             return true;

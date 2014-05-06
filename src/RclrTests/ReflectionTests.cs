@@ -26,9 +26,18 @@ namespace RclrTests
             public void OptionalInt(int i = 0) { }
             public void IntOptionalInt(int blah, int i = 0) { }
             public void DoubleOptionalInt(double blah, int i = 0) { }
-            public void DoubleOptionalIntDoubleString(double blah, int i = 0, double d2 = 5.6, string tag="tag") { }
+            public void DoubleOptionalIntDoubleString(double blah, int i = 0, double d2 = 5.6, string tag = "tag") { }
 
+            public string OptionalArgsMatch(IMyInterface anInterface, int i = 0)  { return "IMyInterface";}
+            public string OptionalArgsMatch(LevelOneClass anInterface, int i = 0) { return "LevelOneClass";}
+            public string OptionalArgsMatch(LevelTwoClass anInterface, int i = 0) { return "LevelTwoClass"; }
         }
+
+        private interface IMyInterface { }
+        private class LevelOneClass : IMyInterface { }
+        private class OtherLevelOneClass : IMyInterface { }
+        private class LevelTwoClass : LevelOneClass { }
+
 
         [Fact]
         public void TestVariableArgumentMethodBinding()
@@ -114,6 +123,10 @@ namespace RclrTests
             ClrFacade.CallInstanceMethod(obj, "DoubleOptionalIntDoubleString", new object[] { 3.0, 5, 4.5 });
             ClrFacade.CallInstanceMethod(obj, "DoubleOptionalIntDoubleString", new object[] { 3.0, 5 });
             ClrFacade.CallInstanceMethod(obj, "DoubleOptionalIntDoubleString", new object[] { 3.0 });
+
+            Assert.Equal("LevelOneClass", ClrFacade.CallInstanceMethod(obj, "OptionalArgsMatch", new object[] { new LevelOneClass() }));
+            Assert.Equal("LevelTwoClass", ClrFacade.CallInstanceMethod(obj, "OptionalArgsMatch", new object[] { new LevelTwoClass() }));
+            Assert.Equal("IMyInterface", ClrFacade.CallInstanceMethod(obj, "OptionalArgsMatch", new object[] { new OtherLevelOneClass() }));
         }
 
         private MethodInfo GetSingleMethod(Type classType, string methodName, BindingFlags bf, Binder binder=null, Type[] types=null)
