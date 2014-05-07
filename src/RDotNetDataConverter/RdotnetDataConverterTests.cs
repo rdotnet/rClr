@@ -40,5 +40,26 @@ namespace Rclr
                     return rdotnetconverter.engine;
             }
         }
+
+
+        private static Tuple<string, SymbolicExpression> tc(string name, double[] values)
+        {
+            return Tuple.Create<string, SymbolicExpression>(name, REngine.CreateNumericVector(values));
+        }
+
+        private static Tuple<string, SymbolicExpression> tc(string name, string[] values)
+        {
+            return Tuple.Create<string, SymbolicExpression>(name, REngine.CreateCharacterVector(values));
+        }
+
+        public static SymbolicExpression CreateTestDataFrame()
+        {
+            var dfFun = REngine.Evaluate("data.frame").AsFunction();
+            var result = dfFun.InvokeNamed(
+                tc("name", new[] {"a","b","c"}),
+                tc("a", new[] {1.0, 2.0, 3.0})
+                );
+            return result;
+        }
     }
 }

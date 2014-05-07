@@ -344,25 +344,9 @@ namespace Rclr
             }
         }
 
-        static PlatformID GetPlatform()
-        {
-            return Environment.OSVersion.Platform;
-        }
-
         private static string getRDllName ()
         {
-            var pid = GetPlatform();
-            switch (pid) {
-                case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                case PlatformID.WinCE:
-                    return "R.dll";
-                case PlatformID.Unix:
-                    return "libR.so";
-                default:
-                    throw new NotSupportedException(pid.ToString());
-            }		
+            return NativeUtility.GetRDllFileName();
         }
 
         public REngine engine;

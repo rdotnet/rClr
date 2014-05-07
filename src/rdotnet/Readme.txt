@@ -8,5 +8,10 @@ R.NET is a project lead by Kosei Abe (http://www.codeplex.com/site/users/view/ko
 R.NET Copyright Kosei Abe (2013)
 
 This folder is a copy from the following code from rdotnet.codeplex.com
+
+VERSION:
+CURRENTLY UNDER DEVELOPMENT
+
+remember to track the origin:e.g.
 hg branch:
-rClr                         127:b2d012192790
+rClr                         227:5c9637fb2a84786c782f7e43bc6dc0f4e9c42684
