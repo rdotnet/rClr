@@ -2,7 +2,7 @@
 \alias{clrGetProperties}
 \title{List the instance properties of a CLR object}
 \usage{
-  clrGetProperties(clrobj, contains = "")
+clrGetProperties(clrobj, contains = "")
 }
 \arguments{
   \item{clrobj}{CLR object}
@@ -11,10 +11,10 @@
   must contain}
 }
 \value{
-  a list of names of the properties of the CLR object
+a list of names of the properties of the CLR object
 }
 \description{
-  List the instance properties of a CLR object
+List the instance properties of a CLR object
 }
 \examples{
 \dontrun{

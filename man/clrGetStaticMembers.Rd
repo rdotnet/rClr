@@ -2,7 +2,7 @@
 \alias{clrGetStaticMembers}
 \title{Gets the static members for a type}
 \usage{
-  clrGetStaticMembers(objOrType)
+clrGetStaticMembers(objOrType)
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -10,7 +10,7 @@
   'My.Namespace.MyClass,MyAssemblyName'.}
 }
 \description{
-  Gets the static members for a type
+Gets the static members for a type
 }
 \examples{
 \dontrun{

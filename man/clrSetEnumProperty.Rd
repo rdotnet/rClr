@@ -2,7 +2,7 @@
 \alias{clrSetEnumProperty}
 \title{Sets the value of an enum field or property of an object or class}
 \usage{
-  clrSetEnumProperty(objOrType, name, enumtype, enumval)
+clrSetEnumProperty(objOrType, name, enumtype, enumval)
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -18,7 +18,7 @@
   \item{enumval}{the value to set the field with}
 }
 \description{
-  Sets the value of an enum field or property of an object
-  or class
+Sets the value of an enum field or property of an object or
+class
 }
 

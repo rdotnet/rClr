@@ -2,7 +2,7 @@
 \alias{clrSet}
 \title{Sets the value of a field or property of an object or class}
 \usage{
-  clrSet(objOrType, name, value)
+clrSet(objOrType, name, value)
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -14,8 +14,7 @@
   \item{value}{the value to set the field with}
 }
 \description{
-  Sets the value of a field or property of an object or
-  class
+Sets the value of a field or property of an object or class
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 \alias{clrGetEnumNames}
 \title{Gets the names of a CLR Enum value type}
 \usage{
-  clrGetEnumNames(enumType)
+clrGetEnumNames(enumType)
 }
 \arguments{
   \item{enumType}{a CLR object, System.Type or type name,
@@ -10,10 +10,10 @@
   'My.Namespace.MyClass,MyAssemblyName'.}
 }
 \value{
-  a character vector of the names for the enum
+a character vector of the names for the enum
 }
 \description{
-  Gets the names of a CLR Enum value type
+Gets the names of a CLR Enum value type
 }
 \examples{
 \dontrun{

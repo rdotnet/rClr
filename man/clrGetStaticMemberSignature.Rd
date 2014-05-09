@@ -2,7 +2,7 @@
 \alias{clrGetStaticMemberSignature}
 \title{Gets the signature of a static member of a type}
 \usage{
-  clrGetStaticMemberSignature(typename, memberName)
+clrGetStaticMemberSignature(typename, memberName)
 }
 \arguments{
   \item{typename}{type name, possibly namespace and
@@ -13,6 +13,6 @@
   field, property, method) to search for}
 }
 \description{
-  Gets the signature of a static member of a type
+Gets the signature of a static member of a type
 }
 

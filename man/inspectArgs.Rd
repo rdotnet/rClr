@@ -2,18 +2,18 @@
 \alias{inspectArgs}
 \title{Peek into the structure of R objects 'as seen from C code'}
 \usage{
-  inspectArgs(...)
+inspectArgs(...)
 }
 \arguments{
   \item{...}{one or more R objects}
 }
 \value{
-  NULL. Information is printed, not returned.
+NULL. Information is printed, not returned.
 }
 \description{
-  Inspect one or more R object to get information on its
-  representation in the engine. This function is mostly
-  useful for R/rClr developers. It is derived from the
-  'showArgs' example in the R extension manual
+Inspect one or more R object to get information on its
+representation in the engine. This function is mostly
+useful for R/rClr developers. It is derived from the
+'showArgs' example in the R extension manual
 }
 

@@ -2,18 +2,18 @@
 \alias{clrTypeNameExtPtr}
 \title{Gets the type name of an object}
 \usage{
-  clrTypeNameExtPtr(extPtr)
+clrTypeNameExtPtr(extPtr)
 }
 \arguments{
   \item{extPtr}{external pointer to a CLR object (not a
   cobjRef S4 object)}
 }
 \value{
-  a character string, the type name
+a character string, the type name
 }
 \description{
-  Gets the type name of an object, given the SEXP external
-  pointer to this CLR object.
+Gets the type name of an object, given the SEXP external
+pointer to this CLR object.
 }
 \examples{
 \dontrun{

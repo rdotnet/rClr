@@ -2,7 +2,7 @@
 \alias{clrGetMethods}
 \title{List the instance methods of a CLR object}
 \usage{
-  clrGetMethods(clrobj, contains = "")
+clrGetMethods(clrobj, contains = "")
 }
 \arguments{
   \item{clrobj}{CLR object}
@@ -11,10 +11,10 @@
   must contain}
 }
 \value{
-  a list of names of the methods of the CLR object
+a list of names of the methods of the CLR object
 }
 \description{
-  List the instance methods of a CLR object
+List the instance methods of a CLR object
 }
 \examples{
 \dontrun{

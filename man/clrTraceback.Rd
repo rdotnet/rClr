@@ -2,11 +2,11 @@
 \alias{clrTraceback}
 \title{Prints the last CLR exception}
 \usage{
-  clrTraceback()
+clrTraceback()
 }
 \description{
-  Prints the last CLR exception. This is roughly the
-  equivalent of the traceback function of R.
+Prints the last CLR exception. This is roughly the
+equivalent of the traceback function of R.
 }
 \examples{
 \dontrun{

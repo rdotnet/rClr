@@ -2,7 +2,7 @@
 \alias{clrVT}
 \title{Get the COM variant type of a CLR object}
 \usage{
-  clrVT(objOrType, methodName, ...)
+clrVT(objOrType, methodName, ...)
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -16,14 +16,13 @@
   call}
 }
 \value{
-  A string
+A string
 }
 \description{
-  Get the COM variant type of a CLR object, e.g. "VT_ARRAY
-  | VT_I8". This function only works when run on the
-  Microsoft implementation of the CLR. This function is
-  useful for advanced diagnosis; most users should never
-  have to use it.
+Get the COM variant type of a CLR object, e.g. "VT_ARRAY |
+VT_I8". This function only works when run on the Microsoft
+implementation of the CLR. This function is useful for
+advanced diagnosis; most users should never have to use it.
 }
 \examples{
 \dontrun{

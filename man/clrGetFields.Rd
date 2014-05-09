@@ -2,7 +2,7 @@
 \alias{clrGetFields}
 \title{List the instance fields of a CLR object}
 \usage{
-  clrGetFields(clrobj, contains = "")
+clrGetFields(clrobj, contains = "")
 }
 \arguments{
   \item{clrobj}{CLR object}
@@ -11,10 +11,10 @@
   must contain}
 }
 \value{
-  a list of names of the fields of the CLR object
+a list of names of the fields of the CLR object
 }
 \description{
-  List the instance fields of a CLR object
+List the instance fields of a CLR object
 }
 \examples{
 \dontrun{

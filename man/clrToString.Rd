@@ -2,20 +2,20 @@
 \alias{clrToString}
 \title{Calls the ToString method of an object}
 \usage{
-  clrToString(x)
+clrToString(x)
 }
 \arguments{
   \item{x}{any R object, which is converted to a CLR object
   on which to call ToString}
 }
 \value{
-  the string representation of the object in the CLR
+the string representation of the object in the CLR
 }
 \description{
-  Calls the ToString method of an object as represented in
-  the CLR. This function is here to help quickly test
-  object equivalence from the R interpreter, for instance
-  on the tricky topic of date-time conversions
+Calls the ToString method of an object as represented in
+the CLR. This function is here to help quickly test object
+equivalence from the R interpreter, for instance on the
+tricky topic of date-time conversions
 }
 \examples{
 \dontrun{

@@ -2,16 +2,16 @@
 \alias{clrGetExtPtr}
 \title{Gets the external pointer CLR object.}
 \usage{
-  clrGetExtPtr(clrObject)
+clrGetExtPtr(clrObject)
 }
 \arguments{
   \item{clrObject}{a S4 object of class clrobj}
 }
 \value{
-  the external pointer to the CLR object
+the external pointer to the CLR object
 }
 \description{
-  Gets the external pointer CLR object. End user are
-  unlikely to need this.
+Gets the external pointer CLR object. End user are unlikely
+to need this.
 }
 

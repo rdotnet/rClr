@@ -1,9 +1,6 @@
-\name{.onLoad}
-\alias{.onLoad}
+\name{dotOnLoad}
+\alias{dotOnLoad}
 \title{rClr .onLoad}
-\usage{
-  .onLoad(libname = "~/R", pkgname = "rClr")
-}
 \arguments{
   \item{libname}{the path to the library from which the
   package is loaded}
@@ -11,15 +8,15 @@
   \item{pkgname}{the name of the package.}
 }
 \description{
-  Function called when loading the rClr package with
-  'library'.
+Function called when loading the rClr package with
+'library'.
 }
 \details{
-  The function looks by default for the rClr native library
-  for the Mono runtime. If the platform is Linux, this is
-  the only option. If the platform is Windows, using the
-  Microsoft .NET runtime is an option. If the rClr native
-  library for MS.NET is detected, the Microsoft .NET
-  runtime is loaded in preference to Mono.
+The function looks by default for the rClr native library
+for the Mono runtime. If the platform is Linux, this is the
+only option. If the platform is Windows, using the
+Microsoft .NET runtime is an option. If the rClr native
+library for MS.NET is detected, the Microsoft .NET runtime
+is loaded in preference to Mono.
 }
 

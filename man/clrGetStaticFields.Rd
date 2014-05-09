@@ -2,7 +2,7 @@
 \alias{clrGetStaticFields}
 \title{Gets the static fields for a type}
 \usage{
-  clrGetStaticFields(objOrType, contains = "")
+clrGetStaticFields(objOrType, contains = "")
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -13,6 +13,6 @@
   must contain}
 }
 \description{
-  Gets the static fields for a type
+Gets the static fields for a type
 }
 

@@ -2,7 +2,7 @@
 \alias{clrLoadAssembly}
 \title{Loads a Common Language assembly.}
 \usage{
-  clrLoadAssembly(name)
+clrLoadAssembly(name)
 }
 \arguments{
   \item{name}{a character vector of length one. It can be
@@ -11,9 +11,9 @@
   name.}
 }
 \description{
-  Loads an assembly. Note that this is loaded in the single
-  application domain that is created by rClr, not a
-  separate application domain.
+Loads an assembly. Note that this is loaded in the single
+application domain that is created by rClr, not a separate
+application domain.
 }
 \examples{
 \dontrun{
@@ -31,6 +31,6 @@ clrGetLoadedAssemblies()
 }
 }
 \seealso{
-  \code{\link{.C}} which this function wraps
+\code{\link{.C}} which this function wraps
 }
 

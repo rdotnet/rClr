@@ -2,12 +2,12 @@
 \alias{clrShutdown}
 \title{Shuts down the current runtime.}
 \usage{
-  clrShutdown()
+clrShutdown()
 }
 \value{
-  nothing is returned by this function
+nothing is returned by this function
 }
 \description{
-  Shuts down the current runtime.
+Shuts down the current runtime.
 }
 

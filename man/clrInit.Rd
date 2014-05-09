@@ -2,7 +2,7 @@
 \alias{clrInit}
 \title{Initialize a new CLR application domain}
 \usage{
-  clrInit(debug = FALSE)
+clrInit(debug = FALSE)
 }
 \arguments{
   \item{debug}{If using Mono, should the CLR be initialised
@@ -11,10 +11,10 @@
   MS.NET.}
 }
 \value{
-  nothing is returned by this function
+nothing is returned by this function
 }
 \description{
-  Initialize a new CLR application domain
+Initialize a new CLR application domain
 }
 \examples{
 \dontrun{

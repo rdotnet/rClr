@@ -2,7 +2,7 @@
 \alias{clrGetStaticMethods}
 \title{Gets the static members for a type}
 \usage{
-  clrGetStaticMethods(objOrType, contains = "")
+clrGetStaticMethods(objOrType, contains = "")
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -13,6 +13,6 @@
   must contain}
 }
 \description{
-  Gets the static members for a type
+Gets the static members for a type
 }
 

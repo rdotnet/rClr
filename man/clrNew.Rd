@@ -2,7 +2,7 @@
 \alias{clrNew}
 \title{Create a new CLR object}
 \usage{
-  clrNew(typename, ...)
+clrNew(typename, ...)
 }
 \arguments{
   \item{typename}{type name, possibly namespace and
@@ -13,10 +13,10 @@
   object constructor via the call to .External}
 }
 \value{
-  a CLR object
+a CLR object
 }
 \description{
-  Create a new CLR object
+Create a new CLR object
 }
 \examples{
 \dontrun{

@@ -2,14 +2,14 @@
 \alias{setRDotNet}
 \title{Turn on/off R.NET}
 \usage{
-  setRDotNet(setit = TRUE)
+setRDotNet(setit = TRUE)
 }
 \arguments{
   \item{setit}{if true enable, otherwise disable}
 }
 \description{
-  Turn on or off the usage of the R.NET assemblies to
-  convert CLR objects to R data structures
+Turn on or off the usage of the R.NET assemblies to convert
+CLR objects to R data structures
 }
 \examples{
 \dontrun{

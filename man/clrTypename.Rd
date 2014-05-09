@@ -2,17 +2,17 @@
 \alias{clrTypename}
 \title{Gets the type name of an object}
 \usage{
-  clrTypename(clrobj)
+clrTypename(clrobj)
 }
 \arguments{
   \item{clrobj}{CLR object}
 }
 \value{
-  type name
+type name
 }
 \description{
-  Gets the CLR type name of an object, given an S4 clrobj
-  object
+Gets the CLR type name of an object, given an S4 clrobj
+object
 }
 \examples{
 \dontrun{

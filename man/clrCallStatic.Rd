@@ -2,7 +2,7 @@
 \alias{clrCallStatic}
 \title{Call a static method on a CLR type}
 \usage{
-  clrCallStatic(typename, methodName, ...)
+clrCallStatic(typename, methodName, ...)
 }
 \arguments{
   \item{typename}{type name, possibly namespace and
@@ -16,11 +16,11 @@
   .External}
 }
 \value{
-  an object resulting from the call. May be a CLR object,
-  or a native R object for common types. Can be NULL.
+an object resulting from the call. May be a CLR object, or
+a native R object for common types. Can be NULL.
 }
 \description{
-  Call a static method on a CLR type
+Call a static method on a CLR type
 }
 \examples{
 \dontrun{

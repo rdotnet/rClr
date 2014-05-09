@@ -2,16 +2,16 @@
 \alias{getSexpType}
 \title{Get the type code for a SEXP}
 \usage{
-  getSexpType(sexp)
+getSexpType(sexp)
 }
 \arguments{
   \item{sexp}{an R object}
 }
 \value{
-  the type code, an integer, as defined in Rinternals.h
+the type code, an integer, as defined in Rinternals.h
 }
 \description{
-  Get the type code for a SEXP, as returned by the TYPEOF
-  macro
+Get the type code for a SEXP, as returned by the TYPEOF
+macro
 }
 

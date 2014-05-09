@@ -2,8 +2,7 @@
 \alias{clrGetLoadedAssemblies}
 \title{List the names of loaded CLR assemblies}
 \usage{
-  clrGetLoadedAssemblies(fullname = FALSE,
-    filenames = FALSE)
+clrGetLoadedAssemblies(fullname = FALSE, filenames = FALSE)
 }
 \arguments{
   \item{fullname}{should the full name of the assemblies be
@@ -14,10 +13,10 @@
   loaded assembly.}
 }
 \value{
-  the names of loaded CLR assemblies
+the names of loaded CLR assemblies
 }
 \description{
-  List the names of loaded CLR assemblies
+List the names of loaded CLR assemblies
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 \alias{clrGet}
 \title{Gets the value of a field or property of an object or class}
 \usage{
-  clrGet(objOrType, name)
+clrGet(objOrType, name)
 }
 \arguments{
   \item{objOrType}{a CLR object, or type name, possibly
@@ -12,12 +12,11 @@
   \item{name}{the name of a field/property of the object}
 }
 \value{
-  an object resulting from the call. May be a CLR object,
-  or a native R object for common types. Can be NULL.
+an object resulting from the call. May be a CLR object, or
+a native R object for common types. Can be NULL.
 }
 \description{
-  Gets the value of a field or property of an object or
-  class
+Gets the value of a field or property of an object or class
 }
 \examples{
 \dontrun{

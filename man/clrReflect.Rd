@@ -2,18 +2,17 @@
 \alias{clrReflect}
 \title{List the instance members of a CLR object}
 \usage{
-  clrReflect(clrobj)
+clrReflect(clrobj)
 }
 \arguments{
   \item{clrobj}{CLR object}
 }
 \value{
-  a list of methods, fields and properties of the CLR
-  object
+a list of methods, fields and properties of the CLR object
 }
 \description{
-  List the instance members of a CLR object, i.e. its
-  methods, fields and properties.
+List the instance members of a CLR object, i.e. its
+methods, fields and properties.
 }
 \examples{
 \dontrun{

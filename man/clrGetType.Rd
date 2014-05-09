@@ -2,7 +2,7 @@
 \alias{clrGetType}
 \title{Gets the type of a CLR object given its type name}
 \usage{
-  clrGetType(typename)
+clrGetType(typename)
 }
 \arguments{
   \item{typename}{a character vector of length one. It can
@@ -11,9 +11,9 @@
   name.}
 }
 \value{
-  the CLR Type.
+the CLR Type.
 }
 \description{
-  Gets the type of a CLR object given its type name
+Gets the type of a CLR object given its type name
 }
 
