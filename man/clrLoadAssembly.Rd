@@ -24,7 +24,8 @@ f <- path.expand(f)
 stopifnot( file.exists(f) )
 clrLoadAssembly(f)
 # Load an assembly from the global assembly cache (GAC)
-clrLoadAssembly("System.Windows.Presentation, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+clrLoadAssembly("System.Windows.Presentation,
+  Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
 # The use of partial assembly names is discouraged; nevertheless it is supported
 clrLoadAssembly("System.Web.Services")
 clrGetLoadedAssemblies()

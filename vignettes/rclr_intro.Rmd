@@ -103,8 +103,8 @@ clrGetStaticMembers('Rclr.TestObject')
 `clrGet` and `clrSet` can also set static fields and properties, but only if the argument is the name of a class (Type). To avoid risks of ambiguity and confusion, you cannot do this with a concrete object. 
 
 ```{r}
-# this call fails
-clrGet(testObj,  "StaticFieldIntegerOne") 
+# the following call would fail
+# clrGet(testObj,  "StaticFieldIntegerOne") 
 # This is less ambiguous, and is supported
 clrGet('Rclr.TestObject',  "StaticFieldIntegerOne")
 clrSet('Rclr.TestObject',  "StaticFieldIntegerOne", as.integer(3))

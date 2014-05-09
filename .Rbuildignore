@@ -18,3 +18,4 @@
 .*/MonoInstall/.*
 .*/bin/.*
 .*/obj/.*
+.*/packages/xunit/.*

@@ -50,7 +50,8 @@ setRDotNet <- function(setit=TRUE) {
 #' stopifnot( file.exists(f) )
 #' clrLoadAssembly(f)
 #' # Load an assembly from the global assembly cache (GAC)
-#' clrLoadAssembly("System.Windows.Presentation, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+#' clrLoadAssembly("System.Windows.Presentation, 
+#'   Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' # The use of partial assembly names is discouraged; nevertheless it is supported
 #' clrLoadAssembly("System.Web.Services")
 #' clrGetLoadedAssemblies()
@@ -257,7 +258,8 @@ clrGetMemberSignature <- function( clrobj, memberName ) {
 #' (testObj <- clrNew(testClassName))
 #' # object with a constructor that has parameters
 #' (testObj <- clrNew(testClassName, as.integer(123)))
-#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, 
+#'   Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' f <- clrNew('System.Windows.Forms.Form')
 #' clrSet(f, 'Text', "Hello from '.NET'")
 #' clrCall(f, 'Show')
@@ -285,7 +287,8 @@ clrNew <- function(typename, ...)
 #' (testObj <- clrNew(testClassName))
 #' clrCall(testObj, 'GetFieldIntegerOne')
 #' ## derived from unit test for matching the right method (function) to call.
-#' f <- function(...){ paste( 'This called a method with arguments:', paste(clrCallStatic('Rclr.TestMethodBinding', 'SomeStaticMethod', ...), collapse=', ')) }
+#' f <- function(...){ paste( 'This called a method with arguments:', 
+#'   paste(clrCallStatic('Rclr.TestMethodBinding', 'SomeStaticMethod', ...), collapse=', ')) }
 #' f(1:3)
 #' f(3)
 #' f('a')
@@ -339,7 +342,8 @@ clrGet <- function(objOrType,name)
 #' clrSet(testClassName, 'StaticPropertyIntegerOne', 42)
 #' 
 #' # Using 'good old' Windows forms to say hello:
-#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, 
+#'   Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' f <- clrNew('System.Windows.Forms.Form')
 #' clrSet(f, 'Text', "Hello from '.NET'")
 #' clrCall(f, 'Show')
@@ -619,9 +623,10 @@ clrGetType <- function(typename) {
 
 #' Create a reference object wrapper around a CLR object
 #'
-#' Create a reference object wrapper around a CLR object
+#' (EXPERIMENTAL) Create a reference object wrapper around a CLR object
 #'
 #' @param obj an object of S4 class clrObj
+#' @param envClassWhere environment where the new generator is created.
 #' @return the reference object.
 clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
   refgen <- setClrRefClass(obj@clrtype, envClassWhere)
@@ -630,8 +635,10 @@ clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
 
 #' Create reference classes for an object hierarchy
 #'
-#' Create reference classes for an object hierarchy. Gratefully acknowledge Peter D. and its rJavax work.
+#' EXPERIMENTAL Create reference classes for an object hierarchy. Gratefully acknowledge Peter D. and its rJavax work.
 #'
+#' @param typeName a CLR type name, recognizable by clrGetType
+#' @param env environment where the new generator is created.
 #' @return the object generator function
 setClrRefClass <- function(typeName,
                             env=topenv(parent.frame()))
