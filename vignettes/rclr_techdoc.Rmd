@@ -38,3 +38,13 @@ docDir <- file.path(pkgDir, 'inst', 'doc')
 setwd(docDir)
 vignettesRclr()
 ```
+
+```{cmd}
+set R="c:\Program Files\R\R-3.1.0\bin\x64\R.exe"
+cd F:\src\codeplex
+set BuildConfiguration=Debug
+rm -rf rClr.Rcheck
+rm rClr_0.*.tar.gz
+%R% CMD build rClr
+%R% CMD check --as-cran rClr_0.6-1.tar.gz
+```
