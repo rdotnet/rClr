@@ -37,6 +37,11 @@ To start with, the customary "Hello" example follows:
 ```{r methods, tidy=TRUE}
 library(rClr)
 clrCallStatic('Rclr.HelloWorld', 'Hello')
+```
+
+To demonstrate something marginally snazzier:
+
+```{r, tidy=TRUE}
 # TODO: change that to a nicer prepackaged forms example. Or, allow for shorter forms for assembly names. Careful not to allow for ambiguity however.
 # Also TODO a simpler Hello World for Mono... following is problematic as of Mono 3.0.9
 if ( clrGetInnerPkgName() == 'rClrMs' ) {
@@ -57,7 +62,7 @@ testClassName <- "Rclr.TestObject";
 (testObj <- clrNew(testClassName))
 ```
 
-It is possible to dynamically inspect the CLR object "members": properties, fields and methods of an object.
+It is possible to dynamically inspect the CLR object "members": in the .NET world members refer to properties, fields and methods of an object.
 
 ```{r clrReflect}
 clrGetProperties(testObj)
@@ -87,12 +92,20 @@ clrGet(testObj, "PropertyIntegerOne")
 clrSet(testObj, "PropertyIntegerOne", as.integer(1))
 ```
 
-There are functions to list static members (a.k.a. class members). `clrGet` and `clrSet` can also set static fields and properties.
+There are functions to list static members (a.k.a. class members). The discovery of static members can be done on a class name or on an object type; there is no ambiguity.
 
 ```{r clrGetStatic}
+# clrGetStaticMembers(testObj)
+# would have the same result as:
 clrGetStaticMembers('Rclr.TestObject')
-clrGetStaticMembers(testObj)
-# clrGet(testObj,  "StaticFieldIntegerOne") # would fail: do not induce the users into mistake
+```
+
+`clrGet` and `clrSet` can also set static fields and properties, but only if the argument is the name of a class (Type). To avoid risks of ambiguity and confusion, you cannot do this with a concrete object. 
+
+```{r}
+# this call fails
+clrGet(testObj,  "StaticFieldIntegerOne") 
+# This is less ambiguous, and is supported
 clrGet('Rclr.TestObject',  "StaticFieldIntegerOne")
 clrSet('Rclr.TestObject',  "StaticFieldIntegerOne", as.integer(3))
 ```
@@ -138,12 +151,27 @@ library(xtable)
 print(xtable(result),type='html')
 ```
 
+### More advanced data types
+
+Most basic vector data types can be handled in rClr in the native code layer written in C/C++. However, limitations and difficulties appear to handle for instance multidimensional arrays, and matching more complicated types between the CLR and R.
+
+Fortunately, it is easier to handle these directly from C#, using the library **R.NET**, the close relative of **rClr**. The following code demonstrate how this allows the conversion of multi-dimensional arrays from the CLR to R matrices.
+
+```{r cache = F, tidy = TRUE}
+setRDotNet(TRUE)
+cTypename <- "Rclr.TestCases"
+clrGetMemberSignature(cTypename, "CreateRectDoubleArray")
+clrCallStatic(cTypename, "CreateRectDoubleArray")
+```
+
 Method binding in the CLR
 ------------------
 
 In the common language infrastructure methods can be overloaded, that is have the same names but varying types of arguments. The feature is common to other languages such as Java and C++. R has a partly similar behavior throught the use of default argument values.
 
-The **rClr** functions `clrCall` and `clrCallStatic` currently relies on the default behavior of the CLR to find the best method to call for the arguments passed to the `clrCallxyz` functions. The .NET lingo for this is "method binding". In the future, there may be additional behavior added to facilitate the operations from R. A typical case is that, in order to emulate the behavior expected by R users with respect to vectorized operations.
+An important difference between most languages running on the CLR (C#, F#, etc.) and R is that the former are statically typed (or statically inferred) whereas R is dynamically typed. **rClr** tries hard to use R idioms, but without clashing with the strongly typed languages targeting the CLR.
+
+The **rClr** functions `clrCall` and `clrCallStatic` currently relies mostly on the default behavior of the CLR to find the best method to call for the arguments passed to these functions. The .NET lingo for this is "method binding". In the future, there may be additional behaviors added to facilitate the operations from R. A typical case is that, in order to emulate the behavior expected by R users with respect to vectorized operations.
 
 ### `params` keywords
 
@@ -153,18 +181,23 @@ C# has a feature to handle elegantly methods allowing for a variable number of a
    public static int TestParams(string a, string b, params int[] c)
 ```
 
+You can call such a method qith a variable number of arguments; however the types must match that in the CLR method.
 ```{r}
 testObj <- clrNew('Rclr.TestObject')
-clrCall(testObj, 'TestParams', "Hello, ", "World!", 1L, 2L, 3L, 6L, 5L, 4L)
+clrCall(testObj, 'TestParams', "Hello, ", "World!", 1L, 2L, 3L, 6L, 5L, 4L, 9L)
 # As in C#, it also works if passing a vector
-clrCall(testObj, 'TestParams', "Hello, ", "World!", 1:6)
+clrCall(testObj, 'TestParams', "Hello, ", "World!", 1:5)
 ```
 
-### Default parameter values in CLR methods
+### Optional parameter values in CLR methods
+
+C# also has a way to define functions with optional parameters, or rather parameters with default values. 
 
 ```{Csharp}
 public void TestDefaultValues(string a, int b, int c=1, int d=2) { }
 ```
+
+These methods are supported, as demonstrated in the following code. Note that argument passing is based on the order of parameters. Named arguments is not yet supported, though it may be a feature available in future versions.
 
 ```{r}
 clrCall(testObj, 'TestDefaultValues', "Hello", 1L)
@@ -174,7 +207,7 @@ clrCall(testObj, 'TestDefaultValues', "Hello", 1L, 2L, 3L)
 
 ### Generic methods
 
-This section is a placeholder 
+This section is a placeholder. At the time of writing, generic methods are not supported, at least not readily.
 
 ### Metaprogramming
 
@@ -186,13 +219,12 @@ Runtime performance
 While the primary concern of the package is the numerical correctness, attention is also being paid to the speed of execution. This section highlights a few figures and advice that may be of importance to users to avoid unnecessarily sluggish performance. The main take home messages are:
 * Prefer passing large arrays/vectors, rather than numerous calls to `clrCallStatic` or `clrCall` with smaller vectors passed or expected as return value from the call.
 
-The following code and figures show the effective transfer rate for numeric vectors, i.e. double precision array in the .NET world. The experimental design is such that 10 repetitions of the measurement are made for a given vector size. Performance is measured in both direction, with comparable speed. Note that the speed of execution is calculated by removing an estimate of the cost of measurement itself; you may thus notice outliers and even negative transfer rates if the measurement was perturbed by garbage collection in R or the CLR.
+The following code and figures show the effective transfer rate for numeric vectors, i.e. double precision array in the .NET world. The experimental design is such that 10 repetitions of the measurement are made for a given vector size. Performance is measured in both direction, with comparable speed. Note that the speed of execution is calculated by removing an estimate of the cost of measurement itself; you _may_ thus notice outliers and even negative transfer rates if the measurement was perturbed by garbage collection in R or the CLR.
 
 ```{r cache = T, tidy = TRUE, comment = NA, results = "asis", fig.width=11}
 perfMeasureFile <- list.files(system.file('tests', package='rClr'), pattern='performance_profiling', full.names=TRUE)
 stopifnot(file.exists(perfMeasureFile))
 source(perfMeasureFile)
-traceback()
 trials <- createCases(numReps=10, maxArrayLen=7.5e6)
 setRDotNet(FALSE)
 bench <- rclrNumericPerf(trials, tag='no.r.net')
@@ -200,29 +232,46 @@ plotRate(bench, case = 'CLR->R')
 plotRate(bench, case = 'CLR->R', logy=FALSE)
 ```
 
-The transfer rate going form CLR arrays of double to R vectors peaks at around 40 million items per second (240MB/s). The log/log plot of the conversion rate is particularly useful to visualize at which point the overhead of the function call becomes negligible compared to the array conversion itself: Below ~5000 elements in the vector the transfer rate is roughly linear in log-log space. You may notice a decrease in performance in that case of 'CLR->R'; this may be an artefact of the experimental design interplaying with garbage collection.
+The transfer rate going form CLR arrays of double to R vectors peaks at around 35 to 40 million items per second (240MB/s). The log/log plot of the conversion rate is particularly useful to visualize at which point the overhead of the function call becomes negligible compared to the array conversion itself: Below ~5000 elements in the vector the transfer rate is roughly linear in log-log space. You may notice a decrease in performance in that case of 'CLR->R'; this may be an artefact of the experimental design interplaying with garbage collection.
 
 ```{r cache = T, tidy = TRUE, comment = NA, results = "asis", fig.width=11}
 plotRate(bench, case = 'R->CLR')
 plotRate(bench, case = 'R->CLR', logy=FALSE)
 ```
 
-
 Related work
 -----------------------------
 
-* rJava
+* [R.NET](http://rdotnet.codeplex.com) is a library to embed R in .NET applications. It can be used by **rClr** for some data conversion.
+* rJava is by nature quite similar in purpose, though the code and usage are actually quite different.
+* [rsqlserver](https://github.com/agstudy/rsqlserver) uses **rClr**
 * Rcpp notably with intended use of reference classes.
 
 Acknowledgements
 -----------------------------
 
 I gratefully acknowledge:
-* Hadley Wickham, creator of devtools and testtat
 * Kosei ABE, creator of R.NET
+* Hadley Wickham, creator of devtools and testtat
 * Yihui Xie, creator of the knitr package
 
 References
 -----------------------------
 
-* R date and times.
+This is a placeholder for reference to technical documentation and journal articles.
+
+Appendix
+-----------------------------
+
+How to re-produce the HTML version of this document:
+
+```{r, eval=FALSE}
+library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+library(rClr)
+pkgDir <- tryFindPkgDir()
+# seem to need to move working directory. Oddities with knitr figure output otherwise
+originalDir <- getwd()
+docDir <- file.path(pkgDir, 'inst', 'doc')
+setwd(docDir)
+vignettesRclr()
+```

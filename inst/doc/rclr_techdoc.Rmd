@@ -1,0 +1,40 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Technical reference documentation}
+-->
+
+Technical reference documentation
+=======================================
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(out.extra='style="display:block; margin: auto"', fig.align="center")
+```
+
+Introduction
+------------
+
+This page gathers some more technical aspects of the **rClr** package. One aim is to document a few processes such as the build process.
+
+Build process
+----------------------------
+
+## .Rd file documentation
+```{r, eval=FALSE}
+library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+roxyRclr()
+```
+
+## Vignettes
+You should start from a new R session; if you have regenerated doc from Roxygen, there may be some surprises with the result of the `system.file` function.
+
+```{r, eval=FALSE}
+library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+library(rClr)
+pkgDir <- tryFindPkgDir()
+# seem to need to move working directory. Oddities with knitr figure output otherwise
+originalDir <- getwd()
+docDir <- file.path(pkgDir, 'inst', 'doc')
+setwd(docDir)
+vignettesRclr()
+```

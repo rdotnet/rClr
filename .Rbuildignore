@@ -1,6 +1,6 @@
-opensdf$
-.gitignore
-.git
+.*\.opensdf
+.*\.gitignore
+.*\.git
 .*\.tlog
 .*\.ilk
 .*\.exp
