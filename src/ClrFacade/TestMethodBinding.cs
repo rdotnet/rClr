@@ -2,6 +2,7 @@
 using System.Reflection;
 using Rclr;
 using System.Collections.Generic;
+using Rclr.Tests.RefClasses;
 
 namespace Rclr
 {
@@ -179,45 +180,76 @@ namespace Rclr
 			list.Add("int p1");
 			return list.ToArray();
 		}
-        public static string SomeMethodWithOptionalArguments(int p1, int p2, params int [] p3)
+        public static string SomeMethodWithVarArgs(int p1, int p2, params int [] p3)
         {
             return "int p1, int p2, params int [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(object p1, int p2, params int [] p3)
+        public static string SomeMethodWithVarArgs(object p1, int p2, params int [] p3)
         {
             return "object p1, int p2, params int [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(int p1, object p2, params int [] p3)
+        public static string SomeMethodWithVarArgs(int p1, object p2, params int [] p3)
         {
             return "int p1, object p2, params int [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(object p1, object p2, params int [] p3)
+        public static string SomeMethodWithVarArgs(object p1, object p2, params int [] p3)
         {
             return "object p1, object p2, params int [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(int p1, int p2, params object [] p3)
+        public static string SomeMethodWithVarArgs(int p1, int p2, params object [] p3)
         {
             return "int p1, int p2, params object [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(object p1, int p2, params object [] p3)
+        public static string SomeMethodWithVarArgs(object p1, int p2, params object [] p3)
         {
             return "object p1, int p2, params object [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(int p1, object p2, params object [] p3)
+        public static string SomeMethodWithVarArgs(int p1, object p2, params object [] p3)
         {
             return "int p1, object p2, params object [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(object p1, object p2, params object [] p3)
+        public static string SomeMethodWithVarArgs(object p1, object p2, params object [] p3)
         {
             return "object p1, object p2, params object [] p3";
         }
-        public static string SomeMethodWithOptionalArguments(object p1)
+        public static string SomeMethodWithVarArgs(object p1)
         {
             return "object p1";
         }
-        public static string SomeMethodWithOptionalArguments(int p1)
+        public static string SomeMethodWithVarArgs(int p1)
         {
             return "int p1";
+        }
+
+//========== Next section is to test the support (or lack thereof) with the most ambiguous cases with optional parameters
+
+        public static string MultipleMatchVarArgs(object p1, InterfaceOne p2, params object[] p3)
+        {
+            return "InterfaceOne";
+        }
+        public static string MultipleMatchVarArgs(object p1, InterfaceTwo p2, params object[] p3)
+        {
+            return "InterfaceTwo";
+        }
+        public static string MultipleMatchVarArgs(object p1, InterfaceBaseOne p2, params object[] p3)
+        {
+            return "InterfaceBaseOne";
+        }
+        public static string MultipleMatchVarArgs(object p1, InterfaceBaseTwo p2, params object[] p3)
+        {
+            return "InterfaceBaseTwo";
+        }
+        public static string MultipleMatchVarArgs(object p1, BaseAbstractClassOne p2, params object[] p3)
+        {
+            return "BaseAbstractClassOne";
+        }
+        public static string MultipleMatchVarArgs(object p1, LevelOneClass p2, params object[] p3)
+        {
+            return "LevelOneClass";
+        }
+        public static string MultipleMatchVarArgs(object p1, LevelTwoClass p2, params object[] p3)
+        {
+            return "LevelTwoClass";
         }
 
     }

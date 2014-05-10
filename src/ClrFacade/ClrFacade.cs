@@ -35,7 +35,7 @@ namespace Rclr
                     result = invokeMethod(obj, arguments, method);
                 }
                 else
-                    throw new MissingMethodException(String.Format("Could not find method {0} on object", methodName));
+                    ThrowMissingMethod(classType, methodName, "instance");
             }
             catch (Exception ex)
             {
@@ -71,7 +71,13 @@ namespace Rclr
                 return invokeMethod(null, arguments, method);
             }
             else
-                throw new MissingMethodException(String.Format("Could not find static method {0} on type {1}", methodName, classType.FullName));
+                ThrowMissingMethod(classType, methodName, "static");
+            return null;
+        }
+
+        internal static void ThrowMissingMethod(Type classType, string methodName, string modifier)
+        {
+            throw new MissingMethodException(String.Format("Could not find {2} method {0} on type {1}", methodName, classType.FullName, modifier));
         }
 
 
