@@ -1,0 +1,59 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)Debug\ClrFacade.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Rclr" #>
+<#@ import namespace="Rclr.Tests" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Reflection;
+using Rclr;
+using System.Collections.Generic;
+using Xunit;
+
+namespace RclrTests
+{
+    /// <summary>
+    /// Do not modify the .cs file: T4 generated class to support the unit tests for method binding
+    /// </summary>
+	public class TestMethodBindings
+    {
+
+<#
+string[] methodParametersOptArgs = TestMethodBinding.GetOptionalParamsTestCases();
+
+int np = 5;
+int cases = (int)Math.Pow(2, np);
+
+#>
+
+		[Fact]
+		public void TestMethodBindingOptionalParameters()
+		{
+			var tname = typeof(TestMethodBinding).FullName;
+			int anInt = 1;
+			object anObject = new Object();
+
+<#
+
+for (int i = 0; i < cases; i++)
+{
+    bool[] s = Convert.ToString(i, 2).ToCharArray().Select(x => x == '1').ToArray();
+    bool[] b = new bool[np];
+    Array.Copy(s, 0, b, b.Length - s.Length, s.Length);
+    string[] paramsArray = Array.ConvertAll(b, x => (x ? "anInt" : "anObject"));
+    string paramsBody = TestUtilities.Concat(paramsArray, ", ");
+#>
+            Assert.Equal(
+                TestMethodBinding.SomeMethodWithOptionalArguments(<#=paramsBody#>),
+                ClrFacade.CallStaticMethod(tname, "SomeMethodWithOptionalArguments", new object[] { <#=paramsBody#> })
+            );
+<#
+} // end for loop on cases
+#>
+		}
+	}
+}
+

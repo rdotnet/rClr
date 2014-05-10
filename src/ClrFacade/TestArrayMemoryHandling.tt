@@ -12,6 +12,7 @@
         { "double", "double[]" },
         { "float", "float[]" },
         { "int", "int[]" },
+        { "long", "long[]" },
         { "bool", "bool[]" },
         { "DateTime", "DateTime[]" },
         { "byte", "byte[]" },
@@ -41,7 +42,7 @@ foreach (var item in arrayTypes)
 {
 #>
         public <#=item.Value#> FieldArray_<#=item.Key#>;
-        public <#=item.Value#> CreateArray_<#=item.Key#>(int size) 
+        public static <#=item.Value#> CreateArray_<#=item.Key#>(int size) 
         {
             return (<#=item.Value#>)Array.CreateInstance(typeof(<#=item.Key#>), size);
         }

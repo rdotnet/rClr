@@ -103,6 +103,7 @@
     <Compile Include="Tests\RefClasses\LevelOneClass.cs" />
     <Compile Include="Tests\RefClasses\LevelThreeClass.cs" />
     <Compile Include="Tests\RefClasses\LevelTwoClass.cs" />
+    <Compile Include="Tests\TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestArrayMemoryHandling.tt">

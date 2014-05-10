@@ -22,6 +22,8 @@ Build process
 
 ## .Rd file documentation
 ```{r, eval=FALSE}
+library(devtools)
+install_github("jmp75/rclr-devtools/packages/rClrDevtools")
 library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
 roxyRclr()
 ```
@@ -42,6 +44,7 @@ vignettesRclr()
 
 ```{cmd}
 set R="c:\Program Files\R\R-3.1.0\bin\x64\R.exe"
+if not exist %R% set R="c:\Program Files\R\R-3.1.0\bin\i386\R.exe"
 cd F:\src\codeplex
 set BuildConfiguration=Debug
 rm -rf rClr.Rcheck
@@ -53,4 +56,20 @@ Note that a call to R CMD build will now build the vignettes too, so maybe vigne
 ```{cmd}
 %R% CMD build rClr > logbuild.txt 2>&1
 %R% CMD check --as-cran rClr_0.6-1.tar.gz > logcheck.txt 2>&1
+```
+
+
+```{r, eval=FALSE}
+> setwd('c:/src/codeplex/rclr')
+> tools::buildVignettes(dir='.', tangle=TRUE)
+Quitting from lines 224-232 (rclr_intro.Rmd) 
+Error: processing vignette 'rclr_intro.Rmd' failed with diagnostics:
+argument is of length zero
+```
+
+```{r, eval=FALSE}
+library(rClrDevtools) 
+cpDebugBins()
+library(testthat)
+test_package('rClr')
 ```

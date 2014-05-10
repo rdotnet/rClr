@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Rclr;
+using System.Collections.Generic;
 
 namespace Rclr
 {
@@ -162,6 +163,63 @@ namespace Rclr
         public static string[] SomeStaticMethod(string[] x, string[] y) { return ReflectionHelper.GetMethodParameterTypes(MethodBase.GetCurrentMethod()); }
         public string[] SomeInstanceMethod(string[] x, string[] y) { return ReflectionHelper.GetMethodParameterTypes(MethodBase.GetCurrentMethod()); }
         string[] ITestMethodBindings.SomeExplicitlyImplementedMethod(string[] x, string[] y) { return ReflectionHelper.GetMethodParameterTypes(MethodBase.GetCurrentMethod()); }
+
+
+        public static string[] GetOptionalParamsTestCases() {
+			var list = new List<string>();
+			list.Add("int p1, int p2, params int [] p3");
+			list.Add("object p1, int p2, params int [] p3");
+			list.Add("int p1, object p2, params int [] p3");
+			list.Add("object p1, object p2, params int [] p3");
+			list.Add("int p1, int p2, params object [] p3");
+			list.Add("object p1, int p2, params object [] p3");
+			list.Add("int p1, object p2, params object [] p3");
+			list.Add("object p1, object p2, params object [] p3");
+			list.Add("object p1");
+			list.Add("int p1");
+			return list.ToArray();
+		}
+        public static string SomeMethodWithOptionalArguments(int p1, int p2, params int [] p3)
+        {
+            return "int p1, int p2, params int [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(object p1, int p2, params int [] p3)
+        {
+            return "object p1, int p2, params int [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(int p1, object p2, params int [] p3)
+        {
+            return "int p1, object p2, params int [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(object p1, object p2, params int [] p3)
+        {
+            return "object p1, object p2, params int [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(int p1, int p2, params object [] p3)
+        {
+            return "int p1, int p2, params object [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(object p1, int p2, params object [] p3)
+        {
+            return "object p1, int p2, params object [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(int p1, object p2, params object [] p3)
+        {
+            return "int p1, object p2, params object [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(object p1, object p2, params object [] p3)
+        {
+            return "object p1, object p2, params object [] p3";
+        }
+        public static string SomeMethodWithOptionalArguments(object p1)
+        {
+            return "object p1";
+        }
+        public static string SomeMethodWithOptionalArguments(int p1)
+        {
+            return "int p1";
+        }
+
     }
 
     public interface ITestMethodBindings
