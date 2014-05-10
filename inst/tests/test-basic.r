@@ -36,9 +36,21 @@ test_that("Basic types of length one are marshalled correctly", {
 # TODO: test unicode characters: what is happening then
 })
 
+if(clrGetInnerPkgName()=="rClrMs")
+{
+  test_that("MS CLR: check that the variant types are reported correctly", {
+    #         public static bool IsTrue(bool arg)clrCallStatic(tn, "CreateArray_double", 0L )
+    expect_equal(clrVT(cTypename, 'IsTrue', TRUE), "VT_BOOL")
+    expect_equal(clrVT('System.Convert', 'ToInt64', 123L), "VT_I8")
+    expect_equal(clrVT('System.Convert', 'ToUInt64', 123L), "VT_UI8")
+    tn <- "Rclr.TestArrayMemoryHandling"
+    expect_equal( clrVT(tn, "CreateArray_DateTime", 0L ), "VT_ARRAY | VT_DATE" )
+  })
+}
+
+
 test_that("Basic types of length zero are marshalled correctly", {
   tn <- "Rclr.TestArrayMemoryHandling"
-  expect_equal( clrCallStatic(tn, "CreateArray_double", 0L ), numeric(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_float", 0L ), numeric(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_int", 0L ), integer(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_byte", 0L ), raw(0) );

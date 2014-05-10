@@ -20,6 +20,11 @@ namespace Rclr
         /// </summary>
         public static object CallInstanceMethod(object obj, string methodName, object[] arguments)
         {
+            return InternalCallInstanceMethod(obj, methodName, true, arguments);
+        }
+
+        internal static object InternalCallInstanceMethod(object obj, string methodName, bool tryUseConverter, object[] arguments)
+        {
             object result = null;
             try
             {
@@ -32,7 +37,7 @@ namespace Rclr
                 {
                     // Reenable to address issue 15
                     // arguments = changeArgumentTypes(arguments, method);
-                    result = invokeMethod(obj, arguments, method);
+                    result = invokeMethod(obj, arguments, method, tryUseConverter);
                 }
                 else
                     ThrowMissingMethod(classType, methodName, "instance");
@@ -43,7 +48,6 @@ namespace Rclr
                     throw;
             }
             return result;
-
         }
 
         /// <summary>
@@ -54,6 +58,11 @@ namespace Rclr
         /// <param name="arguments"></param>
         /// <returns></returns>
         public static object CallStaticMethod(Type classType, string methodName, object[] arguments)
+        {
+            return InternalCallStaticMethod(classType, methodName, true, arguments);
+        }
+
+        internal static object InternalCallStaticMethod(Type classType, string methodName, bool tryUseConverter, params object[] arguments)
         {
             if (arguments.GetType() == typeof(string[])) // workaround https://r2clr.codeplex.com/workitem/11
                 arguments = new object[] { arguments };
@@ -68,7 +77,7 @@ namespace Rclr
             {
                 //if (method.GetParameters().Length == 1 && method.GetParameters()[0].ParameterType == typeof(object[]))
                 //    arguments = new object[] { arguments }; // necessary for e.g. static void QueryTypes(params object[] blah)
-                return invokeMethod(null, arguments, method);
+                return invokeMethod(null, arguments, method, tryUseConverter);
             }
             else
                 ThrowMissingMethod(classType, methodName, "static");
@@ -80,21 +89,20 @@ namespace Rclr
             throw new MissingMethodException(String.Format("Could not find {2} method {0} on type {1}", methodName, classType.FullName, modifier));
         }
 
-
-
         /// <summary>
         /// Invokes a static method given the name of a type.
         /// </summary>
         public static object CallStaticMethod(string typename, string methodName, object[] arguments)
         {
+            Type t = null;
             object result = null;
             try
             {
                 LastCallException = string.Empty;
-                var t = GetType(typename);
+                t = GetType(typename);
                 if (t == null)
                     throw new ArgumentException(String.Format("Type not found: {0}", typename));
-                result = CallStaticMethod(t, methodName, arguments);
+                result = InternalCallStaticMethod(t, methodName, true, arguments);
             }
             catch (Exception ex)
             {
@@ -450,7 +458,6 @@ namespace Rclr
 				field.SetValue (obj_or_null, value);
 		}
 
-
         public static object GetFieldOrProperty (string typename, string name)
 		{
             Type t = ClrFacade.GetType(typename);
@@ -495,7 +502,7 @@ namespace Rclr
             return ReflectionHelper.GetMethod(classType, methodName, methodBinder, bf, types);
         }
 
-        private static object invokeMethod(object obj, object[] arguments, MethodInfo method)
+        private static object invokeMethod(object obj, object[] arguments, MethodInfo method, bool tryUseConverter)
         {
             var parameters = method.GetParameters();
             var numParameters = parameters.Length;
@@ -517,7 +524,7 @@ namespace Rclr
                 if (ReflectionHelper.IsVarArg(p))
                     arguments = packParameters(arguments, numParameters, p);
             }
-            return marshallData(method.Invoke(obj, arguments));
+            return marshallData(method.Invoke(obj, arguments), tryUseConverter);
         }
 
         private static object[] packParameters(object[] arguments, int np, ParameterInfo p)
@@ -554,10 +561,10 @@ namespace Rclr
             return result;
         }
 
-        private static object marshallData(object obj)
+        private static object marshallData(object obj, bool tryUseConverter)
         {
             obj = conditionDateTime(obj);
-            return (DataConverter != null ? DataConverter.ConvertToR(obj) : obj);
+            return (tryUseConverter && (DataConverter != null) ? DataConverter.ConvertToR(obj) : obj);
         }
 
         private static object[] makeDatesUtcKind(object[] arguments)

@@ -1807,10 +1807,13 @@ HRESULT rclr_ms_call_static_method(_TypePtr spType, bstr_t * bstrStaticMethodNam
 			BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public), 
 			NULL, vtEmpty, NULL, vtResult);
 		bstr_t tmpBstr(vtResult->bstrVal);
+		if (std::string((char*)vtResult->bstrVal) == std::string(""))
+			error("%s", "Failure in rclr_ms_call_static_method, but could not retrieve an error message");
+		else
 		// There seems to be a limit to the size printed by error, which is a problem for long stack traces
 		// Nevertheless cannot use Rprintf here or this breaks the try/error patterns e.g. with the testthat package...
 		// Rprintf("%s", bstr_to_c_string( &tmpBstr ));
-		error("%s", bstr_to_c_string( &tmpBstr )); 
+			error("%s", bstr_to_c_string( &tmpBstr )); 
 	}
 	return hr;
 }
