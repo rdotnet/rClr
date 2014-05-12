@@ -53,4 +53,16 @@ Note that a call to R CMD build will now build the vignettes too, so maybe vigne
 ```{cmd}
 %R% CMD build rClr > logbuild.txt 2>&1
 %R% CMD check --as-cran rClr_0.6-1.tar.gz > logcheck.txt 2>&1
+%R% CMD INSTALL rClr_0.6-1.tar.gz
+```
+
+Diagnosing
+---------------
+
+Have warnings, but by defaults could not see where, what. The following treats warnings as errors:
+```{r, eval=FALSE}
+options(warn=2)
+test_package('rClr')
+# restore:
+options(warn=0)
 ```
