@@ -455,6 +455,19 @@ SEXP make_bool_sexp(int n, bool * values) {
 	return result;
 }
 
+SEXP make_uchar_sexp(int n, unsigned char * values) {
+	SEXP result;
+	long i = 0;
+	Rbyte * bPtr;
+	PROTECT(result = NEW_RAW(n));
+	bPtr = RAW_POINTER(result);
+	for (i = 0; i < n; i++) {
+		bPtr[i] = values[i];
+	}
+	UNPROTECT(1);
+	return result;
+}
+
 SEXP make_char_single_sexp(const char* str) { // FIXME: does that not duplicate mkString??
 	return mkString(str);
 	//SEXP ans;
@@ -637,6 +650,7 @@ SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj) {
 	int * iVals = NULL;
 	double * rVals = NULL;
 	bool * bVals = NULL;
+	unsigned char * ucharVals = NULL;
 	char ** strVals = NULL;
 	int n = 1;
 	SAFEARRAY * array = NULL;
@@ -672,13 +686,22 @@ SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj) {
 	case VT_ARRAY | VT_I4:
 		get_array_variant(pobj, &array, &n, &uBound);
 		iVals = (int*)malloc(sizeof(int)*n);
-		for(long i = 0; i < n ; i++ ) {
-			SafeArrayGetElement(array, &i, &(iVals[i])); 
+		for (long i = 0; i < n; i++) {
+			SafeArrayGetElement(array, &i, &(iVals[i]));
 		}
 		result = make_int_sexp(n, iVals);
 		free(iVals);
 		break;
-	case VT_ARRAY | VT_BSTR :
+	case VT_ARRAY | VT_BOOL:
+		get_array_variant(pobj, &array, &n, &uBound);
+		bVals = (bool*)malloc(sizeof(bool)*n);
+		for (long i = 0; i < n; i++) {
+			SafeArrayGetElement(array, &i, &(bVals[i]));
+		}
+		result = make_bool_sexp(n, bVals);
+		free(bVals);
+		break;
+	case VT_ARRAY | VT_BSTR:
 		array = pobj->parray;
 		SafeArrayGetUBound(array, 1, &uBound);	
 		n = ((int)uBound)+1;
@@ -693,6 +716,17 @@ SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj) {
 		// TOCHECK: does R copy the char array, and do I need to free each (char*) too?
 		free(strVals);
 		break;
+	case VT_ARRAY | VT_UI1:  // byte[]:  8209
+		get_array_variant(pobj, &array, &n, &uBound);
+		ucharVals = (unsigned char*)malloc(sizeof(unsigned char)*n);
+		for (long i = 0; i < n; i++) {
+			SafeArrayGetElement(array, &i, &(ucharVals[i]));
+		}
+		result = make_uchar_sexp(n, ucharVals);
+		free(ucharVals);
+		break;
+		// The following would be handling .NET characters; however these are unicode characters, not ANSI characters.
+		//case VT_ARRAY | VT_UI2:  // char[]:  8210. 
 	case VT_EMPTY:
 	case VT_NULL:
 	case VT_VOID:
@@ -1773,10 +1807,13 @@ HRESULT rclr_ms_call_static_method(_TypePtr spType, bstr_t * bstrStaticMethodNam
 			BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public), 
 			NULL, vtEmpty, NULL, vtResult);
 		bstr_t tmpBstr(vtResult->bstrVal);
+		if (std::string((char*)vtResult->bstrVal) == std::string(""))
+			error("%s", "Failure in rclr_ms_call_static_method, but could not retrieve an error message");
+		else
 		// There seems to be a limit to the size printed by error, which is a problem for long stack traces
 		// Nevertheless cannot use Rprintf here or this breaks the try/error patterns e.g. with the testthat package...
 		// Rprintf("%s", bstr_to_c_string( &tmpBstr ));
-		error("%s", bstr_to_c_string( &tmpBstr )); 
+			error("%s", bstr_to_c_string( &tmpBstr )); 
 	}
 	return hr;
 }

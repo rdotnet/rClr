@@ -41,7 +41,6 @@ namespace Rclr
             }
         }
 
-
         private static Tuple<string, SymbolicExpression> tc(string name, double[] values)
         {
             return Tuple.Create<string, SymbolicExpression>(name, REngine.CreateNumericVector(values));

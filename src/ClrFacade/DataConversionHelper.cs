@@ -83,10 +83,12 @@ namespace Rclr
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
-            if (obj is string)
-                return GetVariantTypename(ClrFacade.CallStaticMethod((string)obj, methodName, arguments));
+            else if (obj is Type)
+                return GetVariantTypename(ClrFacade.InternalCallStaticMethod((Type)obj, methodName, false, arguments));
+            else if (obj is string)
+                return GetVariantTypename(ClrFacade.InternalCallStaticMethod(ClrFacade.GetType((string)obj), methodName, false, arguments));
             else
-                return GetVariantTypename(ClrFacade.CallInstanceMethod((string)obj, methodName, arguments));
+                return GetVariantTypename(ClrFacade.InternalCallInstanceMethod(obj, methodName, false, arguments));
         }
 
         private static string GetVariantTypeString(VarEnum vt)

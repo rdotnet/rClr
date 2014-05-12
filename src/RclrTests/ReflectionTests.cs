@@ -105,6 +105,17 @@ namespace RclrTests
 
         }
 
+        public static string Blah(object p1, object p2, params object[] pn)
+        {
+            return "";
+        }
+
+        public static string Blah(int p1, object p2, params object[] pn)
+        {
+            return "";
+        }
+
+
         [Fact]
         public void TestOptionalParametersMethodInvocation()
         {

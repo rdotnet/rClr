@@ -23,6 +23,47 @@ namespace Rclr
 #endif
             ConvertVectors = true;
             ConvertValueTypes = true;
+
+            converterFunctions = new Dictionary<Type, Func<object, SymbolicExpression>>();
+
+            converterFunctions.Add(typeof(float), ConvertSingle);
+            converterFunctions.Add(typeof(double), ConvertDouble);
+            //converterFunctions.Add(typeof(bool), ConvertDouble);
+            converterFunctions.Add(typeof(int), ConvertInt);
+            converterFunctions.Add(typeof(string), ConvertString);
+            converterFunctions.Add(typeof(DateTime), ConvertDateTime);
+            converterFunctions.Add(typeof(TimeSpan), ConvertTimeSpan);
+
+            converterFunctions.Add(typeof(float[]), ConvertArraySingle);
+            converterFunctions.Add(typeof(double[]), ConvertArrayDouble);
+            //converterFunctions.Add(typeof(bool[]), ConvertArrayDouble);
+            converterFunctions.Add(typeof(int[]), ConvertArrayInt);
+            converterFunctions.Add(typeof(string[]), ConvertArrayString);
+            converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
+            converterFunctions.Add(typeof(TimeSpan[]), ConvertArrayTimeSpan);
+
+            converterFunctions.Add(typeof(float[,]), ConvertMatrixSingle);
+            converterFunctions.Add(typeof(double[,]), ConvertMatrixDouble);
+            converterFunctions.Add(typeof(int[,]), ConvertMatrixInt);
+            converterFunctions.Add(typeof(string[,]), ConvertMatrixString);
+
+            converterFunctions.Add(typeof(float[][]), ConvertMatrixJaggedSingle);
+            converterFunctions.Add(typeof(double[][]), ConvertMatrixJaggedDouble);
+            converterFunctions.Add(typeof(int[][]), ConvertMatrixJaggedInt);
+            converterFunctions.Add(typeof(string[][]), ConvertMatrixJaggedString);
+
+            converterFunctions.Add(typeof(Dictionary<string, double>), ConvertDictionary<double>);
+            converterFunctions.Add(typeof(Dictionary<string, float>), ConvertDictionary<float>);
+            converterFunctions.Add(typeof(Dictionary<string, string>), ConvertDictionary<string>);
+            converterFunctions.Add(typeof(Dictionary<string, int>), ConvertDictionary<int>);
+            converterFunctions.Add(typeof(Dictionary<string, DateTime>), ConvertDictionary<DateTime>);
+
+            converterFunctions.Add(typeof(Dictionary<string, double[]>), ConvertDictionary<double[]>);
+            converterFunctions.Add(typeof(Dictionary<string, float[]>), ConvertDictionary<float[]>);
+            converterFunctions.Add(typeof(Dictionary<string, string[]>), ConvertDictionary<string[]>);
+            converterFunctions.Add(typeof(Dictionary<string, int[]>), ConvertDictionary<int[]>);
+            converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
+
         }
 
         private void SetupExceptionHandling()
@@ -102,19 +143,35 @@ namespace Rclr
             return singleton;
         }
 
+        private Dictionary<Type, Func<object,SymbolicExpression>> converterFunctions;
+
         private SymbolicExpression TryConvertToSexp(object obj)
         {
             SymbolicExpression sHandle = null;
-            if (ConvertValueTypes)
-                sHandle = testValueTypes(obj);
-            if (sHandle == null && ConvertVectors)
-                sHandle = testVector(obj);
-            if (sHandle == null)
-                sHandle = testMatrix(obj);
-            if (sHandle == null)
-                sHandle = testDictionary(obj);
+            if (obj == null)
+                throw new ArgumentNullException("object to convert to R must not be a null reference");
+            var t = obj.GetType();
+            var converter = TryGetConverter(t);
+            sHandle = (converter == null ? null : converter.Invoke(obj));
             return sHandle;
         }
+
+        private Func<object, SymbolicExpression> TryGetConverter(Type t)
+        {
+            Func<object, SymbolicExpression> converter;
+            if (converterFunctions.TryGetValue(t, out converter))
+                return converter;
+            return null;
+        }
+
+        //private bool TryGetValueAssignableValue(Type t, out Func<object, SymbolicExpression> converter)
+        //{
+        //    var assignable = converterFunctions.Keys.Where(x => x.IsAssignableFrom(t)).FirstOrDefault();
+        //    if(assignable!=null)
+        //    {
+        //        assignable.
+        //    if(converterFunctions.TryGetValue(t, out converter)
+        //}
 
         private SymbolicExpression ConvertToSexp(object obj)
         {
@@ -125,30 +182,14 @@ namespace Rclr
             return result;
         }
 
-        private SymbolicExpression testDictionary(object obj)
+        private GenericVector ConvertDictionary<U>(object obj)
         {
-            var dss = obj as IDictionary<string, string>;
-            if (dss != null)
-            {
-                var values = new CharacterVector(this.engine, dss.Values);
-                SetAttribute(values, dss.Keys.ToArray());
-                return values.AsList();
-            }
-            var dsa = obj as IDictionary<string, double[]>;
-            if (dsa != null)
-            {
-                var values = ConvertAll(dsa.Values.ToArray());
-                SetAttribute(values, dsa.Keys.ToArray());
-                return values.AsList();
-            }
-            var dso = obj as IDictionary<string, object>;
-            if (dso != null)
-            {
-                var values = ConvertAll(dso.Values.ToArray());
-                SetAttribute(values, dso.Keys.ToArray());
-                return values.AsList();
-            }
-            return null;
+            var dict = (IDictionary<string, U>)obj;
+            if (!converterFunctions.ContainsKey(typeof(U[])))
+                throw new NotSupportedException("Cannot convert a dictionary of type " + dict.GetType()); 
+            var values = converterFunctions[typeof(U[])].Invoke(dict.Values.ToArray());
+            SetAttribute(values, dict.Keys.ToArray());
+            return values.AsList();
         }
 
         private SymbolicExpression ConvertAll(object[] objects)
@@ -159,96 +200,180 @@ namespace Rclr
             return new GenericVector(engine, sexpArray);
         }
 
-        private SymbolicExpression testValueTypes(object obj)
+        private SymbolicExpression ConvertArrayDouble(object obj)
         {
-            SymbolicExpression sHandle = null;
-            if (obj != null)
-            {
-                if (obj is Array)
-                {
-                    if (obj is DateTime[])
-                        sHandle = toNumericArray((DateTime[])obj);
-                    else if (obj is TimeSpan[])
-                        sHandle = toNumericArray((TimeSpan[])obj);
-                }
-                else
-                {
-                    if (obj is DateTime)
-                        sHandle = toNumericArray(new[] { (DateTime)obj });
-                    else if (obj is TimeSpan)
-                        sHandle = toNumericArray(new[] { (TimeSpan)obj });
-                }
-            }
-            return sHandle;
-        }
-
-        private SymbolicExpression testVector(object obj)
-        {
-            SymbolicExpression sHandle = null;
-            if (obj != null)
-            {
-                if (obj is float[])
-                    sHandle = toNumericArray((float[])obj);
-                else if (obj is double[])
-                    sHandle = toNumericArray((double[])obj);
-                else if (obj is int[])
-                    sHandle = toNumericArray((int[])obj);
-            }
-            return sHandle;
-        }
-
-        private SymbolicExpression testMatrix(object obj)
-        {
-            SymbolicExpression sHandle = null;
-            if (obj != null)
-            {
-                if (obj is float[][])
-                    sHandle = toMatrix((float[][])obj);
-                else if (obj is double[][])
-                    sHandle = toMatrix((double[][])obj);
-                else if (obj is string[][])
-                    sHandle = toMatrix((string[][])obj);
-                else if (obj is float[,])
-                    sHandle = toMatrix((float[,])obj);
-                else if (obj is double[,])
-                    sHandle = toMatrix((double[,])obj);
-                else if (obj.GetType() == typeof(string[,]))
-                    sHandle = toMatrix((string[,])obj);
-            }
-            return sHandle;
-        }
-
-        private SymbolicExpression toNumericArray(double[] array)
-        {
+            if (!ConvertVectors) return null;
+            double[] array = (double[])obj;
             return engine.CreateNumericVector(array);
         }
 
-        private SymbolicExpression toNumericArray(float[] array)
+        private SymbolicExpression ConvertArraySingle(object obj)
         {
-            return toNumericArray(Array.ConvertAll(array, x => (double)x));
+            if (!ConvertVectors) return null;
+            float[] array = (float[])obj;
+            return ConvertArrayDouble(Array.ConvertAll(array, x => (double)x));
         }
 
-        private SymbolicExpression toNumericArray(int[] array)
+        private SymbolicExpression ConvertArrayInt(object obj)
         {
+            if (!ConvertVectors) return null;
+            int[] array = (int[])obj;
             return engine.CreateIntegerVector(array);
         }
 
-        private SymbolicExpression toNumericArray(DateTime[] array)
+        private SymbolicExpression ConvertArrayString(object obj)
         {
+            if (!ConvertVectors) return null;
+            string[] array = (string[])obj;
+            return engine.CreateCharacterVector(array);
+        }
+
+        private SymbolicExpression ConvertArrayDateTime(object obj)
+        {
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            DateTime[] array = (DateTime[])obj;
             var doubleArray = Array.ConvertAll(array, ClrFacade.GetRPosixCtDoubleRepresentation);
-            var result = toNumericArray(doubleArray);
+            var result = ConvertArrayDouble(doubleArray);
             SetClassAttribute(result, "POSIXct", "POSIXt");
             SetTzoneAttribute(result, "UTC");
             return result;
         }
 
-        private SymbolicExpression toNumericArray(TimeSpan[] array)
+        private SymbolicExpression ConvertArrayTimeSpan(object obj)
         {
-            var doubleArray = Array.ConvertAll(array, ( x => x.TotalSeconds));
-            var result = toNumericArray(doubleArray);
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            TimeSpan[] array = (TimeSpan[])obj;
+            var doubleArray = Array.ConvertAll(array, (x => x.TotalSeconds));
+            var result = ConvertArrayDouble(doubleArray);
             SetClassAttribute(result, "difftime"); // class(as.difftime(3.5, units='secs'))
             SetUnitsAttribute(result, "secs");  // unclass(as.difftime(3.5, units='secs'))
             return result;
+        }
+
+        private SymbolicExpression ConvertDouble(object obj)
+        {
+            if (!ConvertVectors) return null;
+            double value = (double)obj;
+            return engine.CreateNumeric(value);
+        }
+
+        private SymbolicExpression ConvertSingle(object obj)
+        {
+            if (!ConvertVectors) return null;
+            float value = (float)obj;
+            return ConvertArrayDouble((double)value);
+        }
+
+        private SymbolicExpression ConvertBool(object obj)
+        {
+            if (!ConvertVectors) return null;
+            bool value = (bool)obj;
+            return engine.CreateLogical(value);
+        }
+
+        private SymbolicExpression ConvertInt(object obj)
+        {
+            if (!ConvertVectors) return null;
+            int value = (int)obj;
+            return engine.CreateInteger(value);
+        }
+
+        private SymbolicExpression ConvertString(object obj)
+        {
+            if (!ConvertVectors) return null;
+            string value = (string)obj;
+            return engine.CreateCharacter(value);
+        }
+
+        private SymbolicExpression ConvertDateTime(object obj)
+        {
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            DateTime value = (DateTime)obj;
+            var doubleValue = ClrFacade.GetRPosixCtDoubleRepresentation(value);
+            var result = ConvertDouble(doubleValue);
+            SetClassAttribute(result, "POSIXct", "POSIXt");
+            SetTzoneAttribute(result, "UTC");
+            return result;
+        }
+
+        private SymbolicExpression ConvertTimeSpan(object obj)
+        {
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            TimeSpan value = (TimeSpan)obj;
+            var doubleValue = value.TotalSeconds;
+            var result = ConvertDouble(doubleValue);
+            SetClassAttribute(result, "difftime"); // class(as.difftime(3.5, units='secs'))
+            SetUnitsAttribute(result, "secs");  // unclass(as.difftime(3.5, units='secs'))
+            return result;
+        }
+
+        private SymbolicExpression ConvertToList(object[] array)
+        {
+            return ConvertAll(array);
+        }
+
+        private SymbolicExpression ConvertMatrixJaggedSingle(object obj)
+        {
+            float[][] array = (float[][])obj;
+            if (array.IsRectangular())
+                return ConvertMatrixDouble(array.ToDoubleRect());
+            else
+                return ConvertToList(array.ToDouble());
+        }
+
+        private SymbolicExpression ConvertMatrixJaggedDouble(object obj)
+        {
+            double[][] array = (double[][])obj;
+            if (array.IsRectangular())
+                return ConvertMatrixDouble(array.ToRect());
+            else
+                return ConvertToList(array);
+        }
+
+        private SymbolicExpression ConvertMatrixJaggedInt(object obj)
+        {
+            int[][] array = (int[][])obj;
+            if (array.IsRectangular())
+                return ConvertMatrixInt(array.ToRect());
+            else
+                return ConvertToList(array);
+        }
+
+        private SymbolicExpression ConvertMatrixJaggedString(object obj)
+        {
+            string[][] array = (string[][])obj;
+            if (array.IsRectangular())
+                return ConvertMatrixString(array.ToRect());
+            else
+                return ConvertToList(array);
+        }
+
+        private NumericMatrix ConvertMatrixSingle(object obj)
+        {
+            float[,] array = (float[,])obj;
+            return ConvertMatrixDouble(array.ToDoubleRect());
+        }
+
+        private NumericMatrix ConvertMatrixDouble(object obj)
+        {
+            double[,] array = (double[,])obj;
+            return engine.CreateNumericMatrix(array);
+        }
+
+        private IntegerMatrix ConvertMatrixInt(object obj)
+        {
+            int[,] array = (int[,])obj;
+            return engine.CreateIntegerMatrix(array);
+        }
+
+        private CharacterMatrix ConvertMatrixString(object obj)
+        {
+            string[,] array = (string[,])obj;
+            return engine.CreateCharacterMatrix(array);
         }
 
         private void SetTzoneAttribute(SymbolicExpression sexp, string tzoneId)
@@ -263,53 +388,13 @@ namespace Rclr
 
         private void SetClassAttribute(SymbolicExpression sexp, params string[] classes)
         {
-            SetAttribute(sexp, classes, attributeName:"class");
+            SetAttribute(sexp, classes, attributeName: "class");
         }
 
         private void SetAttribute(SymbolicExpression sexp, string[] attribValues, string attributeName = "names")
         {
             var names = new CharacterVector(engine, attribValues);
             sexp.SetAttribute(attributeName, names);
-        }
-
-        private NumericMatrix toMatrix(float[][] array)
-        {
-            return createNumericMatrix(array.ToDoubleRect());
-        }
-
-        private NumericMatrix toMatrix(double[][] array)
-        {
-            return createNumericMatrix(array.ToDoubleRect());
-        }
-
-        private CharacterMatrix toMatrix(string[][] array)
-        {
-            return createCharacterMatrix(array.ToStringRect());
-        }
-
-        private NumericMatrix toMatrix(float[,] array)
-        {
-            return createNumericMatrix(array.ToDoubleRect());
-        }
-
-        private NumericMatrix toMatrix(double[,] array)
-        {
-            return createNumericMatrix(array);
-        }
-
-        private CharacterMatrix toMatrix(string[,] array)
-        {
-            return createCharacterMatrix(array);
-        }
-
-        private CharacterMatrix createCharacterMatrix(string[,] array)
-        {
-            return engine.CreateCharacterMatrix(array);
-        }
-
-        private NumericMatrix createNumericMatrix(double[,] array)
-        {
-            return engine.CreateNumericMatrix(array);
         }
 
         [Obsolete()]

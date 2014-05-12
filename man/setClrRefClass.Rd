@@ -1,0 +1,22 @@
+\name{setClrRefClass}
+\alias{setClrRefClass}
+\title{Create reference classes for an object hierarchy}
+\usage{
+setClrRefClass(typeName, env = topenv(parent.frame()))
+}
+\arguments{
+  \item{typeName}{a CLR type name, recognizable by
+  clrGetType}
+
+  \item{env}{environment where the new generator is
+  created.}
+}
+\value{
+the object generator function
+}
+\description{
+EXPERIMENTAL Create reference classes for an object
+hierarchy. Gratefully acknowledge Peter D. and its rJavax
+work.
+}
+

@@ -19,21 +19,30 @@
 
         public static double[,] ToDoubleRect(this float[][] array)
         {
-            return array.ToDouble().ToDoubleRect();
+            return array.ToDouble().ToRect();
         }
 
-        public static double[,] ToDoubleRect(this double[][] array)
+        public static bool IsRectangular<T>(this T[][] array)
         {
-            var result = new double[array.Length, array[0].Length];
-            for (int i = 0; i < array.Length; i++)
-                for (int j = 0; j < array[0].Length; j++)
-                    result[i, j] = array[i][j];
-            return result;
+            if (array.Length == 0)
+                return true;
+            else
+            {
+                if (array[0] == null)
+                    return false;
+                int firstLen = array[0].Length;
+                for (int i = 1; i < array.Length; i++)
+                {
+                    if (array[i] == null) return false;
+                    else if (array[i].Length != firstLen) return false;
+                }
+            }
+            return true;
         }
 
-        public static string[,] ToStringRect(this string[][] array)
+        public static T[,] ToRect<T>(this T[][] array)
         {
-            var result = new string[array.Length, array[0].Length];
+            var result = new T[array.Length, array[0].Length];
             for (int i = 0; i < array.Length; i++)
                 for (int j = 0; j < array[0].Length; j++)
                     result[i, j] = array[i][j];

@@ -418,6 +418,19 @@ namespace Rclr
             return new string[] { "ab", "bc", "cd", "de", "ef", };
         }
 
+        public static T[] CreateEmptyArray<T>()
+        {
+            return new T[0];
+        }
+
+        public static double[] CreateEmptyArrayDouble() { return CreateEmptyArray<double>(); }
+        public static float[] CreateEmptyArrayFloat() { return CreateEmptyArray<float>(); }
+        public static long[] CreateEmptyArrayLong() { return CreateEmptyArray<long>(); }
+        public static int[] CreateEmptyArrayInt() { return CreateEmptyArray<int>(); }
+        public static bool[] CreateEmptyArrayBool() { return CreateEmptyArray<bool>(); }
+        public static string[] CreateEmptyArrayString() { return CreateEmptyArray<string>(); }
+        public static byte[] CreateEmptyArrayByte() { return CreateEmptyArray<byte>(); }
+
         public static double CreateDouble()
         {
             return 123.0;

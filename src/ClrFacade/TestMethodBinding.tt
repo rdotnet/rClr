@@ -19,6 +19,8 @@
 using System;
 using System.Reflection;
 using Rclr;
+using System.Collections.Generic;
+using Rclr.Tests.RefClasses;
 
 namespace Rclr
 {
@@ -37,6 +39,77 @@ foreach (var item in methodParameters)
 <#
 } // end foreach
 #>
+
+
+<#
+
+string[] methodParametersVarArgs = new string[]{
+	"int p1, int p2, params int [] p3",
+	"object p1, int p2, params int [] p3",
+	"int p1, object p2, params int [] p3",
+	"object p1, object p2, params int [] p3",
+	"int p1, int p2, params object [] p3",
+	"object p1, int p2, params object [] p3",
+	"int p1, object p2, params object [] p3",
+	"object p1, object p2, params object [] p3",
+	"object p1",
+	"int p1"
+	};
+
+#>
+        public static string[] GetOptionalParamsTestCases() {
+			var list = new List<string>();
+<#
+foreach (var item in methodParametersVarArgs)
+{
+#>
+			list.Add("<#=item#>");
+<#
+} // end foreach
+#>
+			return list.ToArray();
+		}
+<#
+
+
+foreach (var item in methodParametersVarArgs)
+{
+#>
+        public static string SomeMethodWithVarArgs(<#=item#>)
+        {
+            return "<#=item#>";
+        }
+<#
+} // end foreach
+#>
+
+//========== Next section is to test the support (or lack thereof) with the most ambiguous cases with optional parameters
+
+<#
+
+string[] assignableCases = new string[]{
+	"InterfaceOne",
+	"InterfaceTwo",
+	"InterfaceBaseOne",
+	"InterfaceBaseTwo",
+	"BaseAbstractClassOne",
+	"LevelOneClass",
+	"LevelTwoClass"
+	// "LevelThreeClass" // leave aside for tests in the RclrTests assembly for ambiguous matches
+	};
+
+
+foreach (var item in assignableCases)
+{
+#>
+        public static string MultipleMatchVarArgs(object p1, <#=item#> p2, params object[] p3)
+        {
+            return "<#=item#>";
+        }
+<#
+} // end foreach
+#>
+
     }
 
     public interface ITestMethodBindings

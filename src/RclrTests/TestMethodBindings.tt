@@ -1,0 +1,91 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)Debug\ClrFacade.dll" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Rclr" #>
+<#@ import namespace="Rclr.Tests" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Reflection;
+using Rclr;
+using System.Collections.Generic;
+using Xunit;
+using Rclr.Tests.RefClasses;
+
+namespace RclrTests
+{
+    /// <summary>
+    /// Do not modify the .cs file: T4 generated class to support the unit tests for method binding
+    /// </summary>
+	public class TestMethodBindings
+    {
+
+<#
+
+//string[] methodParametersOptArgs = TestMethodBinding.GetOptionalParamsTestCases();
+List<string> cases = new List<string>();
+cases.AddRange(TestUtilities.BuildCombinatorialTestCases("anInt", "anObject", np: 5, sep:", "));
+cases.AddRange(TestUtilities.BuildCombinatorialTestCases("anInt", "aDouble", np: 5, sep:", "));
+
+#>
+
+		[Fact]
+		public void TestMethodBindingOptionalParameters()
+		{
+			var tname = typeof(TestMethodBinding).FullName;
+			int anInt = 1;
+			double aDouble = Math.PI;
+			object anObject = new Object();
+
+<#
+
+for (int i = 0; i < cases.Count(); i++)
+{
+    string paramsBody = cases[i];
+#>
+            Assert.Equal(
+                TestMethodBinding.SomeMethodWithVarArgs(<#=paramsBody#>),
+                ClrFacade.CallStaticMethod(tname, "SomeMethodWithVarArgs", new object[] { <#=paramsBody#> })   );
+<#
+} // end for loop on cases
+
+string[] exactMatches = new string[]{
+	"LevelOneClass",
+	"LevelTwoClass",
+	};
+
+string[] ambiguousMatch = new string[]{
+	"LevelThreeClass"
+	};
+
+for (int i = 0; i < exactMatches.Length; i++)
+{
+    string t = "new "+exactMatches[i]+"()";
+#>
+
+            Assert.Equal(
+                TestMethodBinding.MultipleMatchVarArgs(anObject, <#=t#>, anObject, anObject, anObject),
+                ClrFacade.CallStaticMethod(tname, "MultipleMatchVarArgs", new object[] { anObject, <#=t#>, anObject, anObject, anObject })  );
+<#
+} // end for loop on cases
+
+for (int i = 0; i < ambiguousMatch.Length; i++)
+{
+    string t = "new "+ambiguousMatch[i]+"()";
+#>
+
+            Assert.Throws<AmbiguousMatchException>(
+			  () => { ClrFacade.CallStaticMethod(tname, "MultipleMatchVarArgs", new object[] { anObject, <#=t#>, anObject, anObject, anObject }); } );
+
+<#
+} // end for loop on cases
+#>
+
+
+
+		}
+	}
+}
+
