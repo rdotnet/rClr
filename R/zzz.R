@@ -65,7 +65,7 @@ startupMsg <- ''
       }
     }
   } else {
-    appendStartupMsg('Loading the dynamic library for Microsoft .NET runtime...')
+    appendStartupMsg('Loading the dynamic library for Mono runtime...')
     chname <- getFnameNoExt(monoDll) 
     loadAndInit(chname, pkgname, libname, srcPkgLibPath)
   }

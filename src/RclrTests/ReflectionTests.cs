@@ -42,7 +42,6 @@ namespace RclrTests
         [Fact]
         public void TestVariableArgumentMethodBinding()
         {
-            BindingFlags sbf = BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod;
             BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
             var t = typeof(MyTestClass);
             Assert.False(ReflectionHelper.HasVarArgs(GetSingleMethod(t, "NoParams", bf)));

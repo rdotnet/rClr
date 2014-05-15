@@ -1471,7 +1471,7 @@ SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 		case MONO_TYPE_GENERICINST  :   /* <type> <type-arg-count> <type-1> \x{2026} <type-n> */
 		case MONO_TYPE_TYPEDBYREF 	:
 		case MONO_TYPE_U            :
-			warning("As yet, unhandled type of underlying MonoTypeEnum code %x", type_il);
+			warning("As yet, unhandled type of underlying MonoTypeEnum hex code %x", type_il);
 		default:
 			result = clr_object_to_SEXP(pobj);
 			break;
