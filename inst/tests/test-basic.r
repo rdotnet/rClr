@@ -96,7 +96,7 @@ test_that("Numeric arrays are marshalled correctly", {
   ## Internally somewhere, some noise is added probably in a float to double conversion. 
   ## Expected, but 5e-8 is more difference than I'd have guessed. Some watch point.
   # expect_that( clrCallStatic(cTypename, "CreateFloatArray"), equals(expectedNumArray) );
-  expect_equal( clrCallStatic(cTypename, "CreateFloatArray"), expected = expectedNumArray, tolerance = 5e-8, scale = expectedNumArray)
+  expect_equal( clrCallStatic(cTypename, "CreateFloatArray"), expected = expectedNumArray, tolerance = 5e-8, scale = 2)
   expect_that( clrCallStatic(cTypename, "NumArrayEquals", expectedNumArray ), is_true() );
 
   numDays = 5
