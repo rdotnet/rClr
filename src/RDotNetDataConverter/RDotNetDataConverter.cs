@@ -105,18 +105,41 @@ namespace Rclr
         /// </remarks>
         public object ConvertToR (object obj)
         {
+            ClearSexpHandles();
             if (obj == null) 
                 return null;
             var sexp = obj as SymbolicExpression;
             if (sexp != null)
-                return sexp.DangerousGetHandle();
+                return ReturnHandle(sexp);
 
             sexp = TryConvertToSexp(obj);
 
             if (sexp == null)
                 return obj;
+            return ReturnHandle(sexp);
+        }
+
+        private void ClearSexpHandles()
+        {
+            handles.Clear();
+        }
+
+        private static object ReturnHandle(SymbolicExpression sexp)
+        {
+            AddSexpHandle(sexp);
             return sexp.DangerousGetHandle();
         }
+
+        private static void AddSexpHandle(SymbolicExpression sexp)
+        {
+            handles.Add(sexp);
+        }
+
+        /// <summary>
+        /// A list to reference to otherwise transient SEXP created by this class. 
+        /// This is to prevent .NET and R to trigger GC before rClr function calls have returned to R.
+        /// </summary>
+        private static List<SymbolicExpression> handles = new List<SymbolicExpression>();
 
         public object ConvertFromR(IntPtr pointer, int sexptype)
         {

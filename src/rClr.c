@@ -785,8 +785,11 @@ SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj) {
 		result = make_bool_sexp(n, bVals);
 		free(bVals);
 		break;
-	case VT_INT: // HACK? Assume this is an IntPtr, native handle to an R.NET object.
-		return (SEXP) pobj->intVal;
+	case VT_INT: 
+		// This seems to be the case when an IntPtr is returned, native handle to an R.NET object.
+		// However, this is not intVal that we need to retrieve. This is not well documented, but 
+		// on 64 bits you would have nasty surprises. ullVal reports the same value as the IntPtr in the managed world
+		return (SEXP) pobj->ullVal;
 		//case VT_CY:
 		//case VT_ERROR:
 		//case VT_VARIANT:
