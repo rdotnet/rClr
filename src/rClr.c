@@ -248,9 +248,14 @@ MonoArray * create_array_double( double * values, int length )
 	create_array_oftype(double, mono_get_double_class, values, length);
 }
 
-MonoArray * create_array_int( int * values, int length )
+MonoArray * create_array_int(int * values, int length)
 {
 	create_array_oftype(int, mono_get_int32_class, values, length);
+}
+
+MonoArray * create_array_bytes(unsigned char * values, int length)
+{
+	create_array_oftype(unsigned char, mono_get_byte_class, values, length);
 }
 
 MonoArray * create_array_bool( int * values, int length )
@@ -1035,6 +1040,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	const char *val;
 	double * values;
 	int * intVals;
+	Rbyte * rawVals;
 	int element_type;
 	const char * tzone;
 	RCLR_BOOL is_date;
@@ -1094,7 +1100,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 			result = new variant_t(dval, vtype);
 #endif
 		}
-		else if (lengthArg > 1)
+		else if (lengthArg > 1 || lengthArg == 0)
 		{
 			int nVals = lengthArg;
 #ifdef MONO_CLR
@@ -1136,7 +1142,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 			result = new variant_t((bool)LOGICAL(el)[0]);
 #endif
 		}
-		else if (lengthArg > 1)
+		else if (lengthArg > 1 || lengthArg == 0)
 		{
 			int nVals = lengthArg;
 #ifdef MONO_CLR
@@ -1159,7 +1165,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 			result = new variant_t(intVals[0]);
 #endif
 		}
-		else if (lengthArg > 1)
+		else if (lengthArg > 1 || lengthArg == 0)
 		{
 			int nVals = lengthArg;
 #ifdef MONO_CLR
@@ -1177,6 +1183,29 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 		//    result = &(COMPLEX(el)[0]);
 		//    //Rprintf("[%d] '%s' %f + %fi\n", i+1, name, cpl.r, cpl.i);
 		//    break;
+	case RAWSXP:
+		lengthArg = LENGTH(el);
+		rawVals = RAW(el);
+		if (lengthArg == 1)
+		{
+#ifdef MONO_CLR
+			result = create_mono_int32(intVals);
+#elif MS_CLR
+			result = new variant_t(rawVals[0]);
+#endif
+		}
+		else if (lengthArg > 1 || lengthArg == 0)
+		{
+			int nVals = lengthArg;
+#ifdef MONO_CLR
+			MonoArray* monoArray = create_array_bytes(rawVals, lengthArg);
+			result = monoArray;
+#elif MS_CLR
+			SAFEARRAY * safeArray = create_array_bytes(rawVals, nVals);
+			result = rclr_ms_create_vt_array(safeArray, VT_ARRAY | VT_UI1);
+#endif
+		}
+		break;
 	case STRSXP:
 		lengthArg = LENGTH(el);
 		if( lengthArg == 1)
@@ -1189,7 +1218,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 				new variant_t(val); // WARNING: how is this memory reclaimed??
 #endif
 		}
-		else if (lengthArg > 1)
+		else if (lengthArg > 1 || lengthArg == 0)
 		{
 			char ** stringArray = (char**)malloc(sizeof(char*)*lengthArg);
 #ifdef MONO_CLR
@@ -2245,12 +2274,17 @@ SAFEARRAY * create_array_double( double * values, int length )
 	//return psaStaticMethodArgs;
 }
 
-SAFEARRAY * create_array_dates( double * values, int length )
+SAFEARRAY * create_array_dates(double * values, int length)
 {
 	create_safearray_oftype(VT_DATE, values, length);
 }
 
-SAFEARRAY * create_array_int_or_bool( int * values, int length, VARTYPE vtype)
+SAFEARRAY * create_array_bytes(unsigned char * values, int length)
+{
+	create_safearray_oftype(VT_UI1, values, length);
+}
+
+SAFEARRAY * create_array_int_or_bool(int * values, int length, VARTYPE vtype)
 {
 	SAFEARRAY * psaStaticMethodArgs = SafeArrayCreateVector(vtype, 0, length); 
 	for (LONG i = 0; i < length; i++)

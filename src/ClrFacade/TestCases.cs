@@ -380,7 +380,7 @@ namespace Rclr
 
         public static string GetExceptionMessage()
         {
-            return ClrFacade.FormatException(CreateInnerExceptions());
+            return ClrFacade.FormatExceptionInnermost(CreateInnerExceptions());
         }
 
         public static Exception CreateInnerExceptions()

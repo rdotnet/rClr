@@ -338,6 +338,7 @@ SAFEARRAY * create_array_dates( double * values, int length );
 SAFEARRAY * create_array_int( int * values, int length );
 SAFEARRAY * create_array_bool( int * values, int length );
 SAFEARRAY * create_array_strings(char ** values, int length);
+SAFEARRAY * create_array_bytes(unsigned char * values, int length);
 SAFEARRAY * create_safe_array(VARIANT ** values, int length);
 VARIANT * rclr_ms_create_vt_array(SAFEARRAY * safeArray, VARTYPE vartype);
 

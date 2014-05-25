@@ -62,5 +62,10 @@ namespace Rclr
         {
             return (char[])Array.CreateInstance(typeof(char), size);
         }
+		// To test the type of empty vectors:
+        public static bool CheckElementType(Array array, Type expectedElementType)
+        {
+            return (array.GetType().GetElementType() == expectedElementType);
+        }
     }
 }
