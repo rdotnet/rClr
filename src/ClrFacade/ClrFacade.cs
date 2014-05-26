@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Rclr
@@ -40,7 +41,7 @@ namespace Rclr
                     result = invokeMethod(obj, arguments, method, tryUseConverter);
                 }
                 else
-                    ThrowMissingMethod(classType, methodName, "instance");
+                    ThrowMissingMethod(classType, methodName, "instance", types);
             }
             catch (Exception ex)
             {
@@ -80,13 +81,13 @@ namespace Rclr
                 return invokeMethod(null, arguments, method, tryUseConverter);
             }
             else
-                ThrowMissingMethod(classType, methodName, "static");
+                ThrowMissingMethod(classType, methodName, "static", types);
             return null;
         }
 
-        internal static void ThrowMissingMethod(Type classType, string methodName, string modifier)
+        internal static void ThrowMissingMethod(Type classType, string methodName, string modifier, Type[] types)
         {
-            throw new MissingMethodException(String.Format("Could not find {2} method {0} on type {1}", methodName, classType.FullName, modifier));
+            ReflectionHelper.ThrowMissingMethod(classType, methodName, modifier, types);     
         }
 
         /// <summary>
@@ -152,23 +153,36 @@ namespace Rclr
             //     return true;
             // }
             // Instead, using the following
-            LastCallException = FormatException(ex);
+            LastCallException = FormatExceptionInnermost(ex);
             LastException = LastCallException;
             // Rely on this returning false so that caller rethrows the exception, so that 
             // we can retrieve the error in the C layer in the MS.NET related code.
             return false;
         }
 
-        public static string FormatException(Exception ex)
+        public static string FormatExceptionInnermost(Exception ex)
         {
             Exception innermost = ex;
             while (innermost.InnerException != null)
                 innermost = innermost.InnerException;
 
+            var tle = innermost as ReflectionTypeLoadException; // https://rclr.codeplex.com/workitem/26
+            StringBuilder sb = new StringBuilder();
+            sb.Append(FormatExceptionMessage(innermost));
+            if (tle != null)
+            {
+                foreach (var e in tle.LoaderExceptions)
+                    sb.Append(FormatExceptionMessage(e));
+            }
+            return sb.ToString();
+        }
+
+        private static string FormatExceptionMessage(Exception ex)
+        {
             // Note that if using Environment.NewLine below instead of "\n", the rgui prompt is losing it
             // Actually even with the latter it is, but less so. Annoying.
             var result = string.Format("Type:    {1}{0}Message: {2}{0}Method:  {3}{0}Stack trace:{0}{4}{0}{0}",
-                "\n", innermost.GetType(), innermost.Message, innermost.TargetSite, innermost.StackTrace);
+                "\n", ex.GetType(), ex.Message, ex.TargetSite, ex.StackTrace);
             // See whether this helps with the Rgui prompt:
             return result.Replace("\r\n", "\n");
         }
@@ -524,7 +538,7 @@ namespace Rclr
                 if (ReflectionHelper.IsVarArg(p))
                     arguments = packParameters(arguments, numParameters, p);
             }
-            return marshallData(method.Invoke(obj, arguments), tryUseConverter);
+            return marshallDataToR(method.Invoke(obj, arguments), tryUseConverter);
         }
 
         private static object[] packParameters(object[] arguments, int np, ParameterInfo p)
@@ -561,10 +575,13 @@ namespace Rclr
             return result;
         }
 
-        private static object marshallData(object obj, bool tryUseConverter)
+        private static object marshallDataToR(object obj, bool tryUseConverter)
         {
             obj = conditionDateTime(obj);
-            return (tryUseConverter && (DataConverter != null) ? DataConverter.ConvertToR(obj) : obj);
+            var result = (tryUseConverter && (DataConverter != null) ? DataConverter.ConvertToR(obj) : obj);
+            if (result is SafeHandle)
+                throw new NotSupportedException(string.Format("Object '{0}' about to be returned to R is a SafeHandle", result.GetType().ToString() ));
+            return result;
         }
 
         private static object[] makeDatesUtcKind(object[] arguments)

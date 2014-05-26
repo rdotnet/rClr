@@ -49,5 +49,10 @@ foreach (var item in arrayTypes)
 <#
 } // end foreach
 #>
+		// To test the type of empty vectors:
+        public static bool CheckElementType(Array array, Type expectedElementType)
+        {
+            return (array.GetType().GetElementType() == expectedElementType);
+        }
     }
 }

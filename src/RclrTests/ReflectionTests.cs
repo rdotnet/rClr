@@ -65,6 +65,15 @@ namespace RclrTests
         }
 
         [Fact]
+        public void TestReflectionTypeLoadException()
+        {
+            var rtle = new ReflectionTypeLoadException(new[]{this.GetType()}, new[]{new Exception("some inner message")}, "rtle message");
+            string s = ClrFacade.FormatExceptionInnermost(rtle);
+            Assert.Contains("some inner message", s);
+            Assert.Contains("rtle message", s);
+        }
+
+        [Fact]
         public void TestOptionalParametersMethodBinding()
         {
             BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;

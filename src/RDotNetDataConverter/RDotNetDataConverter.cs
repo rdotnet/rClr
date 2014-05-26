@@ -74,7 +74,7 @@ namespace Rclr
         private void OnUnhandleException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = (Exception)e.ExceptionObject;
-            Error(ClrFacade.FormatException(ex));
+            Error(ClrFacade.FormatExceptionInnermost(ex));
         }
 
         public void Error(string msg)

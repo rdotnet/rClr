@@ -48,7 +48,6 @@ if(clrGetInnerPkgName()=="rClrMs")
   })
 }
 
-
 test_that("Basic types of length zero are marshalled correctly", {
   tn <- "Rclr.TestArrayMemoryHandling"
   expect_equal( clrCallStatic(tn, "CreateArray_float", 0L ), numeric(0) );
@@ -77,6 +76,19 @@ test_that("Basic types of length zero are marshalled correctly", {
   class(a) <- c("POSIXct", "POSIXt")
   
   expect_equal( clrCallStatic(tn, "CreateArray_DateTime", 0L ), a );
+
+  # check that we fixed https://rclr.codeplex.com/workitem/2
+  expect_true( clrCallStatic(tn, "CheckElementType", numeric(0)   , clrGetType('System.Double') ));
+  expect_true( clrCallStatic(tn, "CheckElementType", integer(0)   , clrGetType('System.Int32')  ));
+  expect_true( clrCallStatic(tn, "CheckElementType", raw(0)       , clrGetType('System.Byte')   ));
+  expect_true( clrCallStatic(tn, "CheckElementType", logical(0)   , clrGetType('System.Boolean')));
+  expect_true( clrCallStatic(tn, "CheckElementType", character(0) , clrGetType('System.String') ));
+  
+  ## Not sure what to do with these - precision loss and unicode characters.
+  # expect_equal( clrCallStatic(tn, "CreateArray_long", 0L ), integer(0) );
+  # expect_equal( clrCallStatic(tn, "CreateArray_char", 0L ), raw(0) );
+
+
 })
 
 test_that("String arrays are marshalled correctly", {

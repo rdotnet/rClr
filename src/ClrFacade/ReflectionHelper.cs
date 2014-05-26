@@ -179,7 +179,7 @@ namespace Rclr
                     throwAmbiguousMatch(mi);
             }
             else // nothing found
-                ClrFacade.ThrowMissingMethod(classType, methodName, bf.ToString());
+                ClrFacade.ThrowMissingMethod(classType, methodName, bf.ToString(), types);
             return null;
         }
 
@@ -534,13 +534,26 @@ namespace Rclr
             var parameters = method.GetParameters();
             if (parameters.Length > 0)
                 result.Append(", ");
-            for (int i = 0; i < (parameters.Length - 1); i++)
+            result.Append(SummarizeTypes(parameters));
+            return result.ToString();
+        }
+
+        internal static string SummarizeTypes(ParameterInfo[] parameters)
+        {
+            var types = parameters.Select(p => p.ParameterType).ToArray();
+            return SummarizeTypes(types);
+        }
+
+        internal static string SummarizeTypes(Type[] types)
+        {
+            var result = new StringBuilder();
+            for (int i = 0; i < (types.Length - 1); i++)
             {
-                result.Append(parameters[i].ParameterType.Name);
+                result.Append(types[i].Name);
                 result.Append(", ");
             }
-            if (parameters.Length > 0)
-                result.Append(parameters[parameters.Length - 1].ParameterType.Name);
+            if (types.Length > 0)
+                result.Append(types[types.Length - 1].Name);
             return result.ToString();
         }
 
@@ -563,6 +576,14 @@ namespace Rclr
         private static string summarizeField(FieldInfo field)
         {
             return string.Format("Field {0}, {1}", field.Name, field.FieldType.Name);
+        }
+
+        internal static void ThrowMissingMethod(Type classType, string methodName, string modifier, Type[] types)
+        {
+            var s = types.Length == 0 ? 
+                "without method parameters" : "for method parameters " + SummarizeTypes(types);
+            throw new MissingMethodException(String.Format("Could not find a suitable {2} method {0} on type {1} {3}", 
+                methodName, classType.FullName, modifier, s));
         }
     }
 }
