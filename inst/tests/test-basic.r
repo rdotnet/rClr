@@ -36,18 +36,6 @@ test_that("Basic types of length one are marshalled correctly", {
 # TODO: test unicode characters: what is happening then
 })
 
-if(clrGetInnerPkgName()=="rClrMs")
-{
-  test_that("MS CLR: check that the variant types are reported correctly", {
-    #         public static bool IsTrue(bool arg)clrCallStatic(tn, "CreateArray_double", 0L )
-    expect_equal(clrVT(cTypename, 'IsTrue', TRUE), "VT_BOOL")
-    expect_equal(clrVT('System.Convert', 'ToInt64', 123L), "VT_I8")
-    expect_equal(clrVT('System.Convert', 'ToUInt64', 123L), "VT_UI8")
-    tn <- "Rclr.TestArrayMemoryHandling"
-    expect_equal( clrVT(tn, "CreateArray_DateTime", 0L ), "VT_ARRAY | VT_DATE" )
-  })
-}
-
 test_that("Basic types of length zero are marshalled correctly", {
   tn <- "Rclr.TestArrayMemoryHandling"
   expect_equal( clrCallStatic(tn, "CreateArray_float", 0L ), numeric(0) );
@@ -55,6 +43,9 @@ test_that("Basic types of length zero are marshalled correctly", {
   expect_equal( clrCallStatic(tn, "CreateArray_byte", 0L ), raw(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_bool", 0L ), logical(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_string", 0L ), character(0) );
+  
+  expect_equal( clrCallStatic(tn, "CreateArray_Type", 0L ), list() );
+  expect_equal( clrCallStatic(tn, "CreateArray_object", 0L ), list() );
   
   ## Not sure what to do with these - precision loss and unicode characters.
   # expect_equal( clrCallStatic(tn, "CreateArray_long", 0L ), integer(0) );
@@ -91,6 +82,29 @@ test_that("Basic types of length zero are marshalled correctly", {
 
 })
 
+test_that("Array of non-basic .NET objects are handled", {
+  tn <- "Rclr.TestArrayMemoryHandling"
+  aType <- clrGetType('System.Double')
+  expect_equal( clrCallStatic(tn, "CreateArray_Type", 3L, aType), list(aType, aType, aType) )
+  tName <- 'Rclr.TestObject'
+  obj <- clrNew(tName)
+  expect_equal( clrCallStatic(tn, "CreateArray_object", 3L, obj), list(obj,obj,obj) )
+})  
+
+
+if(clrGetInnerPkgName()=="rClrMs")
+{
+  test_that("MS CLR: check that the variant types are reported correctly", {
+    #         public static bool IsTrue(bool arg)clrCallStatic(tn, "CreateArray_double", 0L )
+    expect_equal(clrVT(cTypename, 'IsTrue', TRUE), "VT_BOOL")
+    expect_equal(clrVT('System.Convert', 'ToInt64', 123L), "VT_I8")
+    expect_equal(clrVT('System.Convert', 'ToUInt64', 123L), "VT_UI8")
+    tn <- "Rclr.TestArrayMemoryHandling"
+    expect_equal( clrVT(tn, "CreateArray_DateTime", 0L ), "VT_ARRAY | VT_DATE" )
+    # expect_equal( clrVT(tn, "CreateArray_Type", 3L, clrGetType('System.Double')), "VT_ARRAY | VT_DATE" )
+  })
+}
+
 test_that("String arrays are marshalled correctly", {
   ltrs = paste(letters[1:5], letters[2:6], sep='')
   expect_that( clrCallStatic(cTypename, "StringArrayEquals", ltrs), is_true() );
@@ -101,6 +115,14 @@ test_that("String arrays are marshalled correctly", {
   # expect_that(clrCallStatic(cTypename, "StringArrayMissingValsEquals", ltrs), is_true() );
   
 })
+
+test_that("clrGetType function", {
+  testObj <- clrNew(testClassName)
+  expect_equal( testClassName,clrGet(clrGetType(testClassName), 'FullName'))
+  expect_equal( testClassName,clrGet(clrGetType(testObj), 'FullName'))
+   
+})
+
 
 test_that("Numeric arrays are marshalled correctly", {
   expectedNumArray <- 1:5 * 1.1  

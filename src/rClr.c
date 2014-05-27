@@ -46,7 +46,10 @@ static void clr_object_finalizer(SEXP clrSexp) {
 		CLR_OBJ * objptr;
 		clroh_ptr = static_cast<ClrObjectHandle*> (R_ExternalPtrAddr(clrSexp));
 		objptr = clroh_ptr->objptr;
-		delete objptr; // TOCHECK
+		if (objptr->vt == VT_EMPTY)
+			warning("clr_object_finalizer called on a variant of type VT_EMPTY\n");
+		else
+			delete objptr; // TOCHECK
 #endif
 	}
 	// TODO else throw exception?
@@ -504,8 +507,7 @@ SEXP r_create_clr_object( SEXP p ) {
 	}
 	else 
 	{
-		objptr = new CLR_OBJ(obj);
-		result = clr_obj_ms_convert_to_SEXP(objptr);
+		result = clr_obj_ms_convert_to_SEXP(obj);
 	}
 #elif MONO_CLR
 	objptr = rclr_mono_create_object (domain, get_image(), ns_qualified_typename, methodParams);
@@ -597,7 +599,7 @@ SEXP r_call_static_method(SEXP p) {
 	{
 		return R_NilValue;
 	}
-	return clr_obj_ms_convert_to_SEXP(new CLR_OBJ(result)); // the local variant 'result' is destroyed; we need a 'new' variant otherwise bug...
+	return clr_obj_ms_convert_to_SEXP(result);
 #endif
 }
 
@@ -632,7 +634,7 @@ SEXP r_call_method(SEXP par) {
 	CLR_OBJ result;
 	rclr_ms_call_method(objptr, (char *)mnam, params, argLength, &result);
 	free_variant_array(params, argLength);
-	return clr_obj_ms_convert_to_SEXP(new CLR_OBJ(result)); // the local variant 'result' is destroyed; we need a 'new' variant otherwise bug...
+	return clr_obj_ms_convert_to_SEXP(result);
 #endif
 
 }
@@ -650,7 +652,8 @@ void get_array_variant(CLR_OBJ * pobj, SAFEARRAY ** array, int * n_ptr, LONG * p
 	(*n_ptr) = ((int)(*plUbound))+1;
 }
 
-SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj) {
+SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &obj) {
+	CLR_OBJ * pobj = new CLR_OBJ(obj); // the allocation of a pobj here will hold a reference (handle) to the managed object.
 	SEXP result = NULL;
 	int * iVals = NULL;
 	double * rVals = NULL;

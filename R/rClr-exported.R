@@ -613,11 +613,16 @@ rToClrType <- function(x) {
 #'
 #' Gets the type of a CLR object given its type name
 #'
-#' @param typename a character vector of length one. It can be the full file name of the assembly to load, or a fully qualified assembly name, or as a last resort a partial name.
+#' @param objOrTypename a character vector of length one. It can be the full file name of the assembly to load, or a fully qualified assembly name, or as a last resort a partial name.
 #' @return the CLR Type.
 #' @export
-clrGetType <- function(typename) {
-  return(clrCallStatic(clrFacadeTypeName, 'GetType',typename))
+clrGetType <- function(objOrTypename) {
+  if(is.character(objOrTypename))
+    return(clrCallStatic(clrFacadeTypeName, 'GetType',objOrTypename))
+  else if('cobjRef' %in% class(objOrTypename))
+    return(clrCall(objOrTypename, 'GetType'))
+  else
+    stop('objOrTypename is neither a cobjRef object nor a character vector')
 }
 
 

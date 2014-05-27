@@ -146,8 +146,51 @@ namespace Rclr
             if (mi.Count() == 0)
                 mi = methods.Where(m => AssignableTypesMatchesOptionalParams(m, types));
             if (mi.Count() > 1)
+                mi = GetLowestParameterMatch(mi, types, GetFirstExactMatchOptionalParams);
+            if (mi.Count() > 1)
                 throwAmbiguousMatch(mi);
             return mi.FirstOrDefault();
+        }
+
+        private static int Min(IEnumerable<int> indices) { return indices.Min(); }
+        private static int Max(IEnumerable<int> indices) { return indices.Max(); } 
+
+        private static IEnumerable<MethodInfo> GetLowestParameterMatch(IEnumerable<MethodInfo> mi, Type[] types, Func<MethodInfo, Type[], int> indexTest)
+        {
+            return GetBestParameterMatch(mi, types, indexTest, Min);
+        }
+
+        private static IEnumerable<MethodInfo> GetHighestParameterMatch(IEnumerable<MethodInfo> mi, Type[] types, Func<MethodInfo, Type[], int> indexTest)
+        {
+            return GetBestParameterMatch(mi, types, indexTest, Max);
+        }
+
+        private static IEnumerable<MethodInfo> GetBestParameterMatch(IEnumerable<MethodInfo> mi, Type[] types, Func<MethodInfo, Type[], int> indexTest, Func<IEnumerable<int>, int> bestScore)
+        {
+            var candidates = mi.ToList();
+            var indicesFirstMatch = GetIndexFirstMatch(mi, types, indexTest);
+            var validIndices = GetPositivesOnly(indicesFirstMatch);
+            if (validIndices.Count() == 0) return new MethodInfo[0];
+            var result = new List<MethodInfo>();
+            var bestIndex = bestScore(validIndices);
+            for (int i = 0; i < candidates.Count(); i++)
+            {
+                if (indicesFirstMatch[i] == bestIndex)
+                    result.Add(candidates[i]);
+            }
+            return result;
+        }
+
+        private static IEnumerable<int> GetPositivesOnly(List<int> indicesFirstMatch)
+        {
+            var validIndices = indicesFirstMatch.Where(x => x >= 0);
+            return validIndices;
+        }
+
+        private static List<int> GetIndexFirstMatch(IEnumerable<MethodInfo> mi, Type[] types, Func<MethodInfo, Type[], int> indexTest)
+        {
+            var indicesFirstMatch = mi.Select(m => indexTest(m, types)).ToList();
+            return indicesFirstMatch;
         }
 
         private static void throwAmbiguousMatch(IEnumerable<MethodInfo> mi)
@@ -175,11 +218,20 @@ namespace Rclr
                 desambiguation = mi.Where(m => VarArgsExactTypesMatchesVarArgs(m, types));
                 if (desambiguation.Count() == 1)
                     return desambiguation.FirstOrDefault();
-                else // too hard basket.
-                    throwAmbiguousMatch(mi);
+                else // last resort
+                {
+                    var closestMatches = GetLowestParameterMatch(mi, types, GetFirstExactMatchVarargMethods);
+                    if (closestMatches.Count() <= 1)
+                        return closestMatches.FirstOrDefault();
+                    closestMatches = GetHighestParameterMatch(closestMatches, types, GetLastExactMatchVarargMethods); // See https://rclr.codeplex.com/workitem/30
+                    if (closestMatches.Count() <= 1)
+                        return closestMatches.FirstOrDefault();
+                    else
+                        // too hard basket. For now. 
+                        throwAmbiguousMatch(closestMatches);
+                }
             }
-            else // nothing found
-                ClrFacade.ThrowMissingMethod(classType, methodName, bf.ToString(), types);
+            // nothing found
             return null;
         }
 
@@ -223,6 +275,21 @@ namespace Rclr
             return methodType.IsAssignableFrom(paramType);
         }
 
+        private static int GetFirstExactMatchOptionalParams(MethodInfo m, Type[] types)
+        {
+            return IndexFirstTypeMatchOptionalParams(m, types, equals);
+        }
+
+        private static int GetFirstExactMatchVarargMethods(MethodInfo m, Type[] types)
+        {
+            return IndexFirstTestTypeMatchesVarArgs(m, types, equals, equals);
+        }
+
+        private static int GetLastExactMatchVarargMethods(MethodInfo m, Type[] types)
+        {
+            return IndexBeforeTransitionToNoMatchVarArgs(m, types, equals);
+        }
+
         private static bool TestTypeMatchesOptionalParams(MethodInfo method, Type[] types, Func<Type, Type, bool> matchTest)
         {
             var parameters = method.GetParameters();
@@ -239,11 +306,27 @@ namespace Rclr
             return true;
         }
 
+        private static int IndexFirstTypeMatchOptionalParams(MethodInfo method, Type[] types, Func<Type, Type, bool> matchTest)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0 && types.Length == 0) return -1;
+            if (types.Length > parameters.Length) return -1; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            if (types.Length < parameters.Length)
+                if (!parameters[types.Length].IsOptional)
+                    return -1; // there remains at least one non-optional parameters that is missing.
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (matchTest(parameters[i].ParameterType, types[i]))
+                    return i;
+            }
+            return -1;
+        }
+
         private static bool TestTypeMatchesVarArgs(MethodInfo method, Type[] types, Func<Type, Type, bool> stdParamsMatchTest, Func<Type, Type, bool> paramsParamsMatchTest)
         {
             var parameters = method.GetParameters();
             if (parameters.Length == 0 && types.Length == 0) return true;
-            if (types.Length < parameters.Length) return false; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            if (types.Length < (parameters.Length - 1)) return false; // this may be an issue with mix of default values and params keyword. So be it; feature later.
             for (int i = 0; i < parameters.Length - 1; i++)
             {
                 if (!stdParamsMatchTest(parameters[i].ParameterType, types[i]))
@@ -260,6 +343,77 @@ namespace Rclr
                     return false;
             }
             return true;
+        }
+
+        private static int IndexFirstTestTypeMatchesVarArgs(MethodInfo method, Type[] types, Func<Type, Type, bool> stdParamsMatchTest, Func<Type, Type, bool> paramsParamsMatchTest)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0 && types.Length == 0) return -1;
+            if (types.Length < (parameters.Length - 1)) return -1; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            for (int i = 0; i < parameters.Length - 1; i++)
+            {
+                if (stdParamsMatchTest(parameters[i].ParameterType, types[i]))
+                    return i;
+            }
+            var arrayType = parameters[parameters.Length - 1].ParameterType;
+            Type t;
+            if (!arrayType.IsArray)
+                throw new ArgumentException("Inconsistent - arguments should not be packed with a non-array method parameter");
+            t = arrayType.GetElementType();
+            for (int i = parameters.Length - 1; i < types.Length; i++)
+            {
+                if (paramsParamsMatchTest(t, types[i]))
+                    return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Finds the last index of a parameter that matches a criteria, before a transition to false.
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="types"></param>
+        /// <param name="matchTest"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Needed to cater for https://rclr.codeplex.com/workitem/30
+        /// </remarks>
+        private static int IndexBeforeTransitionToNoMatchVarArgs(MethodInfo method, Type[] types, Func<Type, Type, bool> matchTest)
+        {
+            var parameters = method.GetParameters();
+            if (parameters.Length == 0 && types.Length == 0) return -1;
+            if (types.Length < (parameters.Length - 1)) return -1; // this may be an issue with mix of default values and params keyword. So be it; feature later.
+            bool hasHitMatch = false;
+            for (int i = 0; i < parameters.Length - 1; i++)
+            {
+                if (!matchTest(parameters[i].ParameterType, types[i]))
+                {
+                    if (hasHitMatch)
+                        return i - 1;
+                }
+                else
+                    hasHitMatch = true;
+            }
+            var arrayType = parameters[parameters.Length - 1].ParameterType;
+            Type t;
+            if (!arrayType.IsArray)
+                throw new ArgumentException("Inconsistent - arguments should not be packed with a non-array method parameter");
+            t = arrayType.GetElementType();
+            for (int i = parameters.Length - 1; i < types.Length; i++)
+            {
+                if (!matchTest(t, types[i]))
+                {
+                    if (hasHitMatch)
+                        return i - 1;
+                }
+                else
+                    hasHitMatch = true;
+            }
+            if (hasHitMatch) 
+                // for cases where blah(object, int, params int[]) called with int, int, int, int, int
+                return types.Length;
+            else
+                return -1;
         }
 
         public static bool HasOptionalParams(MethodInfo method)

@@ -115,6 +115,7 @@ typedef struct {
 extern "C" {
 	SEXP rclr_ms_get_type_name(SEXP clrObj);
 	SEXP rclr_ms_reflect_object(CLR_OBJ * objptr);
+	SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &pobj);
 #endif
 	SEXP r_create_clr_object( SEXP p );
 	SEXP r_get_null_reference();
@@ -158,9 +159,8 @@ CLR_OBJ * rclr_convert_element( SEXP el );
 CLR_OBJ * rclr_create_array_objects( SEXP s );
 CLR_OBJ * rclr_wrap_data_frame( SEXP s );
 CLR_OBJ * get_clr_object( SEXP clrObj );
-SEXP clr_object_to_SEXP( CLR_OBJ * o);
-SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ * pobj);
-const char * get_type_full_name(CLR_OBJ * objptr);
+SEXP clr_object_to_SEXP( CLR_OBJ *o);
+const char * get_type_full_name(CLR_OBJ *objptr);
 
 
 

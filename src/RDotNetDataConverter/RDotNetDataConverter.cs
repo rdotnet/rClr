@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using RDotNet;
+using RDotNet.Internals;
 using RDotNet.NativeLibrary;
 
 namespace Rclr
@@ -63,6 +64,11 @@ namespace Rclr
             converterFunctions.Add(typeof(Dictionary<string, string[]>), ConvertDictionary<string[]>);
             converterFunctions.Add(typeof(Dictionary<string, int[]>), ConvertDictionary<int[]>);
             converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
+
+            // Add some default converters for more general types
+            converterFunctions.Add(typeof(Array), ConvertArrayObject);
+            converterFunctions.Add(typeof(object), ConvertObject);
+
 
         }
 
@@ -166,17 +172,27 @@ namespace Rclr
             return singleton;
         }
 
-        private Dictionary<Type, Func<object,SymbolicExpression>> converterFunctions;
+        private Dictionary<Type, Func<object, SymbolicExpression>> converterFunctions;
 
         private SymbolicExpression TryConvertToSexp(object obj)
         {
             SymbolicExpression sHandle = null;
             if (obj == null)
                 throw new ArgumentNullException("object to convert to R must not be a null reference");
-            var t = obj.GetType();
-            var converter = TryGetConverter(t);
+            var converter = TryGetConverter(obj);
             sHandle = (converter == null ? null : converter.Invoke(obj));
             return sHandle;
+        }
+
+        private Func<object, SymbolicExpression> TryGetConverter(object obj)
+        {
+            var t = obj.GetType();
+            Func<object, SymbolicExpression> converter;
+            if (converterFunctions.TryGetValue(t, out converter))
+                return converter;
+            if (TryGetGenericConverters(obj, out converter))
+                return converter;
+            return null;
         }
 
         private Func<object, SymbolicExpression> TryGetConverter(Type t)
@@ -185,6 +201,19 @@ namespace Rclr
             if (converterFunctions.TryGetValue(t, out converter))
                 return converter;
             return null;
+        }
+
+        private bool TryGetGenericConverters(object obj, out Func<object, SymbolicExpression> converter)
+        {
+            var t = obj.GetType();
+            if (typeof(Array).IsAssignableFrom(t))
+            {
+                Array a = obj as Array;
+                if (a.Rank == 1)
+                    return (converterFunctions.TryGetValue(typeof(Array), out converter));
+            }
+            converter = null;
+            return (converterFunctions.TryGetValue(typeof(object), out converter));
         }
 
         //private bool TryGetValueAssignableValue(Type t, out Func<object, SymbolicExpression> converter)
@@ -215,11 +244,11 @@ namespace Rclr
             return values.AsList();
         }
 
-        private SymbolicExpression ConvertAll(object[] objects)
+        private SymbolicExpression ConvertAll(object[] objects, Func<object, SymbolicExpression> converter=null)
         {
             var sexpArray = new SymbolicExpression[objects.Length];
             for (int i = 0; i < objects.Length; i++)
-                sexpArray[i] = ConvertToSexp(objects[i]);
+                sexpArray[i] = converter == null ? ConvertToSexp(objects[i]) : converter(objects[i]);
             return new GenericVector(engine, sexpArray);
         }
 
@@ -334,9 +363,67 @@ namespace Rclr
             return result;
         }
 
-        private SymbolicExpression ConvertToList(object[] array)
+        private SymbolicExpression ConvertArrayObject(object obj)
         {
-            return ConvertAll(array);
+            Array a = (Array) obj;
+            return ConvertToList(a);
+        }
+
+        private SymbolicExpression ConvertObject(object obj)
+        {
+            if (obj == null)
+                return engine.NilValue;
+            var externalPtr = new ExternalPointer(engine, DataConversionHelper.ClrObjectToSexp(obj));
+            // At this point, we have a loop from managed to unmanaged to managed memory.
+            //  ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
+            // This is not quite what we want to return: we need to produce an S4 object 
+            //  S4Object -> ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
+            return CreateClrObj(externalPtr, obj.GetType().FullName);
+        }
+
+        private Function createClrS4Object;
+
+        public Function CreateClrS4Object
+        {
+            get 
+            {
+                if(createClrS4Object==null)
+                    createClrS4Object = engine.Evaluate("function(objExtPtr, typename) { new('cobjRef', clrobj=objExtPtr, clrtype=typename) }").AsFunction();
+                return createClrS4Object; 
+            }
+        }
+
+        private S4Object CreateClrObj(ExternalPointer ptr, string typename)
+        {
+            return CreateClrS4Object.Invoke(ptr, engine.CreateCharacter(typename)).AsS4();
+        }
+
+        private class ClrObjectWrapper : S4Object
+        {
+            public ClrObjectWrapper(REngine engine, IntPtr pointer)
+                : base(engine, pointer)
+            {
+            }
+        }
+
+        private class ExternalPointer : SymbolicExpression
+        {
+            public ExternalPointer(REngine engine, IntPtr pointer)
+                : base(engine, pointer)
+            {
+            }
+        }
+
+        private SymbolicExpression ConvertToList(Array a)
+        {
+            if (a.Rank > 1)
+                throw new NotSupportedException("Generic array converter is limited to uni-dimensional arrays");
+            // CAUTION: The following, while efficient, means that mroe specialised converters 
+            // will not be picked up.
+            var elementConverter = TryGetConverter(a.GetType().GetElementType());
+            object[] tmp = new object[a.GetLength(0)];
+            Array.Copy(a, tmp, tmp.Length);
+            return ConvertAll(tmp, elementConverter);
         }
 
         private SymbolicExpression ConvertMatrixJaggedSingle(object obj)

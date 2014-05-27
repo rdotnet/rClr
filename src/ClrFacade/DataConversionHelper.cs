@@ -36,6 +36,34 @@ namespace Rclr
 
         const Int32 SizeOfNativeVariant = 16;
 
+
+        [DllImport(@"rClrMs.dll", EntryPoint = "clr_object_to_SEXP", CallingConvention = CallingConvention.StdCall)]
+        static extern IntPtr ClrObjectToSexp(IntPtr variant);
+
+        /// <summary>
+        /// Creates a pointer to a native SEXP. This method is for advanced operations, 
+        /// where garbage collections are impacted. Gurus only.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IntPtr ClrObjectToSexp(object obj)
+        {
+            IntPtr pVariant = IntPtr.Zero;
+            try
+            {
+                pVariant = CreateNativeVariantForObject(obj);
+                return ClrObjectToSexp(pVariant);
+            }
+            catch
+            {
+                // We want to deallocate memory on error, but not on successful completion.
+                // since the creation of a native variant for obj is what creates a handle in the CLR hosting
+                // to prevent the garbage collection.
+                FreeVariantMem(pVariant);
+                throw;
+            }
+        }
+
         /// <summary>
         /// Gets a string helping to identify the COM variant to which an object is converted to an unmanaged data structure, if at all.
         /// </summary>
@@ -54,22 +82,49 @@ namespace Rclr
             IntPtr pVariant = IntPtr.Zero;
             try
             {
-                pVariant = Marshal.AllocHGlobal(SizeOfNativeVariant);
-                Marshal.GetNativeVariantForObject(obj, pVariant);
-                Variant v = (Variant)Marshal.PtrToStructure(pVariant, typeof(Variant));
-                VarEnum vt = (VarEnum)(v.vt);
-                vtString = GetVariantTypeString(vt);
+                pVariant = CreateNativeVariantForObject(obj);
+                vtString = GetVariantTypeString(pVariant);
             }
             finally
             {
-                if (pVariant != IntPtr.Zero)
-                {
-                    VariantClear(pVariant);
-                    Marshal.FreeCoTaskMem(pVariant);
-                    pVariant = IntPtr.Zero;
-                }
+                FreeVariantMem(pVariant);
             }
             return vtString;
+        }
+
+        private static string GetVariantTypeString( IntPtr pVariant)
+        {
+            VarEnum vt = GetVariantType(pVariant);
+            return GetVariantTypeString(vt);
+        }
+
+        private static VarEnum GetVariantType(IntPtr pVariant)
+        {
+            Variant v = GetManagedVariant(pVariant);
+            VarEnum vt = (VarEnum)(v.vt);
+            return vt;
+        }
+
+        private static Variant GetManagedVariant(IntPtr pVariant)
+        {
+            Variant v = (Variant)Marshal.PtrToStructure(pVariant, typeof(Variant));
+            return v;
+        }
+
+        private static void FreeVariantMem(IntPtr pVariant)
+        {
+            if (pVariant != IntPtr.Zero)
+            {
+                VariantClear(pVariant);
+                Marshal.FreeCoTaskMem(pVariant);
+            }
+        }
+
+        private static IntPtr CreateNativeVariantForObject(object obj)
+        {
+            IntPtr pVariant = Marshal.AllocHGlobal(SizeOfNativeVariant);
+            Marshal.GetNativeVariantForObject(obj, pVariant);
+            return pVariant;
         }
 
         /// <summary>

@@ -522,12 +522,21 @@ namespace Rclr
             var numParameters = parameters.Length;
             if (numParameters > arguments.Length)
             {
-                // Assume this is because of parameters with default values, and handle as per:
-                // http://msdn.microsoft.com/en-us/library/x0acewhc.aspx
                 var newargs = new object[numParameters];
                 arguments.CopyTo(newargs, 0);
-                for (int i = arguments.Length; i < newargs.Length; i++)
-                    newargs[i] = Type.Missing;
+                if (numParameters == (arguments.Length + 1))
+                {
+                    var lastParamInfo = parameters[parameters.Length-1];
+                    if (ReflectionHelper.IsVarArg(lastParamInfo))
+                        newargs[numParameters - 1] = Array.CreateInstance(lastParamInfo.ParameterType.GetElementType(), 0);
+                }
+                else
+                {
+                    // Assume this is because of parameters with default values, and handle as per:
+                    // http://msdn.microsoft.com/en-us/library/x0acewhc.aspx
+                    for (int i = arguments.Length; i < newargs.Length; i++)
+                        newargs[i] = Type.Missing;
+                }
                 arguments = newargs;
             }
             else if (parameters.Length > 0)

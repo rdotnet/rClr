@@ -9,3 +9,4 @@ r_get_type_name
 r_call_static_method
 r_get_sexp_type
 r_show_args
+clr_object_to_SEXP

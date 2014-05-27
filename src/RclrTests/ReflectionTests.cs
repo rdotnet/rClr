@@ -20,6 +20,8 @@ namespace RclrTests
             public void StringSameNameParams(string s, params int[] p) { }
             public void StringSameNameParams(string s, params double[] p) { }
 
+            public void UniqueNameStrStrParams(string s, string s2, params double[] p) { }
+
             public void NoDiffSameNameParams(params int[] p) { }
             public void NoDiffSameNameParams(params double[] p) { }
 
@@ -74,6 +76,16 @@ namespace RclrTests
         }
 
         [Fact]
+        public void TestParamsLengthZero()
+        {
+            var obj = new MyTestClass();
+            // Check that passing no parameters to the 'params' parameter (empty array) works
+            var result = ClrFacade.CallInstanceMethod(obj, "UniqueNameStrStrParams", new[] { "", "" });
+            // However, if it means that there are more than one candidate methods:
+            Assert.Throws<AmbiguousMatchException>(() => { ClrFacade.CallInstanceMethod(obj, "StringSameNameParams", new[] { "" }); });
+        }
+
+        [Fact]
         public void TestOptionalParametersMethodBinding()
         {
             BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
@@ -112,17 +124,6 @@ namespace RclrTests
             Assert.Null(ReflectionHelper.GetMethod(t, "DoubleOptionalIntDoubleString", null, bf, Type.EmptyTypes));
 
         }
-
-        public static string Blah(object p1, object p2, params object[] pn)
-        {
-            return "";
-        }
-
-        public static string Blah(int p1, object p2, params object[] pn)
-        {
-            return "";
-        }
-
 
         [Fact]
         public void TestOptionalParametersMethodInvocation()
