@@ -37,7 +37,7 @@ namespace Rclr
         const Int32 SizeOfNativeVariant = 16;
 
 
-        [DllImport(@"rClrMs.dll", EntryPoint = "clr_object_to_SEXP", CallingConvention = CallingConvention.StdCall)]
+        [DllImport(@"rClrMs.dll", EntryPoint = "clr_object_to_SEXP", CallingConvention = CallingConvention.Cdecl)]
         static extern IntPtr ClrObjectToSexp(IntPtr variant);
 
         /// <summary>
