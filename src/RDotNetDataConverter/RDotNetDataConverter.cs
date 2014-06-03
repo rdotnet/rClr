@@ -30,7 +30,9 @@ namespace Rclr
                     dllName = Path.Combine(libDir, "rClrMono.so");
                 else
                 {
-                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", "rClrMs.dll");
+                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", 
+                        (isMonoRuntime() ? "rClrMono.dll" : "rClrMs.dll")
+                    );
                 }
             }
 
@@ -89,7 +91,12 @@ namespace Rclr
             converterFunctions.Add(typeof(Array), ConvertArrayObject);
             converterFunctions.Add(typeof(object), ConvertObject);
 
+        }
 
+        private bool isMonoRuntime()
+        {
+            // HACK, but maybe all that can be done given the need.
+            return (Type.GetType("Mono.Math.BigInteger+Sign") != null);
         }
 
         private void SetupExceptionHandling()
