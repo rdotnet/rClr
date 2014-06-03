@@ -6,6 +6,13 @@ using System.Text;
 
 namespace Rclr
 {
+    public class UnmanagedRclrDll
+    {
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate IntPtr ClrObjectToSexpDelegate(IntPtr variant);
+        public ClrObjectToSexpDelegate ClrObjectToSexp;
+    }
+
     /// <summary>
     /// A helper class to inspect data and determind what it is converted to in the unmanaged code.
     /// </summary>
@@ -29,16 +36,31 @@ namespace Rclr
             public Int32 data01;
             public Int32 data02;
         }
+       
+        public static UnmanagedRclrDll RclrNativeDll= null;
+        static Int32 VariantClear(IntPtr pvarg)
+        {
+            if (RclrNativeDll == null)
+                return VariantClearMs(pvarg);
+            throw new NotSupportedException("Variant clear can only work with Windows");
+        }
+
+        static IntPtr ClrObjectToSexp(IntPtr variant)
+        {
+            if (RclrNativeDll == null)
+                return ClrObjectToSexpMs(variant);
+            return RclrNativeDll.ClrObjectToSexp(variant);
+        }
 
         // TODO I will likely need some conditional compilation for Mono
         [DllImport(@"oleaut32.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
-        static extern Int32 VariantClear(IntPtr pvarg);
+        private static extern Int32 VariantClearMs(IntPtr pvarg);
 
         const Int32 SizeOfNativeVariant = 16;
 
 
         [DllImport(@"rClrMs.dll", EntryPoint = "clr_object_to_SEXP", CallingConvention = CallingConvention.Cdecl)]
-        static extern IntPtr ClrObjectToSexp(IntPtr variant);
+        private static extern IntPtr ClrObjectToSexpMs(IntPtr variant);
 
         /// <summary>
         /// Creates a pointer to a native SEXP. This method is for advanced operations, 

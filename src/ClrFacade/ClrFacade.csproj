@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClrFacade.cs" />
-    <Compile Include="DataConversionHelper.cs" />
     <Compile Include="DataConverterExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -104,6 +103,7 @@
     <Compile Include="Tests\RefClasses\LevelThreeClass.cs" />
     <Compile Include="Tests\RefClasses\LevelTwoClass.cs" />
     <Compile Include="Tests\TestUtilities.cs" />
+    <Compile Include="DataConversionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestArrayMemoryHandling.tt">
@@ -114,6 +114,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestMethodBinding.cs</LastGenOutput>
     </None>
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

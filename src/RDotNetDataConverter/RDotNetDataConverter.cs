@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,16 +6,36 @@ using System.Runtime.InteropServices;
 using RDotNet;
 using RDotNet.Internals;
 using RDotNet.NativeLibrary;
+using Rclr;
+using System.Reflection;
 
 namespace Rclr
 {
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void Rf_error(string msg);
+//    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+//    internal delegate void Rf_error(string msg);
 
     public class RDotNetDataConverter : IDataConverter
     {
-        private RDotNetDataConverter ()
+        private RDotNetDataConverter (string pathToNativeSharedObj)
         {
+            var dllName = pathToNativeSharedObj;
+            // HACK - this feels wrong, at least not clean. All I have time for.
+            if (string.IsNullOrEmpty(dllName))
+            {
+                string assmbPath = Assembly.GetAssembly(this.GetType()).Location;
+                assmbPath = Path.GetFullPath(assmbPath);
+                var libDir = Path.GetDirectoryName(assmbPath);
+      
+                if (NativeUtility.IsUnix)
+                    dllName = Path.Combine(libDir, "rClrMono.so");
+                else
+                {
+                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", "rClrMs.dll");
+                }
+            }
+
+            DataConversionHelper.RclrNativeDll = new RclrUnmanagedDll(dllName).CreateWrapper();
+
             SetupREngine ();
             // The Mono API already has some unhandled exception reporting. 
             // TODO Use the following if it works well for both CLRuntimes.
@@ -85,6 +105,7 @@ namespace Rclr
 
         public void Error(string msg)
         {
+         // TODO consider removing; since this looked like not working.
             throw new NotSupportedException();
             //engine.Error(msg);
         }
@@ -92,10 +113,10 @@ namespace Rclr
         /// <summary>
         /// Enable/disable the use of this data converter in the R-CLR interop data marshalling.
         /// </summary>
-        public static void SetRDotNet(bool setit)
+        public static void SetRDotNet(bool setit, string pathToNativeSharedObj = null)
         {
             if (setit)
-                ClrFacade.DataConverter = GetInstance();
+                ClrFacade.DataConverter = GetInstance(pathToNativeSharedObj);
             else
                 ClrFacade.DataConverter = null;
         }
@@ -164,11 +185,11 @@ namespace Rclr
 
         private static RDotNetDataConverter singleton;
 
-        private static RDotNetDataConverter GetInstance()
+        private static RDotNetDataConverter GetInstance(string pathToNativeSharedObj)
         {
             // Make sure this is set only once (RDotNet known limitation to one engine per session, effectively a singleton).
             if (singleton == null)
-                singleton = new RDotNetDataConverter();
+                singleton = new RDotNetDataConverter(pathToNativeSharedObj);
             return singleton;
         }
 

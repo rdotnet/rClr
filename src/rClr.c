@@ -1,6 +1,14 @@
 #include "rClr.h"
 
 
+int is_microsoft_clr() {
+#ifdef MS_CLR 
+	return 1;
+#else
+	return 0;
+#endif
+}
+
 /////////////////////////////////////////
 // Initialisation and disposal of the CLR
 /////////////////////////////////////////

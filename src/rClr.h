@@ -124,9 +124,7 @@ extern "C" {
 	SEXP r_call_static_method(SEXP p);
 	SEXP r_call_method(SEXP par);
 	SEXP r_get_typename_externalptr(SEXP p);
-	void rclr_cleanup();
 	SEXP make_char_single_sexp(const char* str);
-	static void clr_object_finalizer(SEXP ref);
 #ifdef MONO_CLR
 	void ** build_method_parameters(SEXP largs);
 	SEXP rclr_mono_reflect_object(CLR_OBJ * obj);
@@ -141,10 +139,11 @@ extern "C" {
 	void get_FullTypeName( SEXP p, char ** tname);
 	void rclr_load_assembly(char ** filename);
 	void rclr_create_domain(char ** appBaseDir, char ** filename, int* mono_debug);
-
-;
+	int is_microsoft_clr();
+	void rclr_cleanup();
+	static void clr_object_finalizer(SEXP ref);
 #ifdef MS_CLR
-}
+} // end of extern "C" block
 #endif
 
 
