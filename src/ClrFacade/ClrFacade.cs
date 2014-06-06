@@ -660,5 +660,22 @@ namespace Rclr
         /// </summary>
         public static string LastException { get; private set; }
 
+
+        private static bool monoRuntimeChecked = false;
+        private static bool isMonoRuntime = false;
+
+        /// <summary>
+        /// Avoid using this, at all cost. Required for some interop approaches.
+        /// </summary>
+        public static bool IsMonoRuntime 
+        {
+            get 
+            {
+                if (!monoRuntimeChecked)
+                    // HACK, but maybe all that can be done given the need.
+                    isMonoRuntime = (Type.GetType("Mono.Math.BigInteger+Sign") != null);
+                return isMonoRuntime;
+            }
+        }
     }
 }

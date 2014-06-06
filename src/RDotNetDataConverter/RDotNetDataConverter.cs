@@ -95,8 +95,7 @@ namespace Rclr
 
         private bool isMonoRuntime()
         {
-            // HACK, but maybe all that can be done given the need.
-            return (Type.GetType("Mono.Math.BigInteger+Sign") != null);
+            return ClrFacade.IsMonoRuntime;
         }
 
         private void SetupExceptionHandling()

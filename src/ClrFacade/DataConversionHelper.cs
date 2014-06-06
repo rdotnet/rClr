@@ -40,9 +40,9 @@ namespace Rclr
         public static UnmanagedRclrDll RclrNativeDll= null;
         static Int32 VariantClear(IntPtr pvarg)
         {
-            if (RclrNativeDll == null)
-                return VariantClearMs(pvarg);
-            throw new NotSupportedException("Variant clear can only work with Windows");
+            if(ClrFacade.IsMonoRuntime)
+                throw new NotSupportedException("Variant clear can only work with Windows");
+            return VariantClearMs(pvarg);
         }
 
         static IntPtr ClrObjectToSexp(IntPtr variant)
@@ -53,7 +53,7 @@ namespace Rclr
         }
 
         // TODO I will likely need some conditional compilation for Mono
-        [DllImport(@"oleaut32.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
+        [DllImport(@"oleaut32.dll", EntryPoint = "VariantClear", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
         private static extern Int32 VariantClearMs(IntPtr pvarg);
 
         const Int32 SizeOfNativeVariant = 16;
