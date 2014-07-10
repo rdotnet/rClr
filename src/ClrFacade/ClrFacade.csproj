@@ -106,6 +106,7 @@
     <Compile Include="DataConversionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="TestArrayMemoryHandling.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestArrayMemoryHandling.cs</LastGenOutput>

@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6-1\cr
-#' Date: \tab 2014-04-29\cr
+#' Version: \tab 0.6-2\cr
+#' Date: \tab 2014-07-10\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'
@@ -28,8 +28,6 @@
 #' @author Jean-Michel Perraud \email{jean-michel.perraud_at_csiro.au}
 #' @keywords package CLR Mono .NET
 NULL
-
-#   #' @import methods
 
 
 
