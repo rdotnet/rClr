@@ -88,8 +88,8 @@ namespace Rclr
             converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
 
             // Add some default converters for more general types
-            converterFunctions.Add(typeof(Array), ConvertArrayObject);
-            converterFunctions.Add(typeof(object), ConvertObject);
+            //converterFunctions.Add(typeof(Array), ConvertArrayObject);
+            //converterFunctions.Add(typeof(object), ConvertObject);
 
         }
 
