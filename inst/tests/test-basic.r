@@ -44,8 +44,8 @@ test_that("Basic types of length zero are marshalled correctly", {
   expect_equal( clrCallStatic(tn, "CreateArray_bool", 0L ), logical(0) );
   expect_equal( clrCallStatic(tn, "CreateArray_string", 0L ), character(0) );
   
-  expect_equal( clrCallStatic(tn, "CreateArray_Type", 0L ), list() );
   expect_equal( clrCallStatic(tn, "CreateArray_object", 0L ), list() );
+  expect_equal( clrCallStatic(tn, "CreateArray_Type", 0L ), list() );
   
   ## Not sure what to do with these - precision loss and unicode characters.
   # expect_equal( clrCallStatic(tn, "CreateArray_long", 0L ), integer(0) );
@@ -84,11 +84,11 @@ test_that("Basic types of length zero are marshalled correctly", {
 
 test_that("Array of non-basic .NET objects are handled", {
   tn <- "Rclr.TestArrayMemoryHandling"
-  aType <- clrGetType('System.Double')
-  expect_equal( clrCallStatic(tn, "CreateArray_Type", 3L, aType), list(aType, aType, aType) )
   tName <- 'Rclr.TestObject'
   obj <- clrNew(tName)
   expect_equal( clrCallStatic(tn, "CreateArray_object", 3L, obj), list(obj,obj,obj) )
+  aType <- clrGetType('System.Double')
+  expect_equal( clrCallStatic(tn, "CreateArray_Type", 3L, aType), list(aType, aType, aType) )
 })  
 
 

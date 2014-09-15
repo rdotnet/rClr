@@ -73,6 +73,9 @@ namespace Rclr
             IntPtr pVariant = IntPtr.Zero;
             try
             {
+                // Trying to solve https://rclr.codeplex.com/workitem/33. 
+                // Not sure whether I can ignore the returned handle or not, however, so treat as experimental.
+                //GCHandle.Alloc(obj, GCHandleType.Pinned);
                 pVariant = CreateNativeVariantForObject(obj);
                 return ClrObjectToSexp(pVariant);
             }
@@ -133,18 +136,28 @@ namespace Rclr
             return v;
         }
 
+        private const bool useCoTaskMem = true;
+
         private static void FreeVariantMem(IntPtr pVariant)
         {
             if (pVariant != IntPtr.Zero)
             {
                 VariantClear(pVariant);
-                Marshal.FreeCoTaskMem(pVariant);
+                if(useCoTaskMem)
+                    Marshal.FreeCoTaskMem(pVariant);
+                else
+                    Marshal.FreeHGlobal(pVariant);
             }
         }
 
         private static IntPtr CreateNativeVariantForObject(object obj)
         {
-            IntPtr pVariant = Marshal.AllocHGlobal(SizeOfNativeVariant);
+            IntPtr pVariant;
+            // GCHandle.Alloc(obj, GCHandleType.Pinned); // Usually, will throw exception.
+            if (useCoTaskMem)
+                pVariant = Marshal.AllocCoTaskMem(SizeOfNativeVariant);
+            else
+                pVariant = Marshal.AllocHGlobal(SizeOfNativeVariant);
             Marshal.GetNativeVariantForObject(obj, pVariant);
             return pVariant;
         }

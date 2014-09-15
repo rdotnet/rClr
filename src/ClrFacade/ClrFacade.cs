@@ -113,6 +113,35 @@ namespace Rclr
             return result;
         }
 
+        /// <summary>
+        /// Advanced debugging. A function to help diagnose issues at the C/.NET interface. 
+        /// </summary>
+        public static string DiagnoseMethodCall(object[] arguments)
+        {
+            var sb = new StringBuilder();
+            try
+            {
+                LastCallException = string.Empty;
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    var arg = arguments[i];
+                    sb.Append(
+                        arg == null ?
+                        string.Format("Parameter {0} is a null reference", i) :
+                        string.Format("Parameter {0} is not null and of type {1}", i, arg.GetType().FullName)
+                        );
+                    sb.Append(Environment.NewLine);
+                }
+            }
+            catch (Exception ex)
+            {
+                var argEx = new ArgumentException("Method Parameter Diagnosis so far: " + sb.ToString(), ex);
+                if (!LogThroughR(argEx))
+                    throw argEx;
+            }
+            return sb.ToString();
+        }
+
         // https://rclr.codeplex.com/workitem/15
         private static object[] changeArgumentTypes(object[] arguments, MethodInfo method)
         {

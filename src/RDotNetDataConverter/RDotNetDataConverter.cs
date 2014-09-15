@@ -51,7 +51,8 @@ namespace Rclr
 
             converterFunctions.Add(typeof(float), ConvertSingle);
             converterFunctions.Add(typeof(double), ConvertDouble);
-            //converterFunctions.Add(typeof(bool), ConvertDouble);
+            converterFunctions.Add(typeof(byte), ConvertByte);
+            converterFunctions.Add(typeof(bool), ConvertBool);
             converterFunctions.Add(typeof(int), ConvertInt);
             converterFunctions.Add(typeof(string), ConvertString);
             converterFunctions.Add(typeof(DateTime), ConvertDateTime);
@@ -59,7 +60,8 @@ namespace Rclr
 
             converterFunctions.Add(typeof(float[]), ConvertArraySingle);
             converterFunctions.Add(typeof(double[]), ConvertArrayDouble);
-            //converterFunctions.Add(typeof(bool[]), ConvertArrayDouble);
+            converterFunctions.Add(typeof(byte[]), ConvertArrayByte);
+            converterFunctions.Add(typeof(bool[]), ConvertArrayBool);
             converterFunctions.Add(typeof(int[]), ConvertArrayInt);
             converterFunctions.Add(typeof(string[]), ConvertArrayString);
             converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
@@ -88,8 +90,8 @@ namespace Rclr
             converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
 
             // Add some default converters for more general types
-            //converterFunctions.Add(typeof(Array), ConvertArrayObject);
-            //converterFunctions.Add(typeof(object), ConvertObject);
+            converterFunctions.Add(typeof(Array), ConvertArrayObject);
+            converterFunctions.Add(typeof(object), ConvertObject);
 
         }
 
@@ -286,6 +288,20 @@ namespace Rclr
             return engine.CreateNumericVector(array);
         }
 
+        private SymbolicExpression ConvertArrayBool(object obj)
+        {
+            if (!ConvertVectors) return null;
+            bool[] array = (bool[])obj;
+            return engine.CreateLogicalVector(array);
+        }
+
+        private SymbolicExpression ConvertArrayByte(object obj)
+        {
+            if (!ConvertVectors) return null;
+            byte[] array = (byte[])obj;
+            return engine.CreateRawVector(array);
+        }
+
         private SymbolicExpression ConvertArraySingle(object obj)
         {
             if (!ConvertVectors) return null;
@@ -343,6 +359,13 @@ namespace Rclr
             if (!ConvertVectors) return null;
             float value = (float)obj;
             return ConvertArrayDouble((double)value);
+        }
+
+        private SymbolicExpression ConvertByte(object obj)
+        {
+            if (!ConvertVectors) return null;
+            byte value = (byte)obj;
+            return engine.CreateRaw(value);
         }
 
         private SymbolicExpression ConvertBool(object obj)

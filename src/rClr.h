@@ -122,6 +122,7 @@ extern "C" {
 	SEXP r_reflect_on_object(SEXP clrobj);
 	SEXP r_get_type_name(SEXP clrObj);
 	SEXP r_call_static_method(SEXP p);
+	SEXP r_diagnose_parameters(SEXP p);
 	SEXP r_call_method(SEXP par);
 	SEXP r_get_typename_externalptr(SEXP p);
 	SEXP make_char_single_sexp(const char* str);
@@ -129,7 +130,8 @@ extern "C" {
 	void ** build_method_parameters(SEXP largs);
 	SEXP rclr_mono_reflect_object(CLR_OBJ * obj);
 	SEXP rclr_mono_get_type_name(SEXP clrObj);
-	SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam, SEXP methodParams );
+	SEXP rclr_mono_diagnose_method_parameters(SEXP methodParams);
+	SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam, SEXP methodParams);
 	SEXP rclr_mono_call_method(const char *mnam, CLR_OBJ * obj, SEXP methodParams);
 	SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj);
 #elif MS_CLR

@@ -1,4 +1,6 @@
-﻿namespace Rclr
+﻿using RDotNet.Utilities;
+
+namespace Rclr
 {
     /// <summary>
     /// Extension methods to facilitate data marshalling between R and the CLR
@@ -7,14 +9,7 @@
     {
         public static double[][] ToDouble(this float[][] array)
         {
-            var result = new double[array.Length][];
-            for (int i = 0; i < array.Length; i++)
-            {
-                result[i] = new double[array[i].Length];
-                for (int j = 0; j < array[i].Length; j++)
-                    result[i][j] = array[i][j];
-            }
-            return result;
+            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (float)x);
         }
 
         public static double[,] ToDoubleRect(this float[][] array)
@@ -51,13 +46,7 @@
 
         public static double[,] ToDoubleRect(this float[,] array)
         {
-            int n = array.GetLength(0);
-            int m = array.GetLength(1);
-            var result = new double[n, m];
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < m; j++)
-                    result[i, j] = array[i, j];
-            return result;
+            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (float)x);
         }
 
         public static float[,] ToFloatRect(this float[][] array)

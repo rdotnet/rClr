@@ -57,7 +57,7 @@ static void clr_object_finalizer(SEXP clrSexp) {
 		if (objptr->vt == VT_EMPTY)
 			warning("clr_object_finalizer called on a variant of type VT_EMPTY\n");
 		else
-			delete objptr; // TOCHECK
+			delete objptr;
 #endif
 	}
 	// TODO else throw exception?
@@ -577,20 +577,33 @@ SEXP r_get_sexp_type(SEXP par) {
 	return make_int_sexp(1, &typecode);
 }
 
+SEXP r_diagnose_parameters(SEXP p) {
+	SEXP e, methodParams;
+	p = CDR(p);; /* skip the first parameter: function name*/
+	methodParams = p;
+
+#ifdef MONO_CLR
+	return rclr_mono_diagnose_method_parameters(methodParams);
+#elif MS_CLR
+	error_return("r_diagnose_parameters: not implemented for MS CLR");
+	return R_NilValue;
+#endif
+}
+
 SEXP r_call_static_method(SEXP p) {
 	SEXP e, methodParams;
 	const char *mnam;
 	char* ns_qualified_typename = NULL; // My.Namespace.MyClass,MyAssemblyName
 
-	p=CDR(p); ; /* skip the first parameter: function name*/
-	get_FullTypeName(p, &ns_qualified_typename); p=CDR(p);
-	e = CAR(p); p=CDR(p); // get the method name.
-	if (TYPEOF(e)!=STRSXP || LENGTH(e)!=1)
+	p = CDR(p);; /* skip the first parameter: function name*/
+	get_FullTypeName(p, &ns_qualified_typename); p = CDR(p);
+	e = CAR(p); p = CDR(p); // get the method name.
+	if (TYPEOF(e) != STRSXP || LENGTH(e) != 1)
 	{
 		free(ns_qualified_typename);
 		error_return("r_call_static_method: invalid method name");
 	}
-	mnam = CHAR(STRING_ELT(e,0));
+	mnam = CHAR(STRING_ELT(e, 0));
 	methodParams = p;
 
 #ifdef MONO_CLR
@@ -1591,10 +1604,9 @@ free(tmp);
 }
 */
 
-SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam, SEXP methodParams ) {
-	CLR_OBJ * obj=NULL;
+SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam, SEXP methodParams) {
+	CLR_OBJ * obj = NULL;
 	CLR_OBJ * result = NULL;
-	CLR_OBJ * exception = NULL;
 	// char * name_space;
 	//	char * type_short_name;
 	//get_ns_and_type_from_fqtn(ns_qualified_typename, &name_space, &type_short_name);
@@ -1602,15 +1614,28 @@ SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam
 	return clr_obj_mono_convert_to_SEXP(result);
 }
 
-CLR_OBJ * rclr_mono_call_static_method_tname(char * ns_qualified_typename, char * mnam, void ** params, int paramCount) {
-	MonoMethod * methodCallStaticMethod = rclr_mono_get_method( spTypeClrFacade, "CallStaticMethodMono", 3);
+SEXP rclr_mono_diagnose_method_parameters(SEXP methodParams) {
+	CLR_OBJ * obj = NULL;
+	MonoMethod * methodCallStaticMethod = rclr_mono_get_method(spTypeClrFacade, "DiagnoseMethodCall", 1);
 	MonoObject * exception, *result;
-	void** static_mparams = (void**)malloc(3*sizeof(void*)); // TOCHECK
+	void** static_mparams = (void**)malloc(1 * sizeof(void*));
+	MonoArray* methParams = create_array_object(build_method_parameters(methodParams), Rf_length(methodParams));
+	static_mparams[0] = methParams;
+	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
+	print_if_exception(exception);
+	free(static_mparams);
+	return clr_obj_mono_convert_to_SEXP(result);
+}
+
+CLR_OBJ * rclr_mono_call_static_method_tname(char * ns_qualified_typename, char * mnam, void ** params, int paramCount) {
+	MonoMethod * methodCallStaticMethod = rclr_mono_get_method(spTypeClrFacade, "CallStaticMethodMono", 3);
+	MonoObject * exception, *result;
+	void** static_mparams = (void**)malloc(3 * sizeof(void*)); // TOCHECK
 	MonoArray* methParams = create_array_object(params, paramCount);
 	static_mparams[0] = create_mono_string(ns_qualified_typename);
 	static_mparams[1] = create_mono_string(mnam);
 	static_mparams[2] = methParams;
-	result = mono_runtime_invoke (methodCallStaticMethod, NULL, static_mparams, &exception);
+	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
 	print_if_exception(exception);
 	free(static_mparams);
 	return result;

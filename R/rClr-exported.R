@@ -463,6 +463,23 @@ clrCallStatic <- function(typename, methodName,...)
   return(createReturnedObject(extPtr))
 }
 
+#' Peek into the types of CLR objects arguments are converted to by rClr
+#'
+#' Advanced use only, to diagnose unexpected conditions in CLR method calls. Most users would not ever need it. 
+#'
+#' @param ... method arguments passed to .External
+#' @return a character message with type information about each argument.
+#' @export
+#' @examples
+#' \dontrun{
+#' library(rClr)
+#' peekClrArgs("a", numeric(0))
+#' }
+peekClrArgs <- function(...) 
+{
+  extPtr <-.External("r_diagnose_parameters", ..., PACKAGE=nativePkgName)
+  return(createReturnedObject(extPtr))
+}
 
 #' Gets the static members for a type
 #' 
