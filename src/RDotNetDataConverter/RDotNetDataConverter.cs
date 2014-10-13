@@ -577,7 +577,7 @@ namespace Rclr
 
         private static string getRDllName ()
         {
-            return NativeUtility.GetRDllFileName();
+            return NativeUtility.GetRLibraryFileName();
         }
 
         public REngine engine;
