@@ -189,21 +189,45 @@ namespace Rclr
             return false;
         }
 
+        private static string CheckSehExceptionAdditionalErrorMessage(Exception ex)
+        {
+            if (ex is System.Runtime.InteropServices.SEHException)
+            {
+                if (ErrorMessageProvider == null)
+                    return "Caught an SEHException, but no additional information is available via ErrorMessageProvider";
+                else
+                    return ErrorMessageProvider();
+            }
+            else
+                return null;
+        }
+
         public static string FormatExceptionInnermost(Exception ex)
         {
             Exception innermost = ex;
             while (innermost.InnerException != null)
                 innermost = innermost.InnerException;
 
+            var additionalMsg = CheckSehExceptionAdditionalErrorMessage(innermost);
+
             var tle = innermost as ReflectionTypeLoadException; // https://rclr.codeplex.com/workitem/26
             StringBuilder sb = new StringBuilder();
-            sb.Append(FormatExceptionMessage(innermost));
+            if (!string.IsNullOrEmpty(additionalMsg))
+                sb.Append(FormatCustomMsg(additionalMsg));
+            else
+                sb.Append(FormatExceptionMessage(innermost));
             if (tle != null)
             {
                 foreach (var e in tle.LoaderExceptions)
                     sb.Append(FormatExceptionMessage(e));
             }
             return sb.ToString();
+        }
+
+        private static string FormatCustomMsg(string additionalMsg)
+        {
+            var result = string.Format("External Error Message: {1}{0}", "\n", additionalMsg);
+            return result.Replace("\r\n", "\n");
         }
 
         private static string FormatExceptionMessage(Exception ex)
@@ -220,6 +244,16 @@ namespace Rclr
         /// Gets/sets a data converter to customize or extend the marshalling of data between R and the CLR
         /// </summary>
         public static IDataConverter DataConverter { get; set; }
+
+        /// <summary>
+        /// Gets/sets a function delegate that can provide additional error message information. 
+        /// </summary>
+        /// <remarks>
+        /// This is intended to cater for cases where exception caught is SEHException, 
+        /// presumably because some native code called by .NET via P/Invoke failed. 
+        /// The native code may provide a way to retrieve information; this property offers a path to retrieve this information.
+        /// </remarks>
+        public static Func<string> ErrorMessageProvider { get; set; }
 
         /// <summary>
         /// Gets if there is a custom data converter set on this facade

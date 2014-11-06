@@ -11,8 +11,9 @@ Accessing the Common Language Runtime (.NET/Mono) from R
 \tabular{ll}{
 Package: \tab rClr\cr
 Type: \tab Package\cr
-Version: \tab 0.6-2\cr
-Date: \tab 2014-07-10\cr
+Version: \tab 0.6-3\cr
+Purpose: \tab Adds a way to retrieve error messages in cases where .NET code is using P/Invoke and the native code can provide additional error information \cr
+Date: \tab 2014-11-06\cr
 License: \tab LGPL 2.1\cr
 }
 
