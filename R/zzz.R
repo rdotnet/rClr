@@ -85,6 +85,7 @@ loadAndInit <- function(chname, pkgname, libname, srcPkgLibPath=NULL) {
   debug_flag=Sys.getenv('RCLR_DEBUG')
   clrInit(debug_flag!="")
   appendStartupMsg(paste('Loaded Common Language Runtime version', getClrVersionString()))
+  setRDotNet(TRUE)
 }
 
 appendStartupMsg <- function(msg) {

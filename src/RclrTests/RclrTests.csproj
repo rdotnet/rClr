@@ -30,11 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RDotNet, Version=1.5.17.31038, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RDotNet, Version=1.5.17.22598, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\R.NET.Community.1.5.17\lib\net40\RDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet.NativeLibrary, Version=1.5.17.31038, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RDotNet.NativeLibrary, Version=1.5.17.17689, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\R.NET.Community.1.5.17\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>

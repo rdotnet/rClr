@@ -423,7 +423,10 @@ namespace Rclr
         {
             if (obj == null)
                 return engine.NilValue;
-            var externalPtr = new ExternalPointer(engine, DataConversionHelper.ClrObjectToSexp(obj));
+            var ptr = DataConversionHelper.ClrObjectToSexp(obj);
+            if (ptr == IntPtr.Zero)
+                return null; // we did not manage to convert here. Fallback on native layer of rClr used later on.
+            var externalPtr = new ExternalPointer(engine, ptr);
             // At this point, we have a loop from managed to unmanaged to managed memory.
             //  ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
             // This is not quite what we want to return: we need to produce an S4 object 
@@ -438,7 +441,7 @@ namespace Rclr
             get 
             {
                 if(createClrS4Object==null)
-                    createClrS4Object = engine.Evaluate("function(objExtPtr, typename) { new('cobjRef', clrobj=objExtPtr, clrtype=typename) }").AsFunction();
+                    createClrS4Object = engine.Evaluate("invisible(function(objExtPtr, typename) { new('cobjRef', clrobj=objExtPtr, clrtype=typename) })").AsFunction();
                 return createClrS4Object; 
             }
         }

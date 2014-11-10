@@ -36,18 +36,21 @@ getLibsPath <- function(pkgName) {
 #' Create if possible and adequate the S4 object that wraps the external pointer to a CLR object. 
 #' Currently not exported, as this is unlikely to be recommended for use outside of unit tests and internal to rClr.
 #'
-#' @param extPtr the external pointer.
+#' @param obj the presumed external pointer.
+#' @param clrtype character; the name of the CLR type for the object. If NULL, rClr retrieves the type name.
 #' @return a cobjRef S4 object if the argument is indeed an external pointer, 
-#' otherwise returned unchanged if null of not an external pointer.
+#' otherwise returned unchanged if null or not an external pointer.
 #' @import methods
-createReturnedObject <- function(extPtr) {
-  if( is.null(extPtr) == TRUE ) {
+mkClrObjRef <- function(obj, clrtype=NULL) {
+  if(is(obj, 'cobjRef')) return(obj)
+  if( is.null(obj) == TRUE ) {
     return(NULL)
-  } else if ("externalptr" %in% class(extPtr)) {
-    typename <- clrTypeNameExtPtr(extPtr)
-		return(new("cobjRef", clrobj=extPtr, clrtype=typename))
+  } else if ("externalptr" %in% class(obj)) {
+    if(is.null(clrtype)) { clrtype <- clrTypeNameExtPtr(obj) }
+		return(new("cobjRef", clrobj=obj, clrtype=clrtype))
   } else {
-    return(extPtr)
+    return(obj)
   }
 }
+
 

@@ -503,7 +503,47 @@ namespace Rclr
         {
             return new TestObject();
         }
+
+        /// <summary>
+        /// cover part of the issue https://rclr.codeplex.com/workitem/39
+        /// </summary>
+        public static TestObjectGeneric<string> CreateTestObjectGenericInstance()
+        {
+            return new TestObjectGeneric<string>("Hi");
+        }
+
+        public static TestObjectGeneric<string>[] CreateTestArrayGenericObjects()
+        {
+            var result = new TestObjectGeneric<string>[3];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = CreateTestObjectGenericInstance();
+            return result;
+        }
+
+        public static ITestInterface[] CreateTestArrayInterface()
+        {
+            var result = new ITestInterface[3];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = new ImplITestInterface();
+            return result;
+        }
+
+        public static ITestGenericInterface<string>[] CreateTestArrayGenericInterface()
+        {
+            var result = new ITestGenericInterface<string>[3];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = new ImplITestGenericInterface();
+            return result;
+        }
     }
+
+    public interface ITestInterface { }
+    internal class ImplITestInterface : ITestInterface { }
+    public interface ITestGenericInterface<T> 
+    {
+        T Value { get; } 
+    }
+    internal class ImplITestGenericInterface : ITestGenericInterface<string> { public string Value { get; set; } }
 
 	public enum TestEnum
 	{
@@ -518,6 +558,15 @@ namespace Rclr
 		B = 2,
 		C = 4
 	}
+
+    public class TestObjectGeneric<T>
+    {
+        public T Value { get; private set; }
+        public TestObjectGeneric(T value)
+        {
+            Value = value;
+        }
+    }
 
     public class TestObject
     {

@@ -85,10 +85,20 @@ test_that("Basic types of length zero are marshalled correctly", {
 test_that("Array of non-basic .NET objects are handled", {
   tn <- "Rclr.TestArrayMemoryHandling"
   tName <- 'Rclr.TestObject'
+  
+  testListEqual <- function(expectObj, expectedLength, actual) {
+    expect_equal(expectedLength, length(actual))
+    expect_true(is.list(actual))
+    expect_true(all(sapply(actual, FUN = function(x) {clrCallStatic('System.Object', 'ReferenceEquals', expectObj, x)})))
+  }  
+  
   obj <- clrNew(tName)
-  expect_equal( clrCallStatic(tn, "CreateArray_object", 3L, obj), list(obj,obj,obj) )
+  actual <- clrCallStatic(tn, "CreateArray_object", 3L, obj)
+  testListEqual(obj, 3L, actual) 
+  
   aType <- clrGetType('System.Double')
-  expect_equal( clrCallStatic(tn, "CreateArray_Type", 3L, aType), list(aType, aType, aType) )
+  actual <- clrCallStatic(tn, "CreateArray_Type", 3L, aType)
+  testListEqual(aType, 3L, actual) 
 })  
 
 
@@ -250,10 +260,43 @@ test_that("Basic objects are created correctly", {
   testObj = clrNew(testClassName)
   expect_that( testObj@clrtype, equals(testClassName))
   rm(testObj)
-	extptr <-.External("r_call_static_method", cTypename, "CreateTestObject",PACKAGE=clrGetNativeLibName())
-  expect_that(is.null(extptr), is_false())
-  expect_that("externalptr" %in% class(extptr), is_true())
-  expect_that(clrTypeNameExtPtr(extptr), equals(testClassName))
+  # Note to self: I originally wrote code to make sure that r_call_static_method kept returning an external pointer, not 
+  # an R object of type clrObjRef already created. I am not sure why this would have been a compulsory behavior. 
+  # Delete if no harm done...
+#	 extptr <-.External("r_call_static_method", cTypename, "CreateTestObject",PACKAGE=clrGetNativeLibName())
+#  expect_that(is.null(extptr), is_false())
+#  expect_that("externalptr" %in% class(extptr), is_true())
+#  expect_that(clrTypeNameExtPtr(extptr), equals(testClassName))
+	testObj <-.External("r_call_static_method", cTypename, "CreateTestObject",PACKAGE=clrGetNativeLibName())
+  expect_that(is.null(testObj), is_false())
+  expect_that( testObj@clrtype, equals(testClassName))
+  rm(testObj)
+	testObj <- clrCallStatic(cTypename, "CreateTestObject")
+  expect_that(is.null(testObj), is_false())
+  expect_that( testObj@clrtype, equals(testClassName))
+
+  # cover part of the issue https://rclr.codeplex.com/workitem/39
+	testObj <- clrCallStatic(cTypename, "CreateTestObjectGenericInstance")
+  expect_that(is.null(testObj), is_false())
+  
+  
+  testObj <- clrCallStatic(cTypename, "CreateTestArrayGenericObjects")
+  testObj <- clrCallStatic(cTypename, "CreateTestArrayInterface")
+  testObj <- clrCallStatic(cTypename, "CreateTestArrayGenericInterface")
+  
+})
+
+test_that("CLR type compatibility checking", {
+  testObj <- clrNew(testClassName)
+  expect_true(clrIs(testObj, testClassName))
+  expect_true(clrIs(testObj, 'System.Object'))
+  expect_false(clrIs(testObj, 'System.Double'))
+  testObj <- clrNew('Rclr.TestMethodBinding')
+  expect_true(clrIs(testObj, 'Rclr.ITestMethodBindings'))
+  expect_true(clrIs(testObj, clrGetType('Rclr.ITestMethodBindings')))
+  expect_true(clrIs(testObj, clrGetType('Rclr.TestMethodBinding')))
+  expect_false(clrIs(testObj, clrGetType('System.Reflection.Assembly')))
+  expect_error(clrIs(testObj, testObj))
 })
 
 test_that("Loaded assemblies discovery", {

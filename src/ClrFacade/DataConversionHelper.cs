@@ -47,6 +47,8 @@ namespace Rclr
 
         static IntPtr ClrObjectToSexp(IntPtr variant)
         {
+            if (variant == IntPtr.Zero)
+                return IntPtr.Zero;
             if (RclrNativeDll == null)
                 return ClrObjectToSexpMs(variant);
             return RclrNativeDll.ClrObjectToSexp(variant);
@@ -152,7 +154,9 @@ namespace Rclr
 
         private static IntPtr CreateNativeVariantForObject(object obj)
         {
-            IntPtr pVariant;
+            IntPtr pVariant = IntPtr.Zero;
+            if (obj.GetType().IsGenericType) // Marshal.GetNativeVariantForObject cannot handle this case
+                return IntPtr.Zero;
             // GCHandle.Alloc(obj, GCHandleType.Pinned); // Usually, will throw exception.
             if (useCoTaskMem)
                 pVariant = Marshal.AllocCoTaskMem(SizeOfNativeVariant);

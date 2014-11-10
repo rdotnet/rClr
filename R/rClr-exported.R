@@ -270,7 +270,46 @@ clrNew <- function(typename, ...)
   if (is.null(o)) {
     stop("Failed to create instance of type '",typename,"'")
   }
-  new("cobjRef", clrobj=o, clrtype=typename)
+  mkClrObjRef(o, clrtype=typename)
+}
+
+#' Check whether an object is of a certain type
+#'
+#' Check whether an object is of a certain type. This function is meant to match the behavior of the 'is' keyword in C#.
+#'
+#' @param obj an object
+#' @param type the object type to check for. It can be a character, of a object of CLR type System.RuntimeType
+#' @return TRUE or FALSE
+#' @export
+#' @examples
+#' \dontrun{
+#' library(rClr)
+#' testClassName <- "Rclr.TestObject";
+#' (testObj <- clrNew(testClassName))
+#' clrIs(testObj, testClassName)
+#' clrIs(testObj, 'System.Object')
+#' clrIs(testObj, 'System.Double')
+#' (testObj <- clrNew('Rclr.TestMethodBinding'))
+#' # Test for interface definitions
+#' clrIs(testObj, 'Rclr.ITestMethodBindings')
+#' clrIs(testObj, clrGetType('Rclr.ITestMethodBindings'))
+#' clrIs(testObj, clrGetType('Rclr.TestMethodBinding'))
+#' clrIs(testObj, clrGetType('System.Reflection.Assembly'))
+#' }
+clrIs <- function(obj, type) {
+  if(is.character(type)) {
+    tmpType <- clrGetType(type)
+    if(is.null(tmpType)) {stop(paste('Unrecognized type name', type))} else {type <- tmpType}
+  }
+  if(!is(type, 'cobjRef')) {
+    stop(paste('argument "type" must be a CLR type name or a Type'))
+  } else {
+    typetypename <- clrGet(clrCall(type, 'GetType'), 'Name')
+    if(typetypename != 'RuntimeType')
+    stop(paste('argument "type" must be a CLR Type. Got a', typetypename))
+  }
+  objType <- clrGetType(obj)
+  return(clrCall(type, 'IsAssignableFrom', objType))
 }
 
 #' Call a method on an object
@@ -301,7 +340,7 @@ clrCall <- function(obj,methodName,...)
   interface="r_call_method"
   result <- NULL
   result <-.External(interface, obj@clrobj, methodName, ..., PACKAGE=nativePkgName)
-  return(createReturnedObject(result))
+  return(mkClrObjRef(result))
 }
 
 #' Gets the value of a field or property of an object or class
@@ -460,7 +499,7 @@ clrGetNativeLibName <- function() {
 clrCallStatic <- function(typename, methodName,...) 
 {
   extPtr <-.External("r_call_static_method", typename, methodName,..., PACKAGE=nativePkgName)
-  return(createReturnedObject(extPtr))
+  return(mkClrObjRef(extPtr))
 }
 
 #' Peek into the types of CLR objects arguments are converted to by rClr
@@ -478,7 +517,7 @@ clrCallStatic <- function(typename, methodName,...)
 peekClrArgs <- function(...) 
 {
   extPtr <-.External("r_diagnose_parameters", ..., PACKAGE=nativePkgName)
-  return(createReturnedObject(extPtr))
+  return(mkClrObjRef(extPtr))
 }
 
 #' Gets the static members for a type
@@ -566,7 +605,7 @@ getNativeLibsPath <- function(pkgName) {
 #' @export
 getSexpType <- function(sexp) {
   extPtr <-.External("r_get_sexp_type", sexp, PACKAGE=nativePkgName)
-  return(createReturnedObject(extPtr))
+  return(mkClrObjRef(extPtr))
 }
 
 #' Peek into the structure of R objects 'as seen from C code'
@@ -580,7 +619,7 @@ getSexpType <- function(sexp) {
 #' @export
 inspectArgs <- function(...) {
   extPtr <-.External("r_show_args", ..., PACKAGE=nativePkgName)
-  # return(createReturnedObject(extPtr))
+  # return(mkClrObjRef(extPtr))
 }
 
 #' Get the COM variant type of a CLR object
@@ -605,7 +644,7 @@ inspectArgs <- function(...) {
 clrVT <- function(objOrType, methodName, ...) {
   if(nativePkgName!='rClrMs') {stop("The CLR is not Microsoft's. This function is CLR specific")}
   return(clrCallStatic('Rclr.DataConversionHelper', 'GetReturnedVariantTypename',objOrType, methodName, ...))
-  # return(createReturnedObject(extPtr))
+  # return(mkClrObjRef(extPtr))
 }
 
 #' Gets the type of a CLR object resulting from converting an R object

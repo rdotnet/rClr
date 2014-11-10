@@ -652,7 +652,7 @@ namespace Rclr
             obj = conditionDateTime(obj);
             var result = (tryUseConverter && (DataConverter != null) ? DataConverter.ConvertToR(obj) : obj);
             if (result is SafeHandle)
-                throw new NotSupportedException(string.Format("Object '{0}' about to be returned to R is a SafeHandle", result.GetType().ToString() ));
+                throw new NotSupportedException(string.Format("Object '{0}' is a SafeHandle and cannot be returned to native R", result.GetType().ToString()));
             return result;
         }
 
