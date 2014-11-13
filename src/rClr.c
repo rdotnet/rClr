@@ -493,6 +493,19 @@ SEXP make_char_single_sexp(const char* str) { // FIXME: does that not duplicate 
 	//return ans;
 }
 
+// Try to work around issue rclr:33
+SEXP r_get_object_direct() {
+	SEXP result = NULL;
+	CLR_OBJ obj; // needs this: otherswise null pointer if using only objptr. 
+#ifdef MS_CLR
+	rclr_ms_get_current_object_direct(&obj);
+	result = clr_obj_ms_convert_to_SEXP(obj);
+#elif MONO_CLR
+	error("%s", "r_get_object_direct not yet implemented for Mono");
+#endif
+	return result;
+}
+
 SEXP r_create_clr_object( SEXP p ) {
 	SEXP methodParams, result;
 	CLR_OBJ * objptr = NULL;
@@ -1889,6 +1902,19 @@ HRESULT rclr_ms_call_static_method(_TypePtr spType, bstr_t * bstrStaticMethodNam
 HRESULT rclr_ms_call_static_method_stringarg(_TypePtr spType, bstr_t * bstrStaticMethodNamePtr, char * strArg, VARIANT * vtResult) {
 	SAFEARRAY * psaStaticMethodArgs = create_array_one_string(strArg);
 	return rclr_ms_call_static_method(spType, bstrStaticMethodNamePtr, psaStaticMethodArgs, vtResult);
+}
+
+
+HRESULT rclr_ms_get_current_object_direct(VARIANT * vtResult) {
+	HRESULT hr = S_FALSE;
+	bstr_t getCurrentObject("get_CurrentObject");
+	hr = spTypeClrFacade->InvokeMember_3(getCurrentObject, static_cast<BindingFlags>(
+		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
+		NULL, vtEmpty, NULL, vtResult);
+	if (FAILED(hr))	{
+		error("%s", "Failure in rclr_ms_get_current_object_direct");
+	}
+	return hr;
 }
 
 // Obsolete??

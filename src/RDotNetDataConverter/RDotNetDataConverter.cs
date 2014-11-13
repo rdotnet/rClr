@@ -118,6 +118,8 @@ namespace Rclr
             //engine.Error(msg);
         }
 
+        public object CurrentObject { get { return CurrentObjectToConvert; } }
+
         /// <summary>
         /// Enable/disable the use of this data converter in the R-CLR interop data marshalling.
         /// </summary>
@@ -423,32 +425,53 @@ namespace Rclr
         {
             if (obj == null)
                 return engine.NilValue;
-            var ptr = DataConversionHelper.ClrObjectToSexp(obj);
-            if (ptr == IntPtr.Zero)
-                return null; // we did not manage to convert here. Fallback on native layer of rClr used later on.
-            var externalPtr = new ExternalPointer(engine, ptr);
+            return CreateClrObj(obj);
+            //var ptr = DataConversionHelper.ClrObjectToSexp(obj);
+            //if (ptr == IntPtr.Zero)
+            //    return null; // we did not manage to convert here. Fallback on native layer of rClr used later on.
+            //var externalPtr = new ExternalPointer(engine, ptr);
             // At this point, we have a loop from managed to unmanaged to managed memory.
             //  ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
             // This is not quite what we want to return: we need to produce an S4 object 
             //  S4Object -> ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
-            return CreateClrObj(externalPtr, obj.GetType().FullName);
+            // return CreateClrObj(externalPtr, obj.GetType().FullName);
         }
 
         private Function createClrS4Object;
 
-        public Function CreateClrS4Object
+        public Function CreateClrS4Object_obsolete
         {
-            get 
+            get
             {
-                if(createClrS4Object==null)
+                if (createClrS4Object == null)
                     createClrS4Object = engine.Evaluate("invisible(function(objExtPtr, typename) { new('cobjRef', clrobj=objExtPtr, clrtype=typename) })").AsFunction();
-                return createClrS4Object; 
+                return createClrS4Object;
             }
         }
 
-        private S4Object CreateClrObj(ExternalPointer ptr, string typename)
+        public Function CreateClrS4Object
+        {
+            get
+            {
+                if (createClrS4Object == null)
+                    createClrS4Object = engine.Evaluate("invisible(getCurrentConvertedObject)").AsFunction();
+                return createClrS4Object;
+            }
+        }
+
+        private S4Object CreateClrObj_obsolete(ExternalPointer ptr, string typename)
         {
             return CreateClrS4Object.Invoke(ptr, engine.CreateCharacter(typename)).AsS4();
+        }
+
+        public static object CurrentObjectToConvert { get; private set; }
+
+        private S4Object CreateClrObj(object obj)
+        {
+            CurrentObjectToConvert = obj;
+            var result = CreateClrS4Object.Invoke().AsS4();
+            CurrentObjectToConvert = null;
+            return result;
         }
 
         private class ClrObjectWrapper : S4Object
@@ -471,7 +494,7 @@ namespace Rclr
         {
             if (a.Rank > 1)
                 throw new NotSupportedException("Generic array converter is limited to uni-dimensional arrays");
-            // CAUTION: The following, while efficient, means that mroe specialised converters 
+            // CAUTION: The following, while efficient, means that mroe specialised converters
             // will not be picked up.
             var elementConverter = TryGetConverter(a.GetType().GetElementType());
             object[] tmp = new object[a.GetLength(0)];

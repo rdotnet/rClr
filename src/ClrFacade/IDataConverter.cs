@@ -14,6 +14,14 @@ namespace Rclr
         object ConvertToR(object obj);
         object ConvertFromR(IntPtr pointer, int sexptype);
 
+        /// <summary>
+        /// Return a reference to the object currently handled by the custom data converter, if any is in use.
+        /// </summary>
+        /// <remarks>
+        /// See https://rclr.codeplex.com/workitem/33 for why we need this.
+        /// </remarks>
+        object CurrentObject { get; }
+
         // TODO: this should not be here, but for now a convenient way to access Rf_error via R.NET
         void Error(string msg);
     }

@@ -89,6 +89,21 @@ namespace Rclr
         {
             ReflectionHelper.ThrowMissingMethod(classType, methodName, modifier, types);     
         }
+        
+        /// <summary>
+        /// Return a reference to the object currently handled by the custom data converter, if any is in use.
+        /// </summary>
+        /// <remarks>
+        /// See https://rclr.codeplex.com/workitem/33
+        /// </remarks>
+        public static object CurrentObject 
+        {
+            get 
+            {
+                if (DataConverter == null) return null;
+                return DataConverter.CurrentObject;
+            }
+        }
 
         /// <summary>
         /// Invokes a static method given the name of a type.

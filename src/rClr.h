@@ -126,6 +126,13 @@ extern "C" {
 	SEXP r_call_method(SEXP par);
 	SEXP r_get_typename_externalptr(SEXP p);
 	SEXP make_char_single_sexp(const char* str);
+
+	/**
+	 * \brief	Gets a SEXP, bypassing the custom data converters e.g. offered by RDotNetDataConverter. Solves issue rClr#33
+	 *
+	 * \return	a SEXP representing the object handled by the CLR conversion facade, if any.
+	 */
+	SEXP r_get_object_direct();
 #ifdef MONO_CLR
 	void ** build_method_parameters(SEXP largs);
 	SEXP rclr_mono_reflect_object(CLR_OBJ * obj);
@@ -329,6 +336,7 @@ HRESULT rclr_ms_gettype(CLR_OBJ * obj, _Type ** pType);
 HRESULT rclr_ms_call_method(CLR_OBJ * objptr, char * methodName, VARIANT ** params, int argLength, VARIANT * vtResult);
 HRESULT rclr_ms_get_raw_object(CLR_OBJ * obj, _Object ** ppObject);
 HRESULT rclr_ms_call_static_method_tname(char * ns_qualified_typename, char * mnam, VARIANT ** params, int argLength, VARIANT * result);
+HRESULT rclr_ms_get_current_object_direct(VARIANT * vtResult);
 
 SAFEARRAY * rclr_ms_create_method_call_parameters(CLR_OBJ * objptr, char * mnam, VARIANT ** params, int paramsArgLength );
 SAFEARRAY * rclr_ms_create_static_method_call_parameters(char * assemblyQualifiedTypeName, char * mnam, VARIANT ** params, int paramsArgLength );

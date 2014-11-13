@@ -45,6 +45,7 @@ namespace Rclr
             return VariantClearMs(pvarg);
         }
 
+        [Obsolete("Could not make to work overall (it works itself, just not in the method is it associated with)", true)]
         static IntPtr ClrObjectToSexp(IntPtr variant)
         {
             if (variant == IntPtr.Zero)
@@ -72,23 +73,23 @@ namespace Rclr
         /// <returns></returns>
         public static IntPtr ClrObjectToSexp(object obj)
         {
-            IntPtr pVariant = IntPtr.Zero;
-            try
-            {
-                // Trying to solve https://rclr.codeplex.com/workitem/33. 
-                // Not sure whether I can ignore the returned handle or not, however, so treat as experimental.
-                //GCHandle.Alloc(obj, GCHandleType.Pinned);
-                pVariant = CreateNativeVariantForObject(obj);
-                return ClrObjectToSexp(pVariant);
-            }
-            catch
-            {
-                // We want to deallocate memory on error, but not on successful completion.
-                // since the creation of a native variant for obj is what creates a handle in the CLR hosting
-                // to prevent the garbage collection.
-                FreeVariantMem(pVariant);
-                throw;
-            }
+            throw new NotImplementedException();
+            //try
+            //{
+            //    // Trying to solve https://rclr.codeplex.com/workitem/33. 
+            //    // Not sure whether I can ignore the returned handle or not, however, so treat as experimental.
+            //    //GCHandle.Alloc(obj, GCHandleType.Pinned);
+            //    // pVariant = CreateNativeVariantForObject(obj);
+            //    // return ClrObjectToSexp(pVariant);
+            //}
+            //catch
+            //{
+            //    // We want to deallocate memory on error, but not on successful completion.
+            //    // since the creation of a native variant for obj is what creates a handle in the CLR hosting
+            //    // to prevent the garbage collection.
+            //    //FreeVariantMem(pVariant);
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -157,7 +158,7 @@ namespace Rclr
             IntPtr pVariant = IntPtr.Zero;
             if (obj.GetType().IsGenericType) // Marshal.GetNativeVariantForObject cannot handle this case
                 return IntPtr.Zero;
-            // GCHandle.Alloc(obj, GCHandleType.Pinned); // Usually, will throw exception.
+            // GCHandle.Alloc(obj, GCHandleType.Pinned);
             if (useCoTaskMem)
                 pVariant = Marshal.AllocCoTaskMem(SizeOfNativeVariant);
             else

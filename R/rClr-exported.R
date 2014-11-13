@@ -273,6 +273,20 @@ clrNew <- function(typename, ...)
   mkClrObjRef(o, clrtype=typename)
 }
 
+#' System function to get a direct access to an object 
+#'
+#' This function needs to be exported, but is highly unlikely to be of any use to an end user, even an advanced one. 
+#' This is indirectly needed to unlock the benefits of using R.NET convert data structures between R and .NET. 
+#' Using this function is a critical part of solving the rather complicated issue rClr #33. 
+#'
+#' @return a CLR object
+#' @export
+getCurrentConvertedObject <- function() 
+{
+  o <-.External("r_get_object_direct", PACKAGE=nativePkgName)
+  mkClrObjRef(o)
+}
+
 #' Check whether an object is of a certain type
 #'
 #' Check whether an object is of a certain type. This function is meant to match the behavior of the 'is' keyword in C#.
