@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6-3\cr
-#' Purpose: \tab Adds a way to retrieve error messages in cases where .NET code is using P/Invoke and the native code can provide additional error information \cr
-#' Date: \tab 2014-11-06\cr
+#' Version: \tab 0.6-4\cr
+#' Purpose: \tab Major fix to memory management issue across the R/C++/.NET interop chain. Issue https://rclr.codeplex.com/workitem/33 appears resolved. \cr
+#' Date: \tab 2014-11-13\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'
