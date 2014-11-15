@@ -151,6 +151,7 @@ extern "C" {
 	int is_microsoft_clr();
 	void rclr_cleanup();
 	static void clr_object_finalizer(SEXP ref);
+	int use_rdotnet = 0;
 #ifdef MS_CLR
 } // end of extern "C" block
 #endif
@@ -167,7 +168,8 @@ CLR_OBJ * rclr_convert_element( SEXP el );
 CLR_OBJ * rclr_create_array_objects( SEXP s );
 CLR_OBJ * rclr_wrap_data_frame( SEXP s );
 CLR_OBJ * get_clr_object( SEXP clrObj );
-SEXP clr_object_to_SEXP( CLR_OBJ *o);
+CLR_OBJ * create_clr_complex_direct(Rcomplex * complex, int length);
+SEXP clr_object_to_SEXP(CLR_OBJ *o);
 const char * get_type_full_name(CLR_OBJ *objptr);
 
 

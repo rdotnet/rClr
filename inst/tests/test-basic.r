@@ -4,11 +4,35 @@ source(file.path(testDir, 'load_libs.r'))
 
 context("rClr essentials")
 
+areClrRefEquals <- function(x, y) {clrCallStatic('System.Object', 'ReferenceEquals', x, y)}
+
+expectArrayTypeConv <- function(clrType, arrayLength, expectedRObj) {
+  tn <- "Rclr.TestArrayMemoryHandling"
+  arrayLength <- as.integer(arrayLength)
+  expect_equal( clrCallStatic(tn, paste0("CreateArray_", clrType), arrayLength ), expectedRObj )
+}
+
+createArray <- function(clrType, arrayLength, elementObject) {
+  tn <- "Rclr.TestArrayMemoryHandling"
+  arrayLength <- as.integer(arrayLength)
+  if(missing(elementObject)) { return(clrCallStatic(tn, paste0("CreateArray_", clrType), arrayLength )) }
+  clrCallStatic(tn, paste0("CreateArray_", clrType), arrayLength, elementObject )
+}
+
+expectClrArrayElementType <- function(rObj, expectedClrTypeName) {
+  tn <- "Rclr.TestArrayMemoryHandling"
+  expect_true( clrCallStatic(tn, 'CheckElementType', rObj , clrGetType(expectedClrTypeName) ))
+}
+
+callTestCase <- function(...) {
+  clrCallStatic(cTypename, ...)
+}
+
 test_that("Booleans are marshalled correctly", {
-  expect_that( clrCallStatic(cTypename, "GetFalse"), is_false() );
-  expect_that( clrCallStatic(cTypename, "GetTrue"), is_true() );
-  expect_that( clrCallStatic(cTypename, "IsTrue", TRUE), is_true() );
-  expect_that( clrCallStatic(cTypename, "IsTrue", FALSE), is_false() );
+  expect_that( callTestCase( "GetFalse"), is_false() )
+  expect_that( callTestCase( "GetTrue"), is_true() )
+  expect_that( callTestCase( "IsTrue", TRUE), is_true() )
+  expect_that( callTestCase( "IsTrue", FALSE), is_false() )
 })
 
 test_that("Object constructors calls work", {
@@ -17,79 +41,87 @@ test_that("Object constructors calls work", {
   d1 <- 1.234; d2 <- 2.345;
   obj <- clrNew(tName)
   obj <- clrNew(tName, i1)
-  expect_that( clrGet(obj, "FieldIntegerOne"), equals(i1) );
+  expect_that( clrGet(obj, "FieldIntegerOne"), equals(i1) )
   obj <- clrNew(tName, i1, i2)
-  expect_that( clrGet(obj, "FieldIntegerOne"), equals(i1) );
-  expect_that( clrGet(obj, "FieldIntegerTwo"), equals(i2) );
+  expect_that( clrGet(obj, "FieldIntegerOne"), equals(i1) )
+  expect_that( clrGet(obj, "FieldIntegerTwo"), equals(i2) )
   obj <- clrNew(tName, d1, d2)
-  expect_that( clrGet(obj, "FieldDoubleOne"), equals(d1) );
-  expect_that( clrGet(obj, "FieldDoubleTwo"), equals(d2) );
+  expect_that( clrGet(obj, "FieldDoubleOne"), equals(d1) )
+  expect_that( clrGet(obj, "FieldDoubleTwo"), equals(d2) )
 })
 
 test_that("Basic types of length one are marshalled correctly", {
-  expect_that( clrCallStatic(cTypename, "DoubleEquals", 123.0 ), is_true() );
-  expect_that( clrCallStatic(cTypename, "CreateDouble"), equals(123.0) );
-  expect_that( clrCallStatic(cTypename, "IntEquals", as.integer(123) ), is_true() );
-  expect_that( clrCallStatic(cTypename, "CreateInt"), equals(as.integer(123)) );
-  expect_that( clrCallStatic(cTypename, "StringEquals", 'ab' ), is_true() );
-  expect_that( clrCallStatic(cTypename, "CreateString"), equals('ab') );
+  expect_that( callTestCase( "DoubleEquals", 123.0 ), is_true() )
+  expect_that( callTestCase( "CreateDouble"), equals(123.0) )
+  expect_that( callTestCase( "IntEquals", as.integer(123) ), is_true() )
+  expect_that( callTestCase( "CreateInt"), equals(as.integer(123)) )
+  expect_that( callTestCase( "StringEquals", 'ab' ), is_true() )
+  expect_that( callTestCase( "CreateString"), equals('ab') )
 # TODO: test unicode characters: what is happening then
 })
 
 test_that("Basic types of length zero are marshalled correctly", {
   tn <- "Rclr.TestArrayMemoryHandling"
-  expect_equal( clrCallStatic(tn, "CreateArray_float", 0L ), numeric(0) );
-  expect_equal( clrCallStatic(tn, "CreateArray_int", 0L ), integer(0) );
-  expect_equal( clrCallStatic(tn, "CreateArray_byte", 0L ), raw(0) );
-  expect_equal( clrCallStatic(tn, "CreateArray_bool", 0L ), logical(0) );
-  expect_equal( clrCallStatic(tn, "CreateArray_string", 0L ), character(0) );
   
-  expect_equal( clrCallStatic(tn, "CreateArray_object", 0L ), list() );
-  expect_equal( clrCallStatic(tn, "CreateArray_Type", 0L ), list() );
+  expectEmptyArrayConv <- function(clrType, expectedRObj) {
+    expectArrayTypeConv( clrType, 0L , expectedRObj )
+  }
+  expectEmptyArrayConv( 'float' , numeric(0) )
+  expectEmptyArrayConv( 'double', numeric(0) )
+  expectEmptyArrayConv( 'int' , integer(0) )
+  expectEmptyArrayConv( 'byte' , raw(0) )
+  expectEmptyArrayConv( 'char' , raw(0) )
+  expectEmptyArrayConv( 'bool' , logical(0) )
+  expectEmptyArrayConv( 'string' , character(0) )
   
-  ## Not sure what to do with these - precision loss and unicode characters.
-  # expect_equal( clrCallStatic(tn, "CreateArray_long", 0L ), integer(0) );
-  # expect_equal( clrCallStatic(tn, "CreateArray_char", 0L ), raw(0) );
+  expect_error( clrCallStatic(tn, 'CreateArray_long', numeric(0) )
 
+  expectEmptyArrayConv( 'object' , list() )
+  expectEmptyArrayConv( 'Type' , list() )
+  
   # a <- now()
   # str(a)
   # str(unclass(a))
   # mode(unclass(a))
   # a <- numeric(0)
-  # attributes(a) <- list(tzone="")
+  # attributes(a) <- list(tzone='')
   # str(a)
-  # class(a) <- c("POSIXct", "POSIXt")
+  # class(a) <- c('POSIXct', 'POSIXt')
   # a # <== Curious
   # str(a)
 
-  a <- numeric(0)
-  attributes(a) <- list(tzone="")
-  class(a) <- c("POSIXct", "POSIXt")
+  aPosixCt <- numeric(0)
+  attributes(aPosixCt) <- list(tzone='')
+  class(aPosixCt) <- c('POSIXct', 'POSIXt')
   
-  expect_equal( clrCallStatic(tn, "CreateArray_DateTime", 0L ), a );
+  expect_equal( clrCallStatic(tn, 'CreateArray_DateTime', 0L ), aPosixCt )
+
+  tdiff <- integer(0)
+  class(tdiff) <- 'difftime'
+  attr(tdiff, 'units') <- 'secs'
+  expect_equal( clrCallStatic(tn, 'CreateArray_TimeSpan', 0L), tdiff )
 
   # check that we fixed https://rclr.codeplex.com/workitem/2
-  expect_true( clrCallStatic(tn, "CheckElementType", numeric(0)   , clrGetType('System.Double') ));
-  expect_true( clrCallStatic(tn, "CheckElementType", integer(0)   , clrGetType('System.Int32')  ));
-  expect_true( clrCallStatic(tn, "CheckElementType", raw(0)       , clrGetType('System.Byte')   ));
-  expect_true( clrCallStatic(tn, "CheckElementType", logical(0)   , clrGetType('System.Boolean')));
-  expect_true( clrCallStatic(tn, "CheckElementType", character(0) , clrGetType('System.String') ));
+  expectClrArrayElementType( numeric(0)   ,'System.Double')
+  expectClrArrayElementType( integer(0)   ,'System.Int32') 
+  expectClrArrayElementType( raw(0)       ,'System.Byte')  
+  expectClrArrayElementType( logical(0)   ,'System.Boolean')
+  expectClrArrayElementType( character(0) ,'System.String')
+  expectClrArrayElementType( aPosixCt     ,'System.DateTime')
+  expectClrArrayElementType( tdiff        ,'System.TimeSpan')
   
-  ## Not sure what to do with these - precision loss and unicode characters.
-  # expect_equal( clrCallStatic(tn, "CreateArray_long", 0L ), integer(0) );
-  # expect_equal( clrCallStatic(tn, "CreateArray_char", 0L ), raw(0) );
-
-
 })
 
-test_that("Array of non-basic .NET objects are handled", {
+
+    
+test_that("non-empty arrays of non-basic .NET objects are handled", {
   tn <- "Rclr.TestArrayMemoryHandling"
   tName <- 'Rclr.TestObject'
   
   testListEqual <- function(expectObj, expectedLength, actual) {
     expect_equal(expectedLength, length(actual))
     expect_true(is.list(actual))
-    expect_true(all(sapply(actual, FUN = function(x) {clrCallStatic('System.Object', 'ReferenceEquals', expectObj, x)})))
+    expect_true(all(sapply(actual, FUN = function(x) { areClrRefEquals(expectObj, x)})))
   }  
   
   obj <- clrNew(tName)
@@ -117,12 +149,12 @@ if(clrGetInnerPkgName()=="rClrMs")
 
 test_that("String arrays are marshalled correctly", {
   ltrs = paste(letters[1:5], letters[2:6], sep='')
-  expect_that( clrCallStatic(cTypename, "StringArrayEquals", ltrs), is_true() );
-  expect_that( clrCallStatic(cTypename, "CreateStringArray"), equals(ltrs) );
+  expect_that( callTestCase( "StringArrayEquals", ltrs), is_true() )
+  expect_that( callTestCase( "CreateStringArray"), equals(ltrs) )
   
   ltrs[3] = NA
-  # expect_that( clrCallStatic(cTypename, "CreateStringArrayMissingVal"), equals(ltrs) );
-  # expect_that(clrCallStatic(cTypename, "StringArrayMissingValsEquals", ltrs), is_true() );
+  # expect_that( callTestCase( "CreateStringArrayMissingVal"), equals(ltrs) )
+  # expect_that(callTestCase( "StringArrayMissingValsEquals", ltrs), is_true() )
   
 })
 
@@ -136,31 +168,34 @@ test_that("clrGetType function", {
 
 test_that("Numeric arrays are marshalled correctly", {
   expectedNumArray <- 1:5 * 1.1  
-  expect_that( clrCallStatic(cTypename, "CreateNumArray"), equals(expectedNumArray) );
+  expect_that( callTestCase( "CreateNumArray"), equals(expectedNumArray) )
   ## Internally somewhere, some noise is added probably in a float to double conversion. 
   ## Expected, but 5e-8 is more difference than I'd have guessed. Some watch point.
-  # expect_that( clrCallStatic(cTypename, "CreateFloatArray"), equals(expectedNumArray) );
-  expect_equal( clrCallStatic(cTypename, "CreateFloatArray"), expected = expectedNumArray, tolerance = 5e-8, scale = 2)
-  expect_that( clrCallStatic(cTypename, "NumArrayEquals", expectedNumArray ), is_true() );
+  # expect_that( callTestCase( "CreateFloatArray"), equals(expectedNumArray) )
+  expect_equal( callTestCase( "CreateFloatArray"), expected = expectedNumArray, tolerance = 5e-8, scale = 2)
+  expect_that( callTestCase( "NumArrayEquals", expectedNumArray ), is_true() )
 
   numDays = 5
-  expect_equal( clrCallStatic(cTypename, "CreateIntArray", as.integer(numDays)), expected = 0:(numDays-1))
+  expect_equal( callTestCase( "CreateIntArray", as.integer(numDays)), expected = 0:(numDays-1))
 
   expectedNumArray[3] = NA
-  expect_that( clrCallStatic(cTypename, "CreateNumArrayMissingVal"), equals(expectedNumArray) );
-  expect_that( clrCallStatic(cTypename, "NumArrayMissingValsEquals", expectedNumArray ), is_true() );
+  expect_that( callTestCase( "CreateNumArrayMissingVal"), equals(expectedNumArray) )
+  expect_that( callTestCase( "NumArrayMissingValsEquals", expectedNumArray ), is_true() )
     
 })
 
-test_that("Complex numbers do not crash things", {
+test_that("Complex numbers are converted", {
   z = 1+2i
-  # TODO 
-  # clrType = clrCallStatic('Rclr.ClrFacade', 'GetObjectTypeName', z)
-  # expect_that( clrType, equals('What??') );
+  expect_equal(callTestCase( "CreateComplex", 1, 2), z)
+  expect_true(callTestCase( "ComplexEquals", z, 1, 2 ))
+  z = c(1+2i, 3+4i, 3.3+4.4i)
+  expect_equal(callTestCase( "CreateComplex", c(1,3,3.3), c(2,4,4.4)), z)
+  expect_true(callTestCase( "ComplexEquals", z, c(1,3,3.3), c(2,4,4.4)))
+  
+
 })
 
 # TODO: test that passing an S4 object that is not a clr object converts to a null reference in the CLR
-
 
 test_that("Methods with variable number of parameters with c# 'params' keyword", {
   testObj <- clrNew(testClassName)
@@ -232,19 +267,19 @@ test_that("Correct method binding based on parameter types", {
 test_that("Numerical bi-dimensional arrays are marshalled correctly", {
   numericMat = matrix(as.numeric(1:15), nrow=3, ncol=5, byrow=TRUE)
   # A natural marshalling of jagged arrays is debatable. For the time being assuming that they are matrices, due to the concrete use case.
-  expect_that( clrCallStatic(cTypename, "CreateJaggedFloatArray"), equals(numericMat));
-  expect_that( clrCallStatic(cTypename, "CreateJaggedDoubleArray"), equals(numericMat));
-  expect_that( clrCallStatic(cTypename, "CreateRectFloatArray"), equals(numericMat));
-  expect_that( clrCallStatic(cTypename, "CreateRectDoubleArray"), equals(numericMat));
+  expect_that( callTestCase( "CreateJaggedFloatArray"), equals(numericMat))
+  expect_that( callTestCase( "CreateJaggedDoubleArray"), equals(numericMat))
+  expect_that( callTestCase( "CreateRectFloatArray"), equals(numericMat))
+  expect_that( callTestCase( "CreateRectDoubleArray"), equals(numericMat))
 
-  # expect_that( clrCallStatic(cTypename, "NumericMatrixEquals", numericMat), equals(numericMat));
+  # expect_that( callTestCase( "NumericMatrixEquals", numericMat), equals(numericMat))
 
 })
 
 test_that("CLI dictionaries are marshalled as expected", {
   # The definition of 'as expected' for these collections is not all that clear, and there may be some RDotNet limitations.
-  expect_that( clrCallStatic(cTypename, "CreateStringDictionary"), equals(list(a='A', b='B')))
-  expect_that( clrCallStatic(cTypename, "CreateStringDoubleArrayDictionary"), 
+  expect_that( callTestCase( "CreateStringDictionary"), equals(list(a='A', b='B')))
+  expect_that( callTestCase( "CreateStringDoubleArrayDictionary"), 
     equals(
       list(
       a=c(1.0, 2.0, 3.0, 3.5, 4.3, 11),
@@ -252,7 +287,7 @@ test_that("CLI dictionaries are marshalled as expected", {
       c=c(2.2, 3.3, 6.5))
       )
     )
-  # d <- clrCallStatic(cTypename, "CreateObjectDictionary")
+  # d <- callTestCase( "CreateObjectDictionary")
   # expect_true
 })
 
@@ -271,18 +306,18 @@ test_that("Basic objects are created correctly", {
   expect_that(is.null(testObj), is_false())
   expect_that( testObj@clrtype, equals(testClassName))
   rm(testObj)
-	testObj <- clrCallStatic(cTypename, "CreateTestObject")
+	testObj <- callTestCase( "CreateTestObject")
   expect_that(is.null(testObj), is_false())
   expect_that( testObj@clrtype, equals(testClassName))
 
   # cover part of the issue https://rclr.codeplex.com/workitem/39
-	testObj <- clrCallStatic(cTypename, "CreateTestObjectGenericInstance")
+	testObj <- callTestCase( "CreateTestObjectGenericInstance")
   expect_that(is.null(testObj), is_false())
   
   
-  testObj <- clrCallStatic(cTypename, "CreateTestArrayGenericObjects")
-  testObj <- clrCallStatic(cTypename, "CreateTestArrayInterface")
-  testObj <- clrCallStatic(cTypename, "CreateTestArrayGenericInterface")
+  testObj <- callTestCase( "CreateTestArrayGenericObjects")
+  testObj <- callTestCase( "CreateTestArrayInterface")
+  testObj <- callTestCase( "CreateTestArrayGenericInterface")
   
 })
 
@@ -368,12 +403,12 @@ test_that("enums get/set", {
 testGarbageCollection <- function( getObjCountMethodName = 'GetMemTestObjCounter', createTestObjectMethodName = 'CreateMemTestObj')
 {
   callGcMethname <- "CallGC"
-  forceDotNetGc <- function() { clrCallStatic(cTypename, callGcMethname) }
-  checkPlusOne <- function () { expect_that( clrCallStatic(cTypename, getObjCountMethodName), equals(counter+1) ) }
+  forceDotNetGc <- function() { callTestCase( callGcMethname) }
+  checkPlusOne <- function () { expect_that( callTestCase( getObjCountMethodName), equals(counter+1) ) }
 
-  counter = clrCallStatic(cTypename, getObjCountMethodName)
-  expect_that( counter, equals(0) ); # make sure none of these test objects instances are hanging in the CLR
-  testObj = clrCallStatic(cTypename, createTestObjectMethodName)
+  counter = callTestCase( getObjCountMethodName)
+  expect_that( counter, equals(0) ) # make sure none of these test objects instances are hanging in the CLR
+  testObj = callTestCase( createTestObjectMethodName)
   checkPlusOne()
   forceDotNetGc()
   # the object should still be in memory.
@@ -384,14 +419,14 @@ testGarbageCollection <- function( getObjCountMethodName = 'GetMemTestObjCounter
   rm(testObj)
   gc()
   forceDotNetGc()
-  expect_that( clrCallStatic(cTypename, getObjCountMethodName), equals(counter) ); 
+  expect_that( callTestCase( getObjCountMethodName), equals(counter) ) 
   
   # Trying to test that issue https://r2clr.codeplex.com/workitem/71 is fixed. 
   # However the underlying COM type for a Form is a VT_DISPATCH but for out MemTestObject a VT_UNKNOWN. 
   # Needs more work to reproduce in a unit test; no desire to introduce dependency on System.Windows.Form
-  # counter = clrCallStatic(cTypename, getObjCountMethodName)
-  # expect_that( counter, equals(0) );
-  # testObj = clrCallStatic(cTypename, createTestObjectMethodName)
+  # counter = callTestCase( getObjCountMethodName)
+  # expect_that( counter, equals(0) )
+  # testObj = callTestCase( createTestObjectMethodName)
   # clrSet( testObj, 'Text', "et nous alimentons nos aimables remords comme les mendiants nourissent leur vermine" )
   # forceDotNetGc()
   # checkPlusOne()

@@ -1069,6 +1069,27 @@ void free_variant_array(VARIANT ** a, int size) {
 }
 #endif
 
+CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
+{
+	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
+	CLR_OBJ vtResult; // needs this: otherswise null pointer if using only objptr. 
+	HRESULT hr = S_FALSE;
+	SAFEARRAY * psaStaticMethodArgs = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+	LONG index = 0;
+	int size_of_voidptr = (sizeof(void*));
+	variant_t param((LONGLONG)el);
+	param.vt = VT_I8;
+	hr = SafeArrayPutElement(psaStaticMethodArgs, &index, &param);
+	bstr_t createSexpWrapper("CreateSexpWrapper");
+	hr = spTypeClrFacade->InvokeMember_3(createSexpWrapper, static_cast<BindingFlags>(
+		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
+		NULL, vtEmpty, psaStaticMethodArgs, &vtResult);
+	if (FAILED(hr))	{
+		error("%s", "Failure in rclr_convert_element_rdotnet");
+	}
+	SafeArrayDestroy(psaStaticMethodArgs);
+	return new CLR_OBJ(vtResult);
+}
 
 CLR_OBJ * rclr_convert_element( SEXP el ) 
 {
@@ -1078,6 +1099,7 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	double * values;
 	int * intVals;
 	Rbyte * rawVals;
+	Rcomplex * cpl;
 	int element_type;
 	const char * tzone;
 	RCLR_BOOL is_date;
@@ -1090,6 +1112,11 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	CLR_OBJ * parameter;
 	void * result;
 #endif
+
+	if (use_rdotnet)
+	{
+		return rclr_convert_element_rdotnet(el);
+	}
 	element_type = TYPEOF(el);
 	switch(element_type) {
 	case REALSXP:
@@ -1215,11 +1242,11 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 		}
 		// free(values); // TODO: do I need to do this? what is R doing with this?
 		break;
-		//case CPLXSXP:
-		//    cpl = COMPLEX(el)[0];
-		//    result = &(COMPLEX(el)[0]);
-		//    //Rprintf("[%d] '%s' %f + %fi\n", i+1, name, cpl.r, cpl.i);
-		//    break;
+	case CPLXSXP:
+		lengthArg = LENGTH(el);
+		cpl = COMPLEX(el);
+		result = create_clr_complex_direct(cpl, lengthArg);
+		break;
 	case RAWSXP:
 		lengthArg = LENGTH(el);
 		rawVals = RAW(el);
@@ -1350,6 +1377,16 @@ CLR_OBJ * rclr_wrap_data_frame( SEXP s ) {
 	return new CLR_OBJ(result);
 #endif
 	return NULL;
+}
+
+CLR_OBJ * create_clr_complex_direct(Rcomplex * complex, int length)
+{
+	return NULL;
+}
+
+HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
+{
+	return S_FALSE;
 }
 
 CLR_OBJ * get_clr_object( SEXP clrObj ) {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RDotNet;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -103,6 +104,15 @@ namespace Rclr
                 if (DataConverter == null) return null;
                 return DataConverter.CurrentObject;
             }
+        }
+
+        public static SymbolicExpressionWrapper CreateSexpWrapper(long ptrValue)
+        {
+            IntPtr sexp = new IntPtr(ptrValue);
+            if (sexp == IntPtr.Zero)
+                throw new ArgumentNullException("ptrValue", "Pointer value is the null pointer");
+            SymbolicExpression s = DataConverter.CreateSymbolicExpression(sexp);
+            return new SymbolicExpressionWrapper(s);
         }
 
         /// <summary>
@@ -672,6 +682,13 @@ namespace Rclr
         }
 
         private static object[] makeDatesUtcKind(object[] arguments)
+        {
+            if (DataConverterIsSet)
+                arguments = DataConverter.ConvertSymbolicExpressions(arguments);
+            return arguments;
+        }
+
+        private static object[] makeDatesUtcKind_TMP(object[] arguments)
         {
             object[] newArgs = (object[])arguments.Clone();
             for (int i = 0; i < arguments.Length; i++)

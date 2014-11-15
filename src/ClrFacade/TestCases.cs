@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 
@@ -469,6 +470,37 @@ namespace Rclr
         public static bool StringEquals(string value)
         {
             return ("ab" == value);
+        }
+
+        public static Complex[] CreateComplex(double[] real, double[] imaginary)
+        {
+            if (real.Length != imaginary.Length) throw new ArgumentException("array of real and imaginary numbers not of the same length");
+            var res = new Complex[real.Length];
+            for (int i = 0; i < real.Length; i++)
+            {
+                res[i] = new Complex(real[i], imaginary[i]);
+            }
+            return res;
+        }
+
+        public static Complex CreateComplex(double real, double imaginary)
+        {
+            return new Complex(real, imaginary);
+        }
+
+        public static bool ComplexEquals(Complex cplx, double real, double imaginary)
+        {
+            return (cplx.Real == real && cplx.Imaginary == imaginary);
+        }
+
+        public static bool ComplexEquals(Complex[] cplx, double[] real, double[] imaginary)
+        {
+            if (cplx.Length != real.Length || cplx.Length != imaginary.Length) return false;
+            for (int i = 0; i < cplx.Length; i++)
+            {
+                if (!ComplexEquals(cplx[i], real[i], imaginary[i])) return false;
+            }
+            return true;
         }
 
         private class MemTestObject

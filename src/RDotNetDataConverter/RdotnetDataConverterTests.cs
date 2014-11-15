@@ -37,7 +37,7 @@ namespace Rclr
                 if (rdotnetconverter == null)
                     return null;
                 else
-                    return rdotnetconverter.engine;
+                    return rdotnetconverter.GetEngine();
             }
         }
 

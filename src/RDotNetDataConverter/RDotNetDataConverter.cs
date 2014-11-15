@@ -8,6 +8,7 @@ using RDotNet.Internals;
 using RDotNet.NativeLibrary;
 using Rclr;
 using System.Reflection;
+using System.Numerics;
 
 namespace Rclr
 {
@@ -36,7 +37,7 @@ namespace Rclr
                 }
             }
 
-            DataConversionHelper.RclrNativeDll = new RclrUnmanagedDll(dllName).CreateWrapper();
+            DataConversionHelper.RclrNativeDll = new RclrUnmanagedDll(dllName);
 
             SetupREngine ();
             // The Mono API already has some unhandled exception reporting. 
@@ -57,6 +58,7 @@ namespace Rclr
             converterFunctions.Add(typeof(string), ConvertString);
             converterFunctions.Add(typeof(DateTime), ConvertDateTime);
             converterFunctions.Add(typeof(TimeSpan), ConvertTimeSpan);
+            converterFunctions.Add(typeof(Complex), ConvertComplex);
 
             converterFunctions.Add(typeof(float[]), ConvertArraySingle);
             converterFunctions.Add(typeof(double[]), ConvertArrayDouble);
@@ -65,7 +67,7 @@ namespace Rclr
             converterFunctions.Add(typeof(int[]), ConvertArrayInt);
             converterFunctions.Add(typeof(string[]), ConvertArrayString);
             converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
-            converterFunctions.Add(typeof(TimeSpan[]), ConvertArrayTimeSpan);
+            converterFunctions.Add(typeof(Complex[]), ConvertArrayComplex);
 
             converterFunctions.Add(typeof(float[,]), ConvertMatrixSingle);
             converterFunctions.Add(typeof(double[,]), ConvertMatrixDouble);
@@ -120,6 +122,12 @@ namespace Rclr
 
         public object CurrentObject { get { return CurrentObjectToConvert; } }
 
+        private static void SetUseRDotNet(bool useIt)
+        {
+            IntPtr UseRDotNet = DataConversionHelper.RclrNativeDll.GetFunctionAddress("use_rdotnet");
+            Marshal.WriteInt32(UseRDotNet, useIt ? 1 : 0);
+        }
+
         /// <summary>
         /// Enable/disable the use of this data converter in the R-CLR interop data marshalling.
         /// </summary>
@@ -129,6 +137,7 @@ namespace Rclr
                 ClrFacade.DataConverter = GetInstance(pathToNativeSharedObj);
             else
                 ClrFacade.DataConverter = null;
+            SetUseRDotNet(setit);
         }
 
         /// <summary>
@@ -337,6 +346,14 @@ namespace Rclr
             return result;
         }
 
+        private SymbolicExpression ConvertArrayComplex(object obj)
+        {
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            Complex[] array = (Complex[])obj;
+            return engine.CreateComplexVector(array);
+        }        
+
         private SymbolicExpression ConvertArrayTimeSpan(object obj)
         {
             if (!ConvertVectors) return null;
@@ -401,6 +418,14 @@ namespace Rclr
             SetClassAttribute(result, "POSIXct", "POSIXt");
             SetTzoneAttribute(result, "UTC");
             return result;
+        }
+
+        private SymbolicExpression ConvertComplex(object obj)
+        {
+            if (!ConvertVectors) return null;
+            if (!ConvertValueTypes) return null;
+            Complex value = (Complex)obj;
+            return engine.CreateComplex(value);
         }
 
         private SymbolicExpression ConvertTimeSpan(object obj)
@@ -606,12 +631,22 @@ namespace Rclr
             return NativeUtility.GetRLibraryFileName();
         }
 
-        public REngine engine;
+        private REngine engine;
 
         public REngine GetEngine()
         {
             return engine;
         }
 
+        public SymbolicExpression CreateSymbolicExpression(IntPtr sexp)
+        {
+            return engine.CreateFromNativeSexp(sexp);
+        }
+
+
+        public object[] ConvertSymbolicExpressions(object[] arguments)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

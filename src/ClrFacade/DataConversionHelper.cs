@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RDotNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -6,11 +7,13 @@ using System.Text;
 
 namespace Rclr
 {
-    public class UnmanagedRclrDll
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate IntPtr ClrObjectToSexpDelegate(IntPtr variant);
+
+    public interface IUnmanagedDll
     {
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr ClrObjectToSexpDelegate(IntPtr variant);
-        public ClrObjectToSexpDelegate ClrObjectToSexp;
+        ClrObjectToSexpDelegate ClrObjectToSexp { get; set; }
+        IntPtr GetFunctionAddress(string entryPointName);
     }
 
     /// <summary>
@@ -37,7 +40,7 @@ namespace Rclr
             public Int32 data02;
         }
        
-        public static UnmanagedRclrDll RclrNativeDll= null;
+        public static IUnmanagedDll RclrNativeDll= null;
         static Int32 VariantClear(IntPtr pvarg)
         {
             if(ClrFacade.IsMonoRuntime)
@@ -60,7 +63,6 @@ namespace Rclr
         private static extern Int32 VariantClearMs(IntPtr pvarg);
 
         const Int32 SizeOfNativeVariant = 16;
-
 
         [DllImport(@"rClrMs.dll", EntryPoint = "clr_object_to_SEXP", CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr ClrObjectToSexpMs(IntPtr variant);
@@ -200,5 +202,15 @@ namespace Rclr
             }
             throw new NotSupportedException(string.Format("Could not find a valid VARIANT type for VarEnum code {0}", (int)vt));
         }
+    }
+
+
+    public class SymbolicExpressionWrapper
+    {
+        public SymbolicExpressionWrapper(SymbolicExpression sexp)
+        {
+            this.Sexp = sexp;
+        }
+        public SymbolicExpression Sexp { get; private set; }
     }
 }
