@@ -6,23 +6,27 @@ using System.IO;
 
 namespace Rclr
 {
-    public class RclrUnmanagedDll : UnmanagedDll
+    public class RclrUnmanagedDll : IUnmanagedDll 
     {
-        public RclrUnmanagedDll(string dllName) : base(dllName)
+        public RclrUnmanagedDll(string dllName)
         {
             if (!File.Exists(dllName))
             {
                 throw new FileNotFoundException(dllName);
             }
-            this.ClrObjectToSexp = GetFunction<UnmanagedRclrDll.ClrObjectToSexpDelegate>("clr_object_to_SEXP");
+            this.dll = new UnmanagedDll(dllName);
+            this.ClrObjectToSexp = dll.GetFunction<ClrObjectToSexpDelegate>("clr_object_to_SEXP");
         }
 
-        public UnmanagedRclrDll CreateWrapper()
+        public ClrObjectToSexpDelegate ClrObjectToSexp { get; set; }
+
+        private UnmanagedDll dll;
+
+
+        public IntPtr GetFunctionAddress(string entryPointName)
         {
-            return new UnmanagedRclrDll() { ClrObjectToSexp=this.ClrObjectToSexp };
+            return dll.GetFunctionAddress(entryPointName);
         }
-
-        public UnmanagedRclrDll.ClrObjectToSexpDelegate ClrObjectToSexp;
     }
 
 }

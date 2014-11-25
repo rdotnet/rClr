@@ -24,5 +24,9 @@ namespace Rclr
 
         // TODO: this should not be here, but for now a convenient way to access Rf_error via R.NET
         void Error(string msg);
+
+        RDotNet.SymbolicExpression CreateSymbolicExpression(IntPtr sexp);
+
+        object[] ConvertSymbolicExpressions(object[] arguments);
     }
 }
