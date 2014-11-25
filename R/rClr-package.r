@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.6-4\cr
+#' Version: \tab 0.6-5\cr
 #' Purpose: \tab Major fix to memory management issue across the R/C++/.NET interop chain. Issue https://rclr.codeplex.com/workitem/33 appears resolved. \cr
-#' Date: \tab 2014-11-13\cr
+#' Date: \tab 2014-11-25\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'

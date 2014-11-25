@@ -3,6 +3,7 @@ using RDotNet.NativeLibrary;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using System.IO;
+using DynamicInterop;
 
 namespace Rclr
 {
