@@ -31,6 +31,9 @@ namespace Rclr
             try
             {
                 LastCallException = string.Empty;
+
+                arguments = ConvertSpecialObjects(arguments);
+
                 Type[] types = getTypes(arguments);
                 BindingFlags bf = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
                 var classType = obj.GetType();
@@ -71,7 +74,7 @@ namespace Rclr
             // In order to handle the R Date and POSIXt conversion, we have to standardise on UTC in the C layer. 
             // The CLR hosting API seems to only marshall to date-times to Unspecified (probably cannot do otherwise)
             // We need to make sure these are Utc DateTime at this point.
-            arguments = makeDatesUtcKind(arguments);
+            arguments = ConvertSpecialObjects(arguments);
             Type[] types = getTypes(arguments);
             BindingFlags bf = BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod;
             MethodInfo method = findMethod(classType, methodName, bf, types);
@@ -285,11 +288,6 @@ namespace Rclr
         /// </summary>
         public static bool DataConverterIsSet { get { return DataConverter != null; } }
 
-        public static object WrapDataFrame(IntPtr pointer, int sexptype)
-        {
-            return (DataConverter == null ? null : DataConverter.ConvertFromR(pointer, sexptype));
-        }
-
         /// <summary>
         /// Creates an instance of an object, given the type name
         /// </summary>
@@ -299,6 +297,8 @@ namespace Rclr
             try
             {
                 LastCallException = string.Empty;
+
+                arguments = ConvertSpecialObjects(arguments);
 
                 var t = GetType(typename);
                 if (t == null)
@@ -313,11 +313,6 @@ namespace Rclr
                     throw;
             }
             return result;
-        }
-
-        public static Type GetObjectType(object obj)
-        {
-            return obj.GetType();
         }
 
         public static Type GetType(string typename)
@@ -570,6 +565,7 @@ namespace Rclr
 
         public static object GetFieldOrProperty (object obj, string name)
 		{
+            obj = ConvertSpecialObject(obj);
 			var b = BindingFlags.Public | BindingFlags.Instance;
 			Type t = obj.GetType ();
 			return internalGetFieldOrProperty (t, name, b, obj);
@@ -583,11 +579,11 @@ namespace Rclr
 
 		static object internalGetFieldOrProperty (Type t, string name, BindingFlags b, object obj_or_null)
 		{
-			var field = t.GetField (name, b);
+			var field = t.GetField(name, b);
 			if (field == null) {
 				var property = t.GetProperty (name, b);
 				if (property == null)
-					throw new ArgumentException (string.Format ("Public instance field or property name '{0}' not found", name));
+					throw new ArgumentException (string.Format ("Field or property name '{0}' not found on object of type '{1}', for binding flags '{2}'", name, t.Name, b.ToString()));
 				else
 					return property.GetValue (obj_or_null, null);
 			}
@@ -681,14 +677,24 @@ namespace Rclr
             return result;
         }
 
-        private static object[] makeDatesUtcKind(object[] arguments)
+        private static object[] ConvertSpecialObjects(object[] arguments)
         {
             if (DataConverterIsSet)
                 arguments = DataConverter.ConvertSymbolicExpressions(arguments);
+            arguments = makeDatesUtcKind(arguments);
             return arguments;
         }
 
-        private static object[] makeDatesUtcKind_TMP(object[] arguments)
+        private static object ConvertSpecialObject(object obj)
+        {
+            if (DataConverterIsSet)
+                obj = DataConverter.ConvertSymbolicExpression(obj);
+            if (obj is DateTime)
+                obj = forceUtcKind((DateTime)obj);
+            return obj;
+        }
+
+        private static object[] makeDatesUtcKind(object[] arguments)
         {
             object[] newArgs = (object[])arguments.Clone();
             for (int i = 0; i < arguments.Length; i++)

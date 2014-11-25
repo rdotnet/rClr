@@ -28,5 +28,7 @@ namespace Rclr
         RDotNet.SymbolicExpression CreateSymbolicExpression(IntPtr sexp);
 
         object[] ConvertSymbolicExpressions(object[] arguments);
+
+        object ConvertSymbolicExpression(object obj);
     }
 }

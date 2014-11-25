@@ -74,7 +74,7 @@ test_that("Basic types of length zero are marshalled correctly", {
   expectEmptyArrayConv( 'bool' , logical(0) )
   expectEmptyArrayConv( 'string' , character(0) )
   
-  expect_error( clrCallStatic(tn, 'CreateArray_long', numeric(0) )
+  expect_error( clrCallStatic(tn, 'CreateArray_long', numeric(0) ) )
 
   expectEmptyArrayConv( 'object' , list() )
   expectEmptyArrayConv( 'Type' , list() )
@@ -113,7 +113,7 @@ test_that("Basic types of length zero are marshalled correctly", {
 })
 
 
-    
+
 test_that("non-empty arrays of non-basic .NET objects are handled", {
   tn <- "Rclr.TestArrayMemoryHandling"
   tName <- 'Rclr.TestObject'
@@ -319,6 +319,11 @@ test_that("Basic objects are created correctly", {
   testObj <- callTestCase( "CreateTestArrayInterface")
   testObj <- callTestCase( "CreateTestArrayGenericInterface")
   
+})
+
+test_that("Creation of SEXP via R.NET", {
+  # cover issue https://rclr.codeplex.com/workitem/42
+  aDataFrame <- callTestCase("CreateTestDataFrame")
 })
 
 test_that("CLR type compatibility checking", {

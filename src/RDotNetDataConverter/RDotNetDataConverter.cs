@@ -643,10 +643,27 @@ namespace Rclr
             return engine.CreateFromNativeSexp(sexp);
         }
 
-
         public object[] ConvertSymbolicExpressions(object[] arguments)
         {
-            throw new NotImplementedException();
+            object[] result = (object[])arguments.Clone();
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ConvertSymbolicExpression(arguments[i]);
+            }
+            return result;
+        }
+
+        public object ConvertSymbolicExpression(object obj)
+        {
+            if (obj is SymbolicExpressionWrapper)
+                return ConvertSymbolicExpression(obj as SymbolicExpressionWrapper);
+            else
+                return obj;
+        }
+
+        private object ConvertSymbolicExpression(SymbolicExpressionWrapper sexpWrap)
+        {
+            return sexpWrap.ToClrEquivalent();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using RDotNet.Internals;
 
 namespace Rclr
 {
@@ -204,7 +205,9 @@ namespace Rclr
         }
     }
 
-
+    /// <summary>
+    /// A wrapper around a symbolic expression. This is necessary to wrap safehandle around.
+    /// </summary>
     public class SymbolicExpressionWrapper
     {
         public SymbolicExpressionWrapper(SymbolicExpression sexp)
@@ -212,5 +215,40 @@ namespace Rclr
             this.Sexp = sexp;
         }
         public SymbolicExpression Sexp { get; private set; }
+
+        public object ToClrEquivalent()
+        {
+            switch (Sexp.Type)
+            {
+                case SymbolicExpressionType.CharacterVector:
+                    return f(Sexp.AsCharacter().ToArray());
+                case SymbolicExpressionType.ComplexVector:
+                    return f(Sexp.AsComplex().ToArray());
+                case SymbolicExpressionType.IntegerVector:
+                    return f(Sexp.AsInteger().ToArray());
+                case SymbolicExpressionType.LogicalVector:
+                    return f(Sexp.AsLogical().ToArray());
+                case SymbolicExpressionType.NumericVector:
+                    return f(Sexp.AsNumeric().ToArray());
+                case SymbolicExpressionType.RawVector:
+                    return f(Sexp.AsRaw().ToArray());
+                //case SymbolicExpressionType.S4:
+                //    {
+                //        var s4sxp = Sexp.AsS4();
+                //        if (!s4sxp.HasSlot("clrobj")) return Sexp;
+                //        s4sxp["clrobj"]
+                //    }
+                default:
+                    return Sexp;
+            }
+        }
+
+        private object f<T>(T[] p)
+        {
+            if (p.Length == 1)
+                return p[0];
+            else
+                return p;
+        }
     }
 }

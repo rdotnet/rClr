@@ -1067,9 +1067,8 @@ void free_variant_array(VARIANT ** a, int size) {
 	}
 	delete[] a;
 }
-#endif
 
-CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
+CLR_OBJ * rclr_ms_convert_element_rdotnet(SEXP el)
 {
 	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
 	CLR_OBJ vtResult; // needs this: otherswise null pointer if using only objptr. 
@@ -1089,6 +1088,24 @@ CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
 	}
 	SafeArrayDestroy(psaStaticMethodArgs);
 	return new CLR_OBJ(vtResult);
+}
+
+HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
+{
+	return S_FALSE;
+}
+
+#endif
+
+CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
+{
+	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
+	CLR_OBJ vtResult; // needs this: otherswise null pointer if using only objptr. 
+#if MS_CLR
+	return rclr_ms_convert_element_rdotnet(el);
+#else
+	error("%s", "Failure in rclr_convert_element_rdotnet: nor implemented yet on Mono");
+#endif
 }
 
 CLR_OBJ * rclr_convert_element( SEXP el ) 
@@ -1113,12 +1130,20 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	void * result;
 #endif
 
+	element_type = TYPEOF(el);
+	switch (element_type) {
+	case S4SXP:
+		result = get_clr_object(el);
+		return (CLR_OBJ *)result;;
+	}
 	if (use_rdotnet)
 	{
 		return rclr_convert_element_rdotnet(el);
 	}
-	element_type = TYPEOF(el);
-	switch(element_type) {
+
+	// Fallback code, to be superseded by C# code using R.NET, gradually.
+	// 
+	switch (element_type) {
 	case REALSXP:
 		lengthArg = LENGTH(el);
 		values = REAL(el);
@@ -1303,9 +1328,6 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 			free(stringArray);
 		}
 		break;
-	case S4SXP:
-		result = get_clr_object(el);
-		break;
 	case EXTPTRSXP:
 		result = GET_CLR_OBJ_FROM_EXTPTR(el);
 		break;
@@ -1352,41 +1374,9 @@ CLR_OBJ * rclr_create_array_objects( SEXP s ) {
 #endif
 }
 
-// TODO; this was a trial but is not used. 
-CLR_OBJ * rclr_wrap_data_frame( SEXP s ) {
-#ifdef MS_CLR
-	CLR_OBJ result; 
-	HRESULT hr;
-	VARIANT ** mparams = new VARIANT*[2];
-	VARIANT vSexp;
-	VARIANT vSexpCode;
-	if(sizeof(void*) == 8) {
-		VariantInit(&vSexp);
-		mparams[0] = &vSexp;
-		mparams[0]->vt = VT_VOID;
-		mparams[0]->byref = (void*)s;
-	}
-	VariantInit(&vSexpCode);
-	vSexpCode.vt = VT_I4;
-	vSexpCode.intVal = (int)VECSXP;
-	mparams[1] = &vSexpCode;
-	hr = rclr_ms_call_static_method_tname("Rclr.ClrFacade", "WrapDataFrame", mparams, 2, &result);
-	VariantClear(mparams[0]);
-	VariantClear(mparams[1]);
-	delete[] mparams;
-	return new CLR_OBJ(result);
-#endif
-	return NULL;
-}
-
 CLR_OBJ * create_clr_complex_direct(Rcomplex * complex, int length)
 {
 	return NULL;
-}
-
-HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
-{
-	return S_FALSE;
 }
 
 CLR_OBJ * get_clr_object( SEXP clrObj ) {

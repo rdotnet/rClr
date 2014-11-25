@@ -538,7 +538,7 @@ namespace Rclr
             return new TestObject();
         }
 
-        public static DataFrame CreateDataFrame()
+        public static DataFrame CreateTestDataFrame()
         {
             var e = REngine.GetInstance();
 
