@@ -322,7 +322,7 @@ test_that("Basic objects are created correctly", {
 })
 
 test_that("Creation of SEXP via R.NET", {
-  # cover issue https://rclr.codeplex.com/workitem/42
+  # cover issue https://rclr.codeplex.com/workitem/42. Just check that the stack imbalance warning does not show up (could not find a way to check this via testthat; warnings() is not affected by the warning given by the stack imbalance checking mechanism in R itself. This is probably because check_stack_balance uses the function REprintf instead of warningcall
   aDataFrame <- callTestCase("CreateTestDataFrame")
 })
 

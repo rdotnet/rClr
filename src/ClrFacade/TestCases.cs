@@ -557,6 +557,12 @@ namespace Rclr
             return e.CreateDataFrame(columns.ToArray(), colNames.ToArray(), stringsAsFactors: false);
         }
 
+        public static NumericVector CreateTestNumericVector()
+        {
+            var e = REngine.GetInstance();
+            return e.CreateNumericVector(new[] { 1.0, 2, 3, 4, 5, 6 });
+        }
+
         /// <summary>
         /// cover part of the issue https://rclr.codeplex.com/workitem/39
         /// </summary>
