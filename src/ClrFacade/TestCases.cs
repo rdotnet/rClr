@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using RDotNet;
 
 namespace Rclr
 {
@@ -502,6 +504,25 @@ namespace Rclr
         public static TestObject CreateTestObject()
         {
             return new TestObject();
+        }
+
+        public static DataFrame CreateDataFrame()
+        {
+            var e = REngine.GetInstance();
+
+            var colNames = new List<string>();
+            var columns = new List<IEnumerable>();
+            for (int i = 0; i < 2; i++)
+            {
+                colNames.Add("column" + i.ToString());
+                var values = new double[7];
+                for (int j = 0; j < 7; j++)
+                {
+                    values[j] = j + i * 0.1;
+                }
+                columns.Add(values);
+            }
+            return e.CreateDataFrame(columns.ToArray(), colNames.ToArray(), stringsAsFactors: false);
         }
 
         /// <summary>
