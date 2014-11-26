@@ -70,7 +70,7 @@ test_that("Basic types of length zero are marshalled correctly", {
   expectEmptyArrayConv( 'double', numeric(0) )
   expectEmptyArrayConv( 'int' , integer(0) )
   expectEmptyArrayConv( 'byte' , raw(0) )
-  expectEmptyArrayConv( 'char' , raw(0) )
+  expectEmptyArrayConv( 'char' , character(0) )
   expectEmptyArrayConv( 'bool' , logical(0) )
   expectEmptyArrayConv( 'string' , character(0) )
   

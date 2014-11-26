@@ -1134,7 +1134,21 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 	switch (element_type) {
 	case S4SXP:
 		result = get_clr_object(el);
-		return (CLR_OBJ *)result;;
+		return (CLR_OBJ *)result;
+	case VECSXP:
+		// If this is a list of S4 objects CLR objects, then either we create a safe array of variants, 
+		// or we call a C# function that creates an array of objects.
+		//SAFEARRAY * safeArray = create_array_double(stringArray, LENGTH(el));
+		//result = rclr_ms_create_vt_array(safeArray, VT_ARRAY | VT_BSTR);
+		//result = build_method_parameters(el);
+		//// TODO if this is a data frame
+		// result = rclr_wrap_data_frame(el);
+		if (r_is_POSIXlt(el))
+			// TODO: do_asPOSIXct in R core datetime.c would be handy. Cannot access - seems hidden.
+			error("POSIXlt objects not yet supported - only UTC/GMT POSIXct can be reliably converted");
+		else
+			return rclr_create_array_objects(el);
+		break;
 	}
 	if (use_rdotnet)
 	{

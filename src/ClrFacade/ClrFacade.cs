@@ -690,7 +690,7 @@ namespace Rclr
             if (DataConverterIsSet)
                 obj = DataConverter.ConvertSymbolicExpression(obj);
             if (obj is DateTime)
-                obj = forceUtcKind((DateTime)obj);
+                obj = ForceUtcKind((DateTime)obj);
             return obj;
         }
 
@@ -701,7 +701,7 @@ namespace Rclr
             {
                 var obj = arguments[i];
                 if (obj is DateTime)
-                    newArgs[i] = forceUtcKind((DateTime)obj);
+                    newArgs[i] = ForceUtcKind((DateTime)obj);
                 else if (obj is DateTime[])
                     newArgs[i] = forceUtcKind((DateTime[])obj);
             }
@@ -713,12 +713,12 @@ namespace Rclr
             var result = new DateTime[dateTimes.Length];
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = forceUtcKind(dateTimes[i]);
+                result[i] = ForceUtcKind(dateTimes[i]);
             }
             return result;
         }
 
-        private static DateTime forceUtcKind(DateTime dateTime)
+        public static DateTime ForceUtcKind(DateTime dateTime)
         {
             return new DateTime(dateTime.Ticks, DateTimeKind.Utc);
         }

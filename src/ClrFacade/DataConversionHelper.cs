@@ -221,29 +221,77 @@ namespace Rclr
             switch (Sexp.Type)
             {
                 case SymbolicExpressionType.CharacterVector:
-                    return f(Sexp.AsCharacter().ToArray());
+                    return convertVector(Sexp.AsCharacter().ToArray());
                 case SymbolicExpressionType.ComplexVector:
-                    return f(Sexp.AsComplex().ToArray());
+                    return convertVector(Sexp.AsComplex().ToArray());
                 case SymbolicExpressionType.IntegerVector:
-                    return f(Sexp.AsInteger().ToArray());
+                    return convertVector(Sexp.AsInteger().ToArray());
                 case SymbolicExpressionType.LogicalVector:
-                    return f(Sexp.AsLogical().ToArray());
+                    return convertVector(Sexp.AsLogical().ToArray());
                 case SymbolicExpressionType.NumericVector:
-                    return f(Sexp.AsNumeric().ToArray());
+                    return convertNumericVector(Sexp);
                 case SymbolicExpressionType.RawVector:
-                    return f(Sexp.AsRaw().ToArray());
+                    return convertVector(Sexp.AsRaw().ToArray());
                 //case SymbolicExpressionType.S4:
                 //    {
                 //        var s4sxp = Sexp.AsS4();
                 //        if (!s4sxp.HasSlot("clrobj")) return Sexp;
                 //        s4sxp["clrobj"]
                 //    }
+                case SymbolicExpressionType.List:
+                    return convertVector(convertList(Sexp.AsList().ToArray()));
                 default:
                     return Sexp;
             }
         }
 
-        private object f<T>(T[] p)
+        private object[] convertList(SymbolicExpression[] symbolicExpression)
+        {
+            // Fall back on Renable vecsxp in C layer;
+            throw new NotSupportedException("Not supported; would need to be able to unpack e.g. S4 objects.");
+        }
+
+        private static object convertNumericVector(SymbolicExpression sexp)
+        {
+            var values = sexp.AsNumeric().ToArray();
+            var classNames = RDotNetDataConverter.GetClassAttrib(sexp);
+            if (classNames != null)
+            {
+                if (classNames.Contains("Date"))
+                    return convertVector(RDateToDateTime(values));
+                if (classNames.Contains("POSIXct"))
+                    return convertVector(RPosixctToDateTime(sexp, values));
+            }
+            return convertVector(values);
+            
+        }
+
+        private static DateTime RDateOrigin = new DateTime(1970, 1, 1);
+
+        private static DateTime[] RPosixctToDateTime(SymbolicExpression sexp, double[] values)
+        {
+            var tz = RDotNetDataConverter.GetTzoneAttrib(sexp);
+            if (string.IsNullOrEmpty(tz))
+                throw new NotSupportedException("POSIXct conversion supported only for UTC time zone. Found none specified");
+            else if (!isUtc(tz))
+                throw new NotSupportedException("POSIXct conversion supported only for UTC time zone, not for " + tz);
+
+            //number of seconds since 1970-01-01 UTC
+            return Array.ConvertAll(values, v => ClrFacade.ForceUtcKind(RDateOrigin + TimeSpan.FromTicks((long)(TimeSpan.TicksPerSecond * v))));
+        }
+
+        private static bool isUtc(string tz)
+        {
+            return (tz == "UTC" || tz == "GMT");
+        }
+
+        private static DateTime[] RDateToDateTime(double[] values)
+        {
+            //number of days since 1970-01-01
+            return Array.ConvertAll(values, v => RDateOrigin + TimeSpan.FromTicks((long)(TimeSpan.TicksPerDay * v)));
+        }
+
+        private static object convertVector<T>(T[] p)
         {
             if (p.Length == 1)
                 return p[0];

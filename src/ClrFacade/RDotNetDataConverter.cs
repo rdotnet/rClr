@@ -201,8 +201,11 @@ namespace Rclr
 
         private void SetupREngine()
         {
-            engine = REngine.GetInstance(initialize: false);
-            engine.Initialize(setupMainLoop: false);
+            if (engine == null)
+            {
+                engine = REngine.GetInstance(initialize: false);
+                engine.Initialize(setupMainLoop: false);
+            }
         }
 
         private static RDotNetDataConverter singleton;
@@ -355,12 +358,6 @@ namespace Rclr
             return result;
         }
 
-        private void AddPosixctAttributes(SymbolicExpression result)
-        {
-            SetClassAttribute(result, "POSIXct", "POSIXt");
-            SetTzoneAttribute(result, "UTC");
-        }
-
         private SymbolicExpression ConvertArrayComplex(object obj)
         {
             if (!ConvertVectors) return null;
@@ -457,12 +454,6 @@ namespace Rclr
             var result = ConvertDouble(doubleValue);
             AddDiffTimeAttributes(result);
             return result;
-        }
-
-        private void AddDiffTimeAttributes(SymbolicExpression result)
-        {
-            SetClassAttribute(result, "difftime"); // class(as.difftime(3.5, units='secs'))
-            SetUnitsAttribute(result, "secs");  // unclass(as.difftime(3.5, units='secs'))
         }
 
         private SymbolicExpression ConvertArrayObject(object obj)
@@ -612,25 +603,63 @@ namespace Rclr
             return engine.CreateCharacterMatrix(array);
         }
 
-        private void SetTzoneAttribute(SymbolicExpression sexp, string tzoneId)
+        public static void SetTzoneAttribute(SymbolicExpression sexp, string tzoneId)
         {
             SetAttribute(sexp, new[] { tzoneId }, attributeName: "tzone");
         }
 
-        private void SetUnitsAttribute(SymbolicExpression sexp, string units)
+        public static void SetUnitsAttribute(SymbolicExpression sexp, string units)
         {
             SetAttribute(sexp, new[] { units }, attributeName: "units");
         }
 
-        private void SetClassAttribute(SymbolicExpression sexp, params string[] classes)
+        public static void SetClassAttribute(SymbolicExpression sexp, params string[] classes)
         {
             SetAttribute(sexp, classes, attributeName: "class");
         }
 
-        private void SetAttribute(SymbolicExpression sexp, string[] attribValues, string attributeName = "names")
+        public static void SetAttribute(SymbolicExpression sexp, string[] attribValues, string attributeName = "names")
         {
             var names = new CharacterVector(engine, attribValues);
             sexp.SetAttribute(attributeName, names);
+        }
+
+        public static void AddPosixctAttributes(SymbolicExpression result)
+        {
+            SetClassAttribute(result, "POSIXct", "POSIXt");
+            SetTzoneAttribute(result, "UTC");
+        }
+
+        public static bool IsOfClass(SymbolicExpression sexp, string className)
+        {
+            var classNames = GetClassAttrib(sexp);
+            if (classNames == null) return false;
+            return classNames.Contains(className);
+        }
+
+        public static string[] GetAttrib(SymbolicExpression sexp, string attribName)
+        {
+            var classes = sexp.GetAttribute(attribName);
+            if (classes == null) return null;
+            var classNames = classes.AsCharacter().ToArray();
+            return classNames;
+        }
+
+        public static string[] GetClassAttrib(SymbolicExpression sexp)
+        {
+            return GetAttrib(sexp, "class");
+        }
+
+        public static string GetTzoneAttrib(SymbolicExpression sexp)
+        {
+            var v = GetAttrib(sexp, "tzone");
+            if (v == null) return null; else return v[0];
+        }
+
+        public static void AddDiffTimeAttributes(SymbolicExpression result)
+        {
+            SetClassAttribute(result, "difftime"); // class(as.difftime(3.5, units='secs'))
+            SetUnitsAttribute(result, "secs");  // unclass(as.difftime(3.5, units='secs'))
         }
 
         [Obsolete()]
@@ -656,12 +685,11 @@ namespace Rclr
             return NativeUtility.GetRLibraryFileName();
         }
 
-        private REngine engine;
-
-        public REngine GetEngine()
+        public static REngine GetEngine()
         {
             return engine;
         }
+        private static REngine engine;
 
         public SymbolicExpression CreateSymbolicExpression(IntPtr sexp)
         {

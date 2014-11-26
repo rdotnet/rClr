@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Rclr.HelloWorld" Collapsed="true">
+    <Position X="7.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>HelloWorld.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.PerformanceProfiling" Collapsed="true">
+    <Position X="7.25" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQQCAAAAAAAAAAAAAAAAAAAQAAACEAAAAAIEAAA=</HashCode>
+      <FileName>PerformanceProfiling.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.RclrBinder" Collapsed="true">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAEAAQAAAEABAAAAAEAAIAAAAAA=</HashCode>
+      <FileName>RclrBinder.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.TestArrayMemoryHandling" Collapsed="true">
+    <Position X="6" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAARAEAIIAAAAUBAAgAIAgAAAAAEBEAAEGAAADEACQ=</HashCode>
+      <FileName>TestArrayMemoryHandling.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.TestCases" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBAAMC0h5AwiyogQlEAAECEhhBM0AQCqAExhIFKhFEE=</HashCode>
+      <FileName>TestCases.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.TestObject" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEQEAABABAAIAEIYQIABAAAAAoIgCAAAFACACA=</HashCode>
+      <FileName>TestCases.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.TestMethodBinding" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAKAAAAAAAEAAAAAAAAAAAAAACAAAAAAAAAAAAIAAAE=</HashCode>
+      <FileName>TestMethodBinding.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.221" />
+  </Class>
+  <Class Name="Rclr.Tests.RefClasses.BaseAbstractClassOne" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAEQAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\BaseAbstractClassOne.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.Tests.RefClasses.LevelOneClass" Collapsed="true">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAEACAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\LevelOneClass.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Rclr.Tests.RefClasses.LevelThreeClass" Collapsed="true">
+    <Position X="0.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAgAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\LevelThreeClass.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Rclr.Tests.RefClasses.LevelTwoClass" Collapsed="true">
+    <Position X="0.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAQAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\LevelTwoClass.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Rclr.Tests.TestUtilities">
+    <Position X="2.5" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\TestUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Rclr.ITestMethodBindings" Collapsed="true">
+    <Position X="6" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestMethodBinding.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Rclr.Tests.RefClasses.InterfaceOne" Collapsed="true">
+    <Position X="2.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAIAAAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\InterfaceOne.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Rclr.Tests.RefClasses.InterfaceBaseTwo" Collapsed="true">
+    <Position X="5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\InterfaceOne.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Rclr.Tests.RefClasses.InterfaceBaseOne" Collapsed="true">
+    <Position X="2.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\InterfaceOne.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Rclr.Tests.RefClasses.InterfaceTwo" Collapsed="true">
+    <Position X="2.5" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Tests\RefClasses\InterfaceOne.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="Rclr.TestEnum" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAEAAAA=</HashCode>
+      <FileName>TestCases.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Rclr.TestFlagEnum" Collapsed="true">
+    <Position X="0.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAEAAAA=</HashCode>
+      <FileName>TestCases.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

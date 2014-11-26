@@ -97,6 +97,9 @@
     <Compile Include="PerformanceProfiling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RclrBinder.cs" />
+    <Compile Include="RclrUnmanagedDll.cs" />
+    <Compile Include="RDotNetDataConverter.cs" />
+    <Compile Include="RdotnetDataConverterTests.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="TestArrayMemoryHandling.cs">
       <AutoGen>True</AutoGen>
@@ -118,6 +121,7 @@
     <Compile Include="DataConversionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="TestClassesDiagram.cd" />
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="TestArrayMemoryHandling.tt">
