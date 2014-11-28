@@ -211,17 +211,17 @@ test_that("Date and Time objects are marshalled correctly", {
   # R to .NET conversions
   ##########
 
-  testRtoClrAestTz('1980-01-01')
-  testRtoClrAestTz('1972-01-01')
+  testRtoClrNoTz('1980-01-01')
+  testRtoClrNoTz('1972-01-01')
   
   # FIXME: expect-error lines pass if run interactively but not if inside a test_that() function call
   # However, there is this DST discrepancy of one hour creeping in sometime in 1971, and before that as well
-  # expect_error(testRtoClrAestTz('1971-01-01'))
-  # expect_error(testRtoClrAestTz(posixct_orig_str))
+  # expect_error(testRtoClrNoTz('1971-01-01'))
+  # expect_error(testRtoClrNoTz(posixct_orig_str))
 
   # we can only test local date times post sometime in 1971 - DST rules for AU EST differ prior to that.
   for ( dateStr in post1971_DateStr ) {
-    testRtoClrAestTz(dateStr)
+    testRtoClrNoTz(dateStr)
     pDate(dateStr)
   }
 

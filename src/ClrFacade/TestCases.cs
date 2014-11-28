@@ -142,7 +142,11 @@ namespace Rclr
                 return CreateDate(isoDateTime, "Utc");
             else
             {
-                var tz = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                TimeZoneInfo tz;
+                if (string.IsNullOrEmpty(timeZoneId))
+                    tz = TimeZoneInfo.Local;
+                else
+                    tz = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
                 var dtun = CreateDate(isoDateTime);
                 return TimeZoneInfo.ConvertTimeToUtc(dtun, tz);
             }

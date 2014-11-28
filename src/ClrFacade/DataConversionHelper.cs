@@ -309,7 +309,8 @@ namespace Rclr
 
         private static bool isUtc(string tz)
         {
-            return (tz == "UTC" || tz == "GMT");
+            var t = tz.ToUpper();
+            return (t == "UTC" || t == "GMT");
         }
 
         private static DateTime[] RDateToDateTime(double[] values)

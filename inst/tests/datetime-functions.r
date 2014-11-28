@@ -160,8 +160,13 @@ testSameInteger <- function(datestr) {
   expect_equal( as.integer(createUtcDate(datestr, 'UTC')), as.integer((as.POSIXct(datestr, tz='UTC'))))
 }
 
+# See issue #45; I do not think this could be passing but by chance
 testRtoClrAestTz <- function(dateStr) {
   testRtoClr(dateStr, pfun=as.POSIXct, tzIdR=tzIdR_AUest, tzId=tzId_AUest)
+}
+
+testRtoClrNoTz <- function(dateStr) {
+  testRtoClr(dateStr, pfun=as.POSIXct, tzIdR="", tzId="")
 }
 
 testRtoClrUtc <- function(dateStr) {
