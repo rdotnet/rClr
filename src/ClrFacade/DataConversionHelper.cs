@@ -309,6 +309,8 @@ namespace Rclr
 
         private static bool isUtc(string tz)
         {
+            if (string.IsNullOrEmpty(tz))
+                return false;
             var t = tz.ToUpper();
             return (t == "UTC" || t == "GMT");
         }
