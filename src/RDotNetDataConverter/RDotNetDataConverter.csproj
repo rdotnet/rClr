@@ -64,7 +64,7 @@
     <Reference Include="DynamicInterop">
       <HintPath>..\packages\DynamicInterop.0.7.1.0\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet, Version=1.5.18.25109, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RDotNet, Version=1.5.18.26088, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\R.NET.Community.1.5.18\lib\net40\RDotNet.dll</HintPath>
     </Reference>

@@ -720,7 +720,12 @@ namespace Rclr
 
         public static DateTime ForceUtcKind(DateTime dateTime)
         {
-            return new DateTime(dateTime.Ticks, DateTimeKind.Utc);
+            return ForceDateKind(dateTime, utc: true);
+        }
+
+        public static DateTime ForceDateKind(DateTime dateTime, bool utc = false)
+        {
+            return new DateTime(dateTime.Ticks, (utc ? DateTimeKind.Utc : DateTimeKind.Unspecified));
         }
 
         private static object conditionDateTime(object obj)

@@ -261,6 +261,8 @@ namespace Rclr
                     return convertVector(RDateToDateTime(values));
                 if (classNames.Contains("POSIXct"))
                     return convertVector(RPosixctToDateTime(sexp, values));
+                if (classNames.Contains("difftime"))
+                    return convertVector(RdifftimeToTimespan(sexp, values));
             }
             return convertVector(values);
             
@@ -268,16 +270,41 @@ namespace Rclr
 
         private static DateTime RDateOrigin = new DateTime(1970, 1, 1);
 
+        private static string[] _timediffUnits = new[]{/*"auto",*/ "secs", "mins", "hours",
+                   "days", "weeks"};
+
+        private static TimeSpan[] RdifftimeToTimespan(SymbolicExpression sexp, double[] values)
+        {
+            var units = RDotNetDataConverter.GetAttrib(sexp, "units")[0];
+            if (!_timediffUnits.Contains(units)) throw new NotSupportedException("timediff units {0} are not supported");
+            if (units == "secs") return Array.ConvertAll(values, TimeSpan.FromSeconds);
+            if (units == "mins") return Array.ConvertAll(values, TimeSpan.FromMinutes);
+            if (units == "hours") return Array.ConvertAll(values, TimeSpan.FromHours);
+            if (units == "days") return Array.ConvertAll(values, TimeSpan.FromDays);
+            if (units == "weeks") return Array.ConvertAll(values, x => TimeSpan.FromDays(x * 7));
+            // This should never be reached.
+            throw new NotSupportedException();
+        }
+
         private static DateTime[] RPosixctToDateTime(SymbolicExpression sexp, double[] values)
         {
             var tz = RDotNetDataConverter.GetTzoneAttrib(sexp);
-            if (string.IsNullOrEmpty(tz))
-                throw new NotSupportedException("POSIXct conversion supported only for UTC time zone. Found none specified");
-            else if (!isUtc(tz))
-                throw new NotSupportedException("POSIXct conversion supported only for UTC time zone, not for " + tz);
+            if (!isSupportedTimeZone(tz))
+                throw new NotSupportedException("POSIXct conversion supported only for UTC or unspecified (local) time zone, not for " + tz);
 
             //number of seconds since 1970-01-01 UTC
-            return Array.ConvertAll(values, v => ClrFacade.ForceUtcKind(RDateOrigin + TimeSpan.FromTicks((long)(TimeSpan.TicksPerSecond * v))));
+            return Array.ConvertAll(values, 
+                    v => 
+                    {
+                        bool utc = isUtc(tz);
+                        return ClrFacade.ForceDateKind(RDateOrigin + TimeSpan.FromTicks((long)(TimeSpan.TicksPerSecond * v)), utc);
+                    }
+                );
+        }
+
+        private static bool isSupportedTimeZone(string tz)
+        {
+            return isUtc(tz) || string.IsNullOrEmpty(tz);
         }
 
         private static bool isUtc(string tz)

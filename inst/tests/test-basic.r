@@ -90,23 +90,25 @@ test_that("Basic types of length zero are marshalled correctly", {
   # a # <== Curious
   # str(a)
 
-  aPosixCt <- numeric(0)
-  attributes(aPosixCt) <- list(tzone='')
-  class(aPosixCt) <- c('POSIXct', 'POSIXt')
-  
-  expect_equal( clrCallStatic(tn, 'CreateArray_DateTime', 0L ), aPosixCt )
-
-  tdiff <- integer(0)
-  class(tdiff) <- 'difftime'
-  attr(tdiff, 'units') <- 'secs'
-  expect_equal( clrCallStatic(tn, 'CreateArray_TimeSpan', 0L), tdiff )
-
   # check that we fixed https://rclr.codeplex.com/workitem/2
   expectClrArrayElementType( numeric(0)   ,'System.Double')
   expectClrArrayElementType( integer(0)   ,'System.Int32') 
   expectClrArrayElementType( raw(0)       ,'System.Byte')  
   expectClrArrayElementType( logical(0)   ,'System.Boolean')
   expectClrArrayElementType( character(0) ,'System.String')
+
+
+  aPosixCt <- numeric(0)
+  attributes(aPosixCt) <- list(tzone='UTC')
+  class(aPosixCt) <- c('POSIXct', 'POSIXt')
+  
+  expect_equal( clrCallStatic(tn, 'CreateArray_DateTime', 0L ), aPosixCt )
+
+  tdiff <- numeric(0)
+  class(tdiff) <- 'difftime'
+  attr(tdiff, 'units') <- 'secs'
+  expect_equal( clrCallStatic(tn, 'CreateArray_TimeSpan', 0L), tdiff )
+
   expectClrArrayElementType( aPosixCt     ,'System.DateTime')
   expectClrArrayElementType( tdiff        ,'System.TimeSpan')
   
