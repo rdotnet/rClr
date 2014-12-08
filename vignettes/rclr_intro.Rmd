@@ -23,7 +23,7 @@ A few overarching principles in the design of **rClr** are:
 * Avoid requiring changes and additions to the .NET code (C#, F#, etc.) for it to be used from R
 * The Common Language Runtime should behave as it usually does, so long as the behavior does not clash with expected R behaviors.
 
-Release 0.7 has major changes compared to 0.5-? released in 2013. Major evolutions in R.NET have allowed to move interop code from C++ to C#.
+Release 0.7 has major changes compared to the 0.5 series released in 2013. Major evolutions in R.NET have allowed to move interop code from C++ to C#.
 
 Getting Started
 ----------------------------
@@ -78,7 +78,7 @@ clrCall(testObj, "GetFieldIntegerOne")
 clrGetMemberSignature('Rclr.TestCases', 'CreateDateArray')
 ```
 
-Two arguments are passed to the function `clrCallStatic`: a string in an ISO date time format, and a numeric cast as an integer. **rClr** will transparently convert these to CLR types. Note that if the last argument had just been `4`, the mode of the R vector would have been `numeric`, not `integer`. To avoid ambiguity in method calls you must pass an integer vector. The returned value of the .NET method is a `DateTime[]` i.e. an array of `System.DateTime` objects. Again **rClr** transparently converts these to a standard R vector with a 'Date' class attribute.
+Two arguments are passed to the function `clrCallStatic`: a string in an ISO date time format, and a numeric cast as an integer. **rClr** will transparently convert these to CLR types. Note that if the last argument had just been `4`, the mode of the R vector would have been `numeric`, not `integer`. To avoid ambiguity in method calls you must pass an integer vector. The returned value of the .NET method is a `DateTime[]` i.e. an array of `System.DateTime` objects. Again **rClr** transparently converts these to a standard R vector with the appropriate POSIX time class attribute.
 
 ```{r}
 dates <- clrCallStatic('Rclr.TestCases', 'CreateDateArray', '2001-01-01', as.integer(4))
@@ -117,7 +117,7 @@ Data conversion
 
 Where there is an obvious and natural conversion between CLR and R data types, the conversion is done in preference to passing pointer to external data structures. Most of the basic modes in R (`character`,`numeric`,`integer` etc.) have relatively obvious equivalents in the CLR. For basic these basic modes, a bijection (i.e. round-trip) with these CLR conterparts is defined if possible.
 
-The notion of time is important for many application, notably for the processing of time series. In order to facilitate the mapping of more complex types by packages that depend on **rClr**, it supports the conversion of some chosen R date and time types. A choice was made to convert R date and time in the **base** package (REF Murdoch 2001). Note that the R classes `Date` and `POSIXct` both map to a `System.DateTime` in the CLR, and a strict bijection is not possible. `DateTime` in the CLR is converted to a `POSIXct` object, as this is the most appropriate to retain the original information.
+The notion of time is important for many application, notably for the processing of time series. In order to facilitate the mapping of more complex types by packages that depend on **rClr**, it supports the conversion of some chosen R date and time types. A choice was made to convert R date and time classes found in the **base** package (see (Ripley and Hornik, 2001)). Other packages such as **lubridate** offer compelling features and you should consider using these. Note that the R classes `Date` and `POSIXct` both map to a `System.DateTime` in the CLR, and a strict bijection is not possible. `DateTime` in the CLR is converted to a `POSIXct` object, as this is the most appropriate to retain the original information. Date, time and time zone software constructs are fraught with oddities and inconsistent between software systems. While considerable effort was devoted to achieve a sensible conversion behavior in **rClr**, you should double check conversions on your data and in your time zone, and you should prefer the use of UTC time zone for conversion.
 
 The rationale for converting data to native types at the boundary of R and the CLR is that this limits the leakage of concepts and behaviors between the two systems. This is particularly important when the expect behavior differs significantly between systems e.g. copying objects versus passing references to objects. Things behave 'as expected' on each side of the boundary.
 
@@ -129,6 +129,7 @@ r_types = list(
   as.integer(1:3),
   1:3 * 1.1,
   1:3 == 2,
+  complex(real=1:3, imaginary=4:6),
   as.Date('2001-01-01') + 0:2,
   as.POSIXct('2001-01-01') + 0:2,
   as.difftime(3, units='secs') + 0:2
@@ -160,11 +161,21 @@ Most basic vector data types can be handled in rClr in the native code layer wri
 Fortunately, it is easier to handle these directly from C#, using the library **R.NET**, the close relative of **rClr**. The following code demonstrate how this allows the conversion of multi-dimensional arrays from the CLR to R matrices.
 
 ```{r cache = F, tidy = TRUE}
-setRDotNet(TRUE)
+# setRDotNet(TRUE)  # this should be the default package state after 0.7.0
 cTypename <- "Rclr.TestCases"
 clrGetMemberSignature(cTypename, "CreateRectDoubleArray")
 clrCallStatic(cTypename, "CreateRectDoubleArray")
 ```
+
+
+
+```{r cache = F, tidy = TRUE}
+cTypename <- "Rclr.TestCases"
+clrGetMemberSignature(cTypename, "CreateRectDoubleArray")
+clrCallStatic(cTypename, "CreateRectDoubleArray")
+```
+
+
 
 Method binding in the CLR
 ------------------
@@ -234,7 +245,7 @@ plotRate(bench, case = 'CLR->R')
 plotRate(bench, case = 'CLR->R', logy=FALSE)
 ```
 
-The transfer rate going form CLR arrays of double to R vectors peaks at around 35 to 40 million items per second (240MB/s). The log/log plot of the conversion rate is particularly useful to visualize at which point the overhead of the function call becomes negligible compared to the array conversion itself: Below ~5000 elements in the vector the transfer rate is roughly linear in log-log space. You may notice a decrease in performance in that case of 'CLR->R'; this may be an artefact of the experimental design interplaying with garbage collection.
+The transfer rate going form CLR arrays of double to R vectors peaks at a value ranging from 40 million to ~200 million items per second. This seems to largely depend on the hardware. The log/log plot of the conversion rate is particularly useful to visualize at which point the overhead of the function call becomes negligible compared to the array conversion itself: Below ~5000 elements in the vector the transfer rate is roughly linear in log-log space. You may notice a decrease in performance in that case of 'CLR->R'; this may be an artefact of the experimental design interplaying with garbage collection.
 
 ```{r cache = T, tidy = TRUE, comment = NA, results = "asis", fig.width=11}
 plotRate(bench, case = 'R->CLR')
@@ -244,7 +255,7 @@ plotRate(bench, case = 'R->CLR', logy=FALSE)
 Related work
 -----------------------------
 
-* [R.NET](http://rdotnet.codeplex.com) is a library to embed R in .NET applications. It can be used by **rClr** for some data conversion.
+* [R.NET](http://rdotnet.codeplex.com) is a library to embed R in .NET applications. It is now the preferred mechanism for **rClr** to perform data conversion.
 * rJava is by nature quite similar in purpose, though the code and usage are actually quite different.
 * [rsqlserver](https://github.com/agstudy/rsqlserver) uses **rClr**
 * Rcpp notably with intended use of reference classes.
@@ -260,20 +271,5 @@ I gratefully acknowledge:
 References
 -----------------------------
 
-This is a placeholder for reference to technical documentation and journal articles.
+[Ripley, B. D. and Hornik, K. (2001) Date-time classes. R News, 1/2, 8–11](http://www.r-project.org/doc/Rnews/Rnews_2001-2.pdf)
 
-Appendix
------------------------------
-
-How to re-produce the HTML version of this document:
-
-```{r, eval=FALSE}
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
-library(rClr)
-pkgDir <- tryFindPkgDir()
-# seem to need to move working directory. Oddities with knitr figure output otherwise
-originalDir <- getwd()
-docDir <- file.path(pkgDir, 'inst', 'doc')
-setwd(docDir)
-vignettesRclr()
-```

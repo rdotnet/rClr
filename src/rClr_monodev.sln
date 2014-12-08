@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClrFacade", "ClrFacade\ClrFacade.csproj", "{024B0C26-BED0-467D-B332-E9796B756133}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDotNetDataConverter", "RDotNetDataConverter\RDotNetDataConverter.csproj", "{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "RclrTests\TestApp\TestApp.csproj", "{00CD413A-C00E-45D5-940D-2C6C6F65F520}"
 EndProject
 Global
@@ -46,20 +44,6 @@ Global
 		{024B0C26-BED0-467D-B332-E9796B756133}.Unix|Any CPU.Build.0 = Release|Any CPU
 		{024B0C26-BED0-467D-B332-E9796B756133}.UnixDebug|Any CPU.ActiveCfg = Debug|Any CPU
 		{024B0C26-BED0-467D-B332-E9796B756133}.UnixDebug|Any CPU.Build.0 = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoInstall|Any CPU.ActiveCfg = MonoInstall|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoInstall|Any CPU.Build.0 = MonoInstall|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoInstallDebug|Any CPU.ActiveCfg = MonoInstallDebug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.MonoInstallDebug|Any CPU.Build.0 = MonoInstallDebug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Unix|Any CPU.ActiveCfg = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.Unix|Any CPU.Build.0 = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.UnixDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{445F1AFA-EEB7-41B2-8292-315E88F6ABEB}.UnixDebug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = RclrTests\TestApp\TestApp.csproj

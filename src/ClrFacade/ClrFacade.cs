@@ -255,7 +255,12 @@ namespace Rclr
         private static string FormatCustomMsg(string additionalMsg)
         {
             var result = string.Format("External Error Message: {1}{0}", "\n", additionalMsg);
-            return result.Replace("\r\n", "\n");
+            return ToUnixNewline(result);
+        }
+
+        private static string ToUnixNewline(string result)
+        {
+           return result.Replace("\r\n", "\n");
         }
 
         private static string FormatExceptionMessage(Exception ex)
@@ -265,7 +270,7 @@ namespace Rclr
             var result = string.Format("Type:    {1}{0}Message: {2}{0}Method:  {3}{0}Stack trace:{0}{4}{0}{0}",
                 "\n", ex.GetType(), ex.Message, ex.TargetSite, ex.StackTrace);
             // See whether this helps with the Rgui prompt:
-            return result.Replace("\r\n", "\n");
+            return ToUnixNewline(result);
         }
 
         /// <summary>

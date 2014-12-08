@@ -278,7 +278,7 @@ test_that("Numerical bi-dimensional arrays are marshalled correctly", {
 
 })
 
-test_that("CLI dictionaries are marshalled as expected", {
+testSmartDictConversion <- function(){
   # The definition of 'as expected' for these collections is not all that clear, and there may be some RDotNet limitations.
   expect_that( callTestCase( "CreateStringDictionary"), equals(list(a='A', b='B')))
   expect_that( callTestCase( "CreateStringDoubleArrayDictionary"), 
@@ -291,6 +291,20 @@ test_that("CLI dictionaries are marshalled as expected", {
     )
   # d <- callTestCase( "CreateObjectDictionary")
   # expect_true
+}
+
+test_that("CLI dictionaries are marshalled as expected", {
+  testSmartDictConversion()
+})
+
+test_that("Conversion of non-bijective types can be turned on/off", {
+  setConvertAdvancedTypes(FALSE)
+  expect_true( is(callTestCase( "CreateStringDictionary"), 'cobjRef'))
+  expect_true( is(callTestCase( "CreateStringDoubleArrayDictionary"), 'cobjRef') )
+  setConvertAdvancedTypes(TRUE)
+  expect_false( is(callTestCase( "CreateStringDictionary"), 'cobjRef'))
+  expect_false( is(callTestCase( "CreateStringDoubleArrayDictionary"), 'cobjRef') )
+  testSmartDictConversion()
 })
 
 test_that("Basic objects are created correctly", {

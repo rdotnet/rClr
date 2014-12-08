@@ -10,7 +10,7 @@ clrShutdown <- function() { # TODO: is this even possible given runtime's constr
 
 #' Turn on/off R.NET
 #'
-#' Turn on or off the usage of the R.NET assemblies to convert CLR objects to R data structures
+#' Turn on or off the usage of the R.NET assemblies to convert CLR objects to R data structures. As of version 0.7.0, R.NET is the preferred way to convert data and is enabled by default.
 #'
 #' @param setit if true enable, otherwise disable
 #' @export
@@ -25,13 +25,26 @@ clrShutdown <- function() { # TODO: is this even possible given runtime's constr
 #' clrCallStatic(cTypename, "CreateStringDictionary")
 #' }
 setRDotNet <- function(setit=TRUE) {
-  f <- file.path(getLibsPath('rClr'), 'RDotNetDataConverter.dll')
-  f <- path.expand(f)
-  clrLoadAssembly(f)
-  # isSet = clrCallStatic(clrFacadeTypeName, 'get_DataConverterIsSet')
-  # if(!isSet & setit) {
-    clrCallStatic('Rclr.RDotNetDataConverter', 'SetRDotNet', setit)
-  # }
+  clrCallStatic('Rclr.RDotNetDataConverter', 'SetRDotNet', setit)
+}
+
+#' Turn on/off the conversion of advanced data types with R.NET
+#'
+#' Turn on/off the conversion of advanced data types with R.NET. This will turn off the conversion of classes such as dictionaries into R lists, 
+#' as these are not bidirectional and you may want to see and manipulate external pointers to dictionaries in some circumstances.
+#'
+#' @param enable if true enable, otherwise disable
+#' @export
+#' @examples
+#' \dontrun{
+#' library(rClr)
+#' cTypename <- "Rclr.TestCases"
+#' clrCallStatic(cTypename, "CreateStringDictionary")
+#' setConvertAdvancedTypes(FALSE)
+#' clrCallStatic(cTypename, "CreateStringDictionary")
+#' }
+setConvertAdvancedTypes <- function(enable=TRUE) {
+  clrCallStatic('Rclr.RDotNetDataConverter', 'SetConvertAdvancedTypes', enable)
 }
 
 #' Loads a Common Language assembly. 
@@ -45,7 +58,7 @@ setRDotNet <- function(setit=TRUE) {
 #' \dontrun{
 #' library(rClr)
 #' clrGetLoadedAssemblies()
-#' f <- file.path(getNativeLibsPath('rClr'), 'RDotNetDataConverter.dll')
+#' f <- file.path('SomeDirectory', 'YourDotNetBinaryFile.dll')
 #' f <- path.expand(f)
 #' stopifnot( file.exists(f) )
 #' clrLoadAssembly(f)

@@ -43,13 +43,96 @@ namespace Rclr
             // The Mono API already has some unhandled exception reporting. 
             // TODO Use the following if it works well for both CLRuntimes.
 #if !MONO
-            SetupExceptionHandling();
+            // OBSOLETE? SetupExceptionHandling();
 #endif
+            converterFunctions = new Dictionary<Type, Func<object, SymbolicExpression>>();
+
             ConvertVectors = true;
             ConvertValueTypes = true;
 
-            converterFunctions = new Dictionary<Type, Func<object, SymbolicExpression>>();
+            addBijectiveConversions();
+            addMultidimensionalArrays();
 
+            ConvertAdvancedTypes = true;
+        }
+
+        private void addGeneralTypes()
+        {
+            // Add some default converters for more general types
+            if (converterFunctions.ContainsKey(typeof(Array))) return;
+            converterFunctions.Add(typeof(Array), ConvertArrayObject);
+            converterFunctions.Add(typeof(object), ConvertObject);
+        }
+
+        private void removeGeneralTypes()
+        {
+            if(!converterFunctions.ContainsKey(typeof(Array))) return;
+            converterFunctions.Remove(typeof(Array));
+            converterFunctions.Remove(typeof(object));
+        }
+
+        private void addDictionaries()
+        {
+            if (converterFunctions.ContainsKey(typeof(Dictionary<string, double>))) return;
+            converterFunctions.Add(typeof(Dictionary<string, double>), ConvertDictionary<double>);
+            converterFunctions.Add(typeof(Dictionary<string, float>), ConvertDictionary<float>);
+            converterFunctions.Add(typeof(Dictionary<string, string>), ConvertDictionary<string>);
+            converterFunctions.Add(typeof(Dictionary<string, int>), ConvertDictionary<int>);
+            converterFunctions.Add(typeof(Dictionary<string, DateTime>), ConvertDictionary<DateTime>);
+
+            converterFunctions.Add(typeof(Dictionary<string, double[]>), ConvertDictionary<double[]>);
+            converterFunctions.Add(typeof(Dictionary<string, float[]>), ConvertDictionary<float[]>);
+            converterFunctions.Add(typeof(Dictionary<string, string[]>), ConvertDictionary<string[]>);
+            converterFunctions.Add(typeof(Dictionary<string, int[]>), ConvertDictionary<int[]>);
+            converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
+        }
+
+        private void removeDictionaries()
+        {
+            if (!converterFunctions.ContainsKey(typeof(Dictionary<string, double>))) return;
+            converterFunctions.Remove(typeof(Dictionary<string, double>));
+            converterFunctions.Remove(typeof(Dictionary<string, float>));
+            converterFunctions.Remove(typeof(Dictionary<string, string>));
+            converterFunctions.Remove(typeof(Dictionary<string, int>));
+            converterFunctions.Remove(typeof(Dictionary<string, DateTime>));
+
+            converterFunctions.Remove(typeof(Dictionary<string, double[]>));
+            converterFunctions.Remove(typeof(Dictionary<string, float[]>));
+            converterFunctions.Remove(typeof(Dictionary<string, string[]>));
+            converterFunctions.Remove(typeof(Dictionary<string, int[]>));
+            converterFunctions.Remove(typeof(Dictionary<string, DateTime[]>));
+        }
+
+        private void addMultidimensionalArrays()
+        {
+            if (converterFunctions.ContainsKey(typeof(float[,]))) return;
+            converterFunctions.Add(typeof(float[,]), ConvertMatrixSingle);
+            converterFunctions.Add(typeof(double[,]), ConvertMatrixDouble);
+            converterFunctions.Add(typeof(int[,]), ConvertMatrixInt);
+            converterFunctions.Add(typeof(string[,]), ConvertMatrixString);
+
+            converterFunctions.Add(typeof(float[][]), ConvertMatrixJaggedSingle);
+            converterFunctions.Add(typeof(double[][]), ConvertMatrixJaggedDouble);
+            converterFunctions.Add(typeof(int[][]), ConvertMatrixJaggedInt);
+            converterFunctions.Add(typeof(string[][]), ConvertMatrixJaggedString);
+        }
+
+        private void removeMultidimensionalArrays()
+        {
+            if (!converterFunctions.ContainsKey(typeof(float[,]))) return;
+            converterFunctions.Remove(typeof(float[,]));
+            converterFunctions.Remove(typeof(double[,]));
+            converterFunctions.Remove(typeof(int[,]));
+            converterFunctions.Remove(typeof(string[,]));
+
+            converterFunctions.Remove(typeof(float[][]));
+            converterFunctions.Remove(typeof(double[][]));
+            converterFunctions.Remove(typeof(int[][]));
+            converterFunctions.Remove(typeof(string[][]));
+        }
+
+        private void addBijectiveConversions()
+        {
             converterFunctions.Add(typeof(float), ConvertSingle);
             converterFunctions.Add(typeof(double), ConvertDouble);
             converterFunctions.Add(typeof(byte), ConvertByte);
@@ -71,49 +154,11 @@ namespace Rclr
             converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
             converterFunctions.Add(typeof(TimeSpan[]), ConvertArrayTimeSpan);
             converterFunctions.Add(typeof(Complex[]), ConvertArrayComplex);
-
-            converterFunctions.Add(typeof(float[,]), ConvertMatrixSingle);
-            converterFunctions.Add(typeof(double[,]), ConvertMatrixDouble);
-            converterFunctions.Add(typeof(int[,]), ConvertMatrixInt);
-            converterFunctions.Add(typeof(string[,]), ConvertMatrixString);
-
-            converterFunctions.Add(typeof(float[][]), ConvertMatrixJaggedSingle);
-            converterFunctions.Add(typeof(double[][]), ConvertMatrixJaggedDouble);
-            converterFunctions.Add(typeof(int[][]), ConvertMatrixJaggedInt);
-            converterFunctions.Add(typeof(string[][]), ConvertMatrixJaggedString);
-
-            converterFunctions.Add(typeof(Dictionary<string, double>), ConvertDictionary<double>);
-            converterFunctions.Add(typeof(Dictionary<string, float>), ConvertDictionary<float>);
-            converterFunctions.Add(typeof(Dictionary<string, string>), ConvertDictionary<string>);
-            converterFunctions.Add(typeof(Dictionary<string, int>), ConvertDictionary<int>);
-            converterFunctions.Add(typeof(Dictionary<string, DateTime>), ConvertDictionary<DateTime>);
-
-            converterFunctions.Add(typeof(Dictionary<string, double[]>), ConvertDictionary<double[]>);
-            converterFunctions.Add(typeof(Dictionary<string, float[]>), ConvertDictionary<float[]>);
-            converterFunctions.Add(typeof(Dictionary<string, string[]>), ConvertDictionary<string[]>);
-            converterFunctions.Add(typeof(Dictionary<string, int[]>), ConvertDictionary<int[]>);
-            converterFunctions.Add(typeof(Dictionary<string, DateTime[]>), ConvertDictionary<DateTime[]>);
-
-            // Add some default converters for more general types
-            converterFunctions.Add(typeof(Array), ConvertArrayObject);
-            converterFunctions.Add(typeof(object), ConvertObject);
-
         }
 
         private bool isMonoRuntime()
         {
             return ClrFacade.IsMonoRuntime;
-        }
-
-        private void SetupExceptionHandling()
-        {
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandleException;
-        }
-
-        private void OnUnhandleException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Exception ex = (Exception)e.ExceptionObject;
-            Error(ClrFacade.FormatExceptionInnermost(ex));
         }
 
         public void Error(string msg)
@@ -141,6 +186,14 @@ namespace Rclr
             else
                 ClrFacade.DataConverter = null;
             SetUseRDotNet(setit);
+        }
+
+        /// <summary>
+        /// Enable/disable the use of this data converter for more "advanced" but unidirectional.
+        /// </summary>
+        public static void SetConvertAdvancedTypes(bool enable)
+        {
+            GetInstance(null).ConvertAdvancedTypes = enable;
         }
 
         /// <summary>
@@ -196,8 +249,44 @@ namespace Rclr
             //return new DataFrame(engine, pointer);
         }
 
+        /// <summary>
+        /// Gets/sets whether to convert vectors using R.NET. Most users should never need to modify the default.
+        /// </summary>
         public bool ConvertVectors { get; set; }
-        public bool ConvertValueTypes { get; set; }
+
+        /// <summary>
+        /// Gets/sets whether to convert non-primitive value types and vector thereof, e.g. TimeSpan and DateTime. 
+        /// Most users should never need to modify the default.
+        /// </summary>
+        public bool ConvertValueTypes 
+        { 
+            get; 
+            set; 
+        }
+
+        private bool convertAdvancedTypes;
+
+        /// <summary>
+        /// Gets/sets whether to convert more complicated types such as dictionaries, arrays of reference types, etc.
+        /// </summary>
+        public bool ConvertAdvancedTypes 
+        {
+            get { return convertAdvancedTypes; }
+            set
+            {
+                convertAdvancedTypes = value;
+                if (value)
+                {
+                    addDictionaries();
+                    addGeneralTypes();
+                }
+                else
+                {
+                    removeDictionaries();
+                    removeGeneralTypes();
+                }
+            }
+        }
 
         private void SetupREngine()
         {

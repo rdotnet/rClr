@@ -9,7 +9,7 @@ setRDotNet(setit = TRUE)
 \item{setit}{if true enable, otherwise disable}
 }
 \description{
-Turn on or off the usage of the R.NET assemblies to convert CLR objects to R data structures
+Turn on or off the usage of the R.NET assemblies to convert CLR objects to R data structures. As of version 0.7.0, R.NET is the preferred way to convert data and is enabled by default.
 }
 \examples{
 \dontrun{

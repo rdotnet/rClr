@@ -15,7 +15,7 @@ Loads an assembly. Note that this is loaded in the single application domain tha
 \dontrun{
 library(rClr)
 clrGetLoadedAssemblies()
-f <- file.path(getNativeLibsPath('rClr'), 'RDotNetDataConverter.dll')
+f <- file.path('SomeDirectory', 'YourDotNetBinaryFile.dll')
 f <- path.expand(f)
 stopifnot( file.exists(f) )
 clrLoadAssembly(f)
