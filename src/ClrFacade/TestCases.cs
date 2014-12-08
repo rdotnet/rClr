@@ -376,6 +376,56 @@ namespace Rclr
                 };
         }
 
+        public static TestObject[] CreateArrayOfRefererenceObjects()
+        {
+            return new TestObject[]
+                {
+                    new TestObject(),
+                    new TestObject()
+                };
+        }
+
+        public static TestObject[][] CreateJaggedArrayOfRefererenceObjects()
+        {
+            return new TestObject[][]
+                {
+                    CreateArrayOfRefererenceObjects(),
+                    CreateArrayOfRefererenceObjects()
+                };
+        }
+
+        #region helper functions for vignette
+        private static Func<object>[] GetComplexDataTestCases()
+        {
+            return new Func<object>[] 
+            {
+                CreateStringDictionary,
+                CreateStringDoubleArrayDictionary,
+                CreateObjectDictionary,
+                CreateArrayOfRefererenceObjects,
+                CreateJaggedArrayOfRefererenceObjects
+            };
+        }
+
+        public static int GetNumComplexDataCases()
+        {
+            return GetComplexDataTestCases().Length;
+        }
+
+        public static object GetComplexDataCase(int index)
+        {
+            return GetComplexDataTestCases()[index]();
+        }
+
+        public static string GetComplexDataTypeName(int index)
+        {
+            var obj = GetComplexDataCase(index);
+            return obj.GetType().FullName;
+        }
+
+        #endregion
+
+
         public static void ThrowException(int stackDepth)
         {
             stackDepth = Math.Max(1, Math.Min(stackDepth, 100));

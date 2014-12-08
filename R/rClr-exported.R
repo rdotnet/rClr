@@ -25,7 +25,7 @@ clrShutdown <- function() { # TODO: is this even possible given runtime's constr
 #' clrCallStatic(cTypename, "CreateStringDictionary")
 #' }
 setRDotNet <- function(setit=TRUE) {
-  clrCallStatic('Rclr.RDotNetDataConverter', 'SetRDotNet', setit)
+  invisible(clrCallStatic('Rclr.RDotNetDataConverter', 'SetRDotNet', setit))
 }
 
 #' Turn on/off the conversion of advanced data types with R.NET
@@ -44,7 +44,7 @@ setRDotNet <- function(setit=TRUE) {
 #' clrCallStatic(cTypename, "CreateStringDictionary")
 #' }
 setConvertAdvancedTypes <- function(enable=TRUE) {
-  clrCallStatic('Rclr.RDotNetDataConverter', 'SetConvertAdvancedTypes', enable)
+  invisible(clrCallStatic('Rclr.RDotNetDataConverter', 'SetConvertAdvancedTypes', enable))
 }
 
 #' Loads a Common Language assembly. 

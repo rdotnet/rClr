@@ -135,17 +135,14 @@ r_types = list(
   as.difftime(3, units='secs') + 0:2
 )
 
+library(plyr)
 conversion = lapply(r_types, rToClrType)
-
-result = as.data.frame(conversion[[1]])
-for (i in 2:length(conversion))
-  result <- rbind(result, as.data.frame(conversion[[i]]))
+result <- ldply(lapply(conversion, FUN=as.data.frame))
 
 r_vec_len_one = lapply(r_types, `[`, 1)
 conversion = lapply(r_vec_len_one, rToClrType)
-
-for (i in 1:length(conversion))
-  result <- rbind(result, as.data.frame(conversion[[i]]))
+result2 <- ldply(lapply(conversion, FUN=as.data.frame))
+result <- ldply(list(result, result2))
  
 ## Cannot seem to get the proper Rmarkdown with pander.
 # library(pander)
@@ -167,15 +164,26 @@ clrGetMemberSignature(cTypename, "CreateRectDoubleArray")
 clrCallStatic(cTypename, "CreateRectDoubleArray")
 ```
 
+There are some cases where, as of version 0.7, automatic conversion can be turned on or off. An example is for CLR dictionaries and arrays, for which an R list is a sensible equivalent. However, a priori converting R lists to CLR equivalent is not well defined. You may also want to manipulate CLR objects from R without **rClr** converting to an R data representation. This can be achieved with the function `setConvertAdvancedTypes`. Consider the following behavior converting a few types of dictionaries and arrays:
 
+```{r cache = F, tidy = TRUE, comment = NA, results = "asis"}
+library(stringr)
+toShortTypeName <- function(x) {str_replace_all( x, ", mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "") }
+getComplexDataCase <- function(i) {clrCallStatic(cTypename, "GetComplexDataCase", as.integer(i-1))}
+getComplexDataTypeName <- function(i) {clrCallStatic(cTypename, "GetComplexDataTypeName", as.integer(i-1))}
 
-```{r cache = F, tidy = TRUE}
-cTypename <- "Rclr.TestCases"
-clrGetMemberSignature(cTypename, "CreateRectDoubleArray")
-clrCallStatic(cTypename, "CreateRectDoubleArray")
+numDataTestCases <- clrCallStatic(cTypename, "GetNumComplexDataCases")
+clrTnames <- toShortTypeName(sapply(1:numDataTestCases, getComplexDataTypeName))
+withConversion <- sapply(1:numDataTestCases, function(i) {class(getComplexDataCase(i))})
+
+setConvertAdvancedTypes(FALSE)
+withoutConversion <- sapply(1:numDataTestCases, function(i) {tryCatch(class(getComplexDataCase(i)), error = function(e){'Not supported'})})
+setConvertAdvancedTypes(TRUE)
+
+convSummary <- data.frame(clrType=clrTnames, enabled=withConversion, disabled=withoutConversion)
+
+print(xtable(convSummary),type='html')
 ```
-
-
 
 Method binding in the CLR
 ------------------
