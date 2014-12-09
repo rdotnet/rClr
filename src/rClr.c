@@ -556,15 +556,15 @@ SEXP r_show_args(SEXP args)
 	int i, j, nclass;
 	SEXP el, names, klass;
 	int nargs, nnames;
-	args = CDR(args); /* skip ’name’ */
+	args = CDR(args); /* skip \92name\92 */
 
 	nargs = Rf_length(args);
 	for(i = 0; i < nargs; i++, args = CDR(args)) {
 		name = 
 			isNull(TAG(args)) ? "<unnamed>" : CHAR(PRINTNAME(TAG(args)));
 		el = CAR(args);
-		Rprintf("[%d] ’%s’ R type %s, SEXPTYPE=%d\n", i+1, name, type2char(TYPEOF(el)), TYPEOF(el));
-		Rprintf("[%d] ’%s’ length %d\n", i+1, name, LENGTH(el));
+		Rprintf("[%d] \92%s\92 R type %s, SEXPTYPE=%d\n", i+1, name, type2char(TYPEOF(el)), TYPEOF(el));
+		Rprintf("[%d] \92%s\92 length %d\n", i+1, name, LENGTH(el));
 		names = getAttrib(el, R_NamesSymbol);
 		nnames = Rf_length(names);
 		Rprintf("[%d] names of length %d\n", i+1, nnames);		
@@ -576,7 +576,7 @@ SEXP r_show_args(SEXP args)
 		klass = getAttrib(el, R_ClassSymbol);
 		nclass = length(klass);
 		for (j = 0; j < nclass; j++) {
-			Rprintf("[%d] class ’%s’\n", i+1, CHAR(STRING_ELT(klass, j)) );
+			Rprintf("[%d] class \92%s\92\n", i+1, CHAR(STRING_ELT(klass, j)) );
 		}
 	}
 	return(R_NilValue);
@@ -1100,11 +1100,11 @@ HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
 CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
 {
 	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
-	CLR_OBJ vtResult; // needs this: otherswise null pointer if using only objptr. 
 #if MS_CLR
 	return rclr_ms_convert_element_rdotnet(el);
 #else
-	error("%s", "Failure in rclr_convert_element_rdotnet: nor implemented yet on Mono");
+    return rclr_mono_convert_element_rdotnet(el);
+    // error("%s", "Failure in rclr_convert_element_rdotnet: nor implemented yet on Mono");
 #endif
 }
 
@@ -1484,7 +1484,6 @@ double * clr_datetime_obj_to_r_posixtc_numeric(CLR_OBJ * datetime_ptr) {
 	//return &result;
 }
 
-
 SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 	SEXP result = NULL;
 	char * klassName;
@@ -1689,6 +1688,21 @@ CLR_OBJ * rclr_mono_call_static_method_tname(char * ns_qualified_typename, char 
 	static_mparams[0] = create_mono_string(ns_qualified_typename);
 	static_mparams[1] = create_mono_string(mnam);
 	static_mparams[2] = methParams;
+	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
+	print_if_exception(exception);
+	free(static_mparams);
+	return result;
+}
+
+CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
+{
+	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
+	CLR_OBJ * obj = NULL;
+	MonoMethod * methodCallStaticMethod = rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
+	MonoObject * exception, *result;
+	void** static_mparams = (void**)malloc(1 * sizeof(void*));
+	MonoArray* methParams = create_array_object(build_method_parameters(el), 1);
+	static_mparams[0] = methParams;
 	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
 	print_if_exception(exception);
 	free(static_mparams);
