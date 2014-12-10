@@ -165,6 +165,7 @@ void rclr_mono_load_assembly( char ** filename );
 #endif
 
 CLR_OBJ * rclr_convert_element( SEXP el );
+CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el);
 CLR_OBJ * rclr_create_array_objects( SEXP s );
 CLR_OBJ * rclr_wrap_data_frame( SEXP s );
 CLR_OBJ * get_clr_object( SEXP clrObj );
