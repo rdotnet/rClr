@@ -49,6 +49,8 @@ double_backslash() {
 	RESULT=`echo $1 | sed -e 's/\\/\\\\/g'`
 }
 
+if [ "$MONO_INSTALL_PATH" = "" ]
+then
 ## Find the location of the Mono binary installation on Windows.
 if [ ! -e ${RCLR_SRC_DIR}/get_monosdk.cmd ] 
 then
@@ -63,6 +65,7 @@ then
 	echo "error: Path to the Mono SDK not found by querying the Windows registry"
 	exit 1
 fi
+fi # if [ "$MONO_INSTALL_PATH" = "" ]
 
 
 ## Location of the sources of the mono codebase

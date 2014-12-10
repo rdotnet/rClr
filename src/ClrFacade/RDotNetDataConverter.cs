@@ -173,6 +173,7 @@ namespace Rclr
         private static void SetUseRDotNet(bool useIt)
         {
             IntPtr UseRDotNet = DataConversionHelper.RclrNativeDll.GetFunctionAddress("use_rdotnet");
+            if (UseRDotNet == IntPtr.Zero) { throw new EntryPointNotFoundException("Native symbol use_rdotnet not found"); }
             Marshal.WriteInt32(UseRDotNet, useIt ? 1 : 0);
         }
 
