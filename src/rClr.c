@@ -556,15 +556,15 @@ SEXP r_show_args(SEXP args)
 	int i, j, nclass;
 	SEXP el, names, klass;
 	int nargs, nnames;
-	args = CDR(args); /* skip \92name\92 */
+	args = CDR(args); /* skip 'name' */
 
 	nargs = Rf_length(args);
 	for(i = 0; i < nargs; i++, args = CDR(args)) {
 		name = 
 			isNull(TAG(args)) ? "<unnamed>" : CHAR(PRINTNAME(TAG(args)));
 		el = CAR(args);
-		Rprintf("[%d] \92%s\92 R type %s, SEXPTYPE=%d\n", i+1, name, type2char(TYPEOF(el)), TYPEOF(el));
-		Rprintf("[%d] \92%s\92 length %d\n", i+1, name, LENGTH(el));
+		Rprintf("[%d] '%s' R type %s, SEXPTYPE=%d\n", i+1, name, type2char(TYPEOF(el)), TYPEOF(el));
+		Rprintf("[%d] '%s' length %d\n", i+1, name, LENGTH(el));
 		names = getAttrib(el, R_NamesSymbol);
 		nnames = Rf_length(names);
 		Rprintf("[%d] names of length %d\n", i+1, nnames);		
@@ -576,7 +576,7 @@ SEXP r_show_args(SEXP args)
 		klass = getAttrib(el, R_ClassSymbol);
 		nclass = length(klass);
 		for (j = 0; j < nclass; j++) {
-			Rprintf("[%d] class \92%s\92\n", i+1, CHAR(STRING_ELT(klass, j)) );
+			Rprintf("[%d] class '%s'\n", i+1, CHAR(STRING_ELT(klass, j)) );
 		}
 	}
 	return(R_NilValue);
