@@ -1,6 +1,19 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
+0.7-1	2014-12-11  beta
+    o	Quite a few months and internal versions later, more than 
+	enough has been done to have a public release. The main change 
+	under the hood is the use by default of R.NET in preference to C, 
+	which has opened the conversion of more complicated data structures.
+	o	One particularly noteworthy feature is the possibility to convert 
+	.NET objects into R data frames in pure C# (or any other .NET language). 
+	This is not directly apparent as a feature in rClr itself, but it supports the 
+	use case. More on these capabilities will come in the form of 
+	additional documentation in subsequent releases.
+	o	Not quite ready functional on Mono, but expected to be at 
+	parity in upcoming releases.
+	
 0.6-1	2014-04-29  beta
     o	Update to use R.NET 1.5.11. This brings lots of performance
 	improvements as well as fixes done over the past months to R.NET.
