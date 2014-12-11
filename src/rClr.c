@@ -296,6 +296,10 @@ MonoObject * create_mono_bool(int * val) {
 	return mono_value_box(domain, mono_get_boolean_class(), val);
 }
 
+MonoObject * create_mono_intptr(size_t * val) {
+	return mono_value_box(domain, mono_get_intptr_class(), val);
+}
+
 #elif MS_CLR
 
 void start_ms_clr() {
@@ -1079,7 +1083,7 @@ CLR_OBJ * rclr_ms_convert_element_rdotnet(SEXP el)
 	variant_t param((LONGLONG)el);
 	param.vt = VT_I8;
 	hr = SafeArrayPutElement(psaStaticMethodArgs, &index, &param);
-	bstr_t createSexpWrapper("CreateSexpWrapper");
+	bstr_t createSexpWrapper("CreateSexpWrapperMs");
 	hr = spTypeClrFacade->InvokeMember_3(createSexpWrapper, static_cast<BindingFlags>(
 		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
 		NULL, vtEmpty, psaStaticMethodArgs, &vtResult);
@@ -1701,8 +1705,9 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 	MonoMethod * methodCallStaticMethod = rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
 	MonoObject * exception, *result;
 	void** static_mparams = (void**)malloc(1 * sizeof(void*));
-	MonoArray* methParams = create_array_object(build_method_parameters(el), 1);
-	static_mparams[0] = methParams;
+	//MonoArray* methParams = create_array_object(el, 1);
+	//static_mparams[0] = create_mono_intptr(el);
+	static_mparams[0] = create_mono_intptr(&el);
 	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
 	print_if_exception(exception);
 	free(static_mparams);

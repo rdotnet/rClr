@@ -109,9 +109,13 @@ namespace Rclr
             }
         }
 
-        public static SymbolicExpressionWrapper CreateSexpWrapper(long ptrValue)
+        public static SymbolicExpressionWrapper CreateSexpWrapperMs(long ptrValue)
         {
-            IntPtr sexp = new IntPtr(ptrValue);
+            return CreateSexpWrapper(new IntPtr(ptrValue));
+        }
+
+        public static SymbolicExpressionWrapper CreateSexpWrapper(IntPtr sexp)
+        {
             if (sexp == IntPtr.Zero)
                 throw new ArgumentNullException("ptrValue", "Pointer value is the null pointer");
             SymbolicExpression s = DataConverter.CreateSymbolicExpression(sexp);

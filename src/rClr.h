@@ -284,6 +284,7 @@ void rclr_mono_create_domain( char* filename, int mono_debug);
 CLR_OBJ * create_object (MonoDomain *domain, MonoImage *image, char * name_space, char * type_short_name);
 MonoString * create_mono_string(char * str);
 MonoObject * create_mono_double(double * val_ptr);
+MonoObject * create_mono_intptr(size_t * val_ptr);
 MonoArray * create_array_double( double * values, int length );
 MonoArray * create_array_object( void ** values, int length );
 double * create_array_double_from_monoarray( MonoArray* monoarray );
