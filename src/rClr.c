@@ -292,6 +292,10 @@ MonoObject * create_mono_int32(int * val) {
 	return mono_value_box(domain, mono_get_int32_class(), val);
 }
 
+MonoObject * create_mono_int64(long * val) {
+	return mono_value_box(domain, mono_get_int64_class(), val);
+}
+
 MonoObject * create_mono_bool(int * val) {
 	return mono_value_box(domain, mono_get_boolean_class(), val);
 }
@@ -1702,13 +1706,17 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 {
 	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
 	CLR_OBJ * obj = NULL;
-	MonoMethod * methodCallStaticMethod = rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
+	MonoMethod * method = 
+		//rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
+		rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapperMs", 1);
 	MonoObject * exception, *result;
 	void** static_mparams = (void**)malloc(1 * sizeof(void*));
 	//MonoArray* methParams = create_array_object(el, 1);
 	//static_mparams[0] = create_mono_intptr(el);
-	static_mparams[0] = create_mono_intptr(&el);
-	result = mono_runtime_invoke(methodCallStaticMethod, NULL, static_mparams, &exception);
+	// static_mparams[0] = create_mono_intptr(&el);
+	//static_mparams[0] = create_mono_int64(&el);
+	static_mparams[0] = create_mono_int64(el);
+	result = mono_runtime_invoke(method, NULL, static_mparams, &exception);
 	print_if_exception(exception);
 	free(static_mparams);
 	return result;
