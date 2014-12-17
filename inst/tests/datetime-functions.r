@@ -12,13 +12,17 @@ createUtcDate <- function(isoDateTimeStr, tzIdClr) { clrCallStatic(cTypename, "U
 tzIdR_AUest = "Australia/Sydney"
 
 # IronPython: tz = [x for x in TimeZoneInfo.GetSystemTimeZones()]
-tzId_AUest <- ifelse(clrGetNativeLibName()=='rClrMono', 
-  # As of Mono 3.8.0, and probably earlier releases including 3.4.0, the time zone names have changed. Not Olson DB anymore. Not MS.NET either. *Sigh*
-  'E. Australia Standard Time', 
-  # I think even on Linux Mono does not use the Olson DB names. If still, use something like the following line
-  # ifelse( tolower(Sys.info())== 'windows', 'E. Australia Standard Time', tzIdR_AUest), 
-  "AUS Eastern Standard Time") # TODO: is 'Australia/Sydney' also OK for MS.NET?
-
+tzId_AUest <- 
+ifelse( tolower(Sys.info()['sysname'])== 'windows',
+    ifelse(clrGetNativeLibName()=='rClrMono', 
+      # As of Mono 3.8.0, and probably earlier releases including 3.4.0, the time zone names have changed. Not Olson DB anymore. Not MS.NET either. *Sigh*
+      'E. Australia Standard Time', 
+      # I think even on Linux Mono does not use the Olson DB names. If still, use something like the following line
+      #  'E. Australia Standard Time', tzIdR_AUest), 
+      "AUS Eastern Standard Time") # TODO: is 'Australia/Sydney' also OK for MS.NET?
+    ,
+tzIdR_AUest # on Linux, use the Olson DB.
+)
 # Help with unit test labels
 pctToString <- function(d) { paste(paste(as.character(d), attr(d, 'tzone')), collapse=';') }
 
