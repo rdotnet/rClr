@@ -146,26 +146,63 @@ CLR_OBJ * rclr_mono_get_current_object_direct() {
 }
 
 
-void print_exception( CLR_OBJ * exception, char * property_name)
+void print_to_R(MonoString * monoString, void f(const char *, ...), const char * msg_container)
 {
 	char * msg;
-	msg = mono_string_to_utf8((MonoString*)get_property_value(exception, property_name));
-	Rprintf ("%s\n", msg);
+	msg = mono_string_to_utf8(monoString);
+	f(msg_container, msg);
 	mono_free(msg);
+}
+
+void print_as_error(MonoString * monoString, const char * msg_container)
+{
+	print_to_R(monoString, error, msg_container);
+}
+
+void print_as_warning(MonoString * monoString, const char * msg_container)
+{
+	print_to_R(monoString, warning, msg_container);
+}
+
+void print_exception(CLR_OBJ * exception, char * property_name)
+{
+	print_to_R((MonoString*)get_property_value(exception, property_name), Rprintf, "%s\n");
+}
+
+MonoString * rclr_mono_get_last_clr_exception() {
+	MonoMethod * method = rclr_mono_get_method(spTypeClrFacade, "get_LastCallException", 0);
+	MonoObject * exception;
+	CLR_OBJ * result;
+	result = mono_runtime_invoke(method, NULL, NULL, &exception);
+	return (MonoString*)result;
+	//return result;
+	//// Work around https://r2clr.codeplex.com/workitem/67
+	//	hr = spType->InvokeMember_3(getLastException, static_cast<BindingFlags>(
+	//		BindingFlags_InvokeMethod | BindingFlags_Static | BindingFlags_Public),
+	//		NULL, vtEmpty, NULL, vtResult);
+	//	bstr_t tmpBstr(vtResult->bstrVal);
+	//	if (std::string((char*)vtResult->bstrVal) == std::string(""))
+	//		error("%s", "Failure in rclr_ms_call_static_method, but could not retrieve an error message");
+	//	else
+	//		// There seems to be a limit to the size printed by error, which is a problem for long stack traces
+	//		// Nevertheless cannot use Rprintf here or this breaks the try/error patterns e.g. with the testthat package...
+	//		// Rprintf("%s", bstr_to_c_string( &tmpBstr ));
+	//		error("%s", bstr_to_c_string(&tmpBstr));
 }
 
 void print_if_exception( CLR_OBJ * exception )
 {
 	CLR_OBJ * inner_exception;
 	if (exception) {
-		Rprintf("Exception thrown in the method invocation\n");
-		print_exception(exception, "Message");
-		print_exception(exception, "StackTrace");
-		inner_exception = get_property_value(exception, "InnerException");
-		if (inner_exception) {
-			print_exception(inner_exception, "Message");
-			print_exception(inner_exception, "StackTrace");
-		}
+		//Rprintf("Exception thrown in the method invocation\n");
+		//print_exception(exception, "Message");
+		//print_exception(exception, "StackTrace");
+		//inner_exception = get_property_value(exception, "InnerException");
+		//if (inner_exception) {
+		//	print_exception(inner_exception, "Message");
+		//	print_exception(inner_exception, "StackTrace");
+		//}
+		print_as_error(rclr_mono_get_last_clr_exception(), "%s");
 	}
 }
 
@@ -1601,7 +1638,7 @@ SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 		case MONO_TYPE_GENERICINST  :   /* <type> <type-arg-count> <type-1> \x{2026} <type-n> */
 		case MONO_TYPE_TYPEDBYREF 	:
 		case MONO_TYPE_U            :
-			warning("As yet, unhandled type of underlying MonoTypeEnum hex code %x", type_il);
+			//warning("As yet, unhandled type of underlying MonoTypeEnum hex code %x", type_il);
 		default:
 			result = clr_object_to_SEXP(pobj);
 			break;
@@ -1724,7 +1761,8 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 		//rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapperMs", 1);
 	MonoObject * exception, *result;
 	void** static_mparams = (void**)malloc(1 * sizeof(void*));
-	//MonoArray* methParams = create_array_object(el, 1);
+	// Note to self: it took me some trial and error to figure out what to pass in order to have things working. Not sure why &el directly, but this works...
+	// MonoArray* methParams = create_array_object(el, 1);
 	// static_mparams[0] = create_mono_intptr(el);
 	// static_mparams[0] = create_mono_intptr(&el);
 	// static_mparams[0] = create_mono_int64(&el);

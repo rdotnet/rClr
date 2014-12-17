@@ -332,8 +332,9 @@ clrIs <- function(obj, type) {
     stop(paste('argument "type" must be a CLR type name or a Type'))
   } else {
     typetypename <- clrGet(clrCall(type, 'GetType'), 'Name')
-    if(typetypename != 'RuntimeType')
-    stop(paste('argument "type" must be a CLR Type. Got a', typetypename))
+    if(!(typetypename %in% c('RuntimeType', 'MonoType'))) {
+      stop(paste('argument "type" must be a CLR Type. Got a', typetypename))
+    }
   }
   objType <- clrGetType(obj)
   return(clrCall(type, 'IsAssignableFrom', objType))
