@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.7-1\cr
-#' Purpose: \tab First public release for more than a year. Many changes, most resulting from improvements to R.NET. This release is effectively Windows-only. Upcoming releases are expected to be executabe on Linux/Mono \cr
-#' Date: \tab 2014-12-11\cr
+#' Version: \tab 0.7-2\cr
+#' Purpose: \tab rClr works on Linux/Mono \cr
+#' Date: \tab 2014-12-18\cr
 #' License: \tab LGPL 2.1\cr
 #' }
 #'
