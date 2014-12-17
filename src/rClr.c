@@ -136,6 +136,16 @@ CLR_OBJ * get_property_value( CLR_OBJ * obj, const char * property_name ) {
 	return mono_property_get_value (prop, obj, NULL, NULL);
 }
 
+CLR_OBJ * rclr_mono_get_current_object_direct() {
+	MonoMethod * method = rclr_mono_get_method( spTypeClrFacade, "get_CurrentObject", 0);
+	MonoObject * exception;
+	CLR_OBJ * result;
+	result = mono_runtime_invoke(method, NULL, NULL, &exception);
+	print_if_exception(exception);
+	return result;
+}
+
+
 void print_exception( CLR_OBJ * exception, char * property_name)
 {
 	char * msg;
@@ -504,12 +514,15 @@ SEXP make_char_single_sexp(const char* str) { // FIXME: does that not duplicate 
 // Try to work around issue rclr:33
 SEXP r_get_object_direct() {
 	SEXP result = NULL;
-	CLR_OBJ obj; // needs this: otherswise null pointer if using only objptr. 
 #ifdef MS_CLR
+	CLR_OBJ obj; // needs this: otherswise null pointer if using only objptr. 
 	rclr_ms_get_current_object_direct(&obj);
 	result = clr_obj_ms_convert_to_SEXP(obj);
 #elif MONO_CLR
-	error("%s", "r_get_object_direct not yet implemented for Mono");
+	//error("%s", "r_get_object_direct not yet implemented for Mono");
+	CLR_OBJ * objptr = NULL;
+	objptr = rclr_mono_get_current_object_direct();
+	result = clr_obj_mono_convert_to_SEXP(objptr);
 #endif
 	return result;
 }
@@ -1707,15 +1720,16 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
 	CLR_OBJ * obj = NULL;
 	MonoMethod * method = 
-		//rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
-		rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapperMs", 1);
+		rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapper", 1);
+		//rclr_mono_get_method(spTypeClrFacade, "CreateSexpWrapperMs", 1);
 	MonoObject * exception, *result;
 	void** static_mparams = (void**)malloc(1 * sizeof(void*));
 	//MonoArray* methParams = create_array_object(el, 1);
-	//static_mparams[0] = create_mono_intptr(el);
+	// static_mparams[0] = create_mono_intptr(el);
 	// static_mparams[0] = create_mono_intptr(&el);
-	//static_mparams[0] = create_mono_int64(&el);
-	static_mparams[0] = create_mono_int64(el);
+	// static_mparams[0] = create_mono_int64(&el);
+	// static_mparams[0] = create_mono_int64(el);
+	static_mparams[0] = &el;
 	result = mono_runtime_invoke(method, NULL, static_mparams, &exception);
 	print_if_exception(exception);
 	free(static_mparams);
