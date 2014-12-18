@@ -3,6 +3,7 @@
 export(clrCall)
 export(clrCallStatic)
 export(clrGet)
+export(clrGetConstructors)
 export(clrGetEnumNames)
 export(clrGetExtPtr)
 export(clrGetFields)

@@ -45,7 +45,7 @@ namespace Rclr
         static Int32 VariantClear(IntPtr pvarg)
         {
             if(ClrFacade.IsMonoRuntime)
-                throw new NotSupportedException("Variant clear can only work with Windows");
+                throw new NotSupportedException("Variant clear can only work with Windows and the .NET CLR");
             return VariantClearMs(pvarg);
         }
 

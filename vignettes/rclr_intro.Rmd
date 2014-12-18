@@ -23,16 +23,19 @@ A few overarching principles in the design of **rClr** are:
 * Avoid requiring changes and additions to the .NET code (C#, F#, etc.) for it to be used from R
 * The Common Language Runtime should behave as it usually does, so long as the behavior does not clash with expected R behaviors.
 
-Release 0.7 has major changes compared to the 0.5 series released in 2013. Major evolutions in R.NET have allowed to move interop code from C++ to C#.
+Release 0.7 has major changes compared to the 0.5 series released in 2013. Major evolutions in R.NET have allowed to move interop code from C++ to C#. The package will continue to increase its use of C# over C++, to reduce code complexity and be more agnostic with respect to the language runtime. The recent announcements in November 2014 by Microsoft with respect to .NET may change the landscape anyway, for the better.
+
+## Date-time handling and known limitations
+
+Several use cases for **rClr** involve the handling of time series. A lot of effort was devoted to handling the conversion of date and time between R and .NET representations. A large portion of the unit tests is devoted to these. Some conversions that are known to pass the test on Microsoft .NET do not pass on Mono, mostly if not solely because of daylight savings (at least for the Australia/Canberra time zone...). It may be wise to stick as much as possible to handling UTC dates, and you should exert caution and double-check if you are handling date-time in another time zone than UTC.
 
 Getting Started
 ----------------------------
 
 On loading, the package attempts to detect and initialise the CLR. 
 
-* On Windows the package looks by default for the Microsoft .NET runtime. If not available the Mono CLR is sought. Note that at the time of writing, the Mono installer for Windows includes only 32 bits binaries and will not be available from a 64 bits R application. It is however feasible to compile and install a 64 bit Mono runtime. If both CLR implementations are present, it is possible to force the use of Mono with "Sys.setenv(RCLR='Mono')" prior to loading the library.
-
-* On Unix-alike, Mono is the only supported runtime
+* On Windows the package looks by default for the Microsoft .NET runtime. If not available the Mono CLR is sought. Note that at the time of writing, the Mono installer for Windows includes only 32 bits binaries and will not be available from a 64 bits R application. It is however feasible to compile and install a 64 bit Mono runtime. If both CLR implementations are present, it is possible to force the use of Mono with "Sys.setenv(RCLR='Mono')" prior to loading the library. In practice, Mono is not a primary target on Windows given the ubiquity of Microsoft .NET, but this may be useful to diagnose Mono-specific issues with Visual Studio.
+* On Unix-alike, Mono is the only supported runtime (there may be more in 2015).
 
 To start with, the customary "Hello" example follows:
 
@@ -45,13 +48,10 @@ To demonstrate something marginally snazzier:
 
 ```{r, tidy=TRUE}
 # TODO: change that to a nicer prepackaged forms example. Or, allow for shorter forms for assembly names. Careful not to allow for ambiguity however.
-# Also TODO a simpler Hello World for Mono... following is problematic as of Mono 3.0.9
-if ( clrGetInnerPkgName() == 'rClrMs' ) {
-  clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
-  f <- clrNew('System.Windows.Forms.Form')
-  clrSet(f, 'Text', "Hello from the '.NET' framework")
-  clrCall(f, 'Show')
-}
+clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+f <- clrNew('System.Windows.Forms.Form')
+clrSet(f, 'Text', "Hello from the .NET framework")
+clrCall(f, 'Show')
 ```
 
 Main functions

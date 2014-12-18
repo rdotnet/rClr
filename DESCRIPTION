@@ -1,8 +1,8 @@
 Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
-Version: 0.7-1
-Date: 2014-12-11
+Version: 0.7-2
+Date: 2014-12-18
 Authors@R: c( person("Jean-Michel", "Perraud", email =
     "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
 Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
@@ -13,16 +13,17 @@ Maintainer: J-M <jean-michel.perraud@csiro.au>
 Description: rClr is a package for low-level access from R to a Common Language
     Runtime (CLR). The supported CLR implementations are Microsoft '.NET'
     framework on Windows and Mono on several platforms, currently Windows and
-    Debian Linux. rClr has been used for scientific modelling work since
-    2013-06. Running it on Mono is still relatively experimental, but has
-    significantly improved over 2014.
+    at least Debian Linux. rClr has been used at least in scientific modelling
+    work since 2013-06. Running it on Mono has been relatively experimental,
+    but as of November 2014 several factors have enabled very near functional
+    parity with the Windows/.NET.
 VignetteBuilder: knitr
 Suggests:
     testthat,
     knitr,
     xtable
 URL: http://rclr.codeplex.com
-License: LGPL-2.1
+License: LGPL-3
 Depends:
     R (>= 3.1.0),
     methods

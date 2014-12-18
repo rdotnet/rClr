@@ -463,6 +463,24 @@ namespace Rclr
         }
 
         /// <summary>
+        /// Gets all the non-static public constructors of a class.
+        /// </summary>
+        /// <param name="typeName">type name</param>
+        public static string[] GetConstructors(string typeName)
+        {
+            return GetConstructors(ClrFacade.GetType(typeName));
+        }
+
+        /// <summary>
+        /// Gets all the non-static public constructors of a class.
+        /// </summary>
+        /// <param name="type">type</param>
+        public static string[] GetConstructors(Type type)
+        {
+            return getConstructors(type, BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        /// <summary>
         /// Gets all the static public methods of an object with a name that contains a specific string.
         /// </summary>
         /// <param name="obj">The object to reflect on, or its type</param>
@@ -656,6 +674,11 @@ namespace Rclr
             return sort(methNames.ToArray());
         }
 
+        private static string[] getConstructors(Type type, BindingFlags flags)
+        {
+            return sort(Array.ConvertAll(type.GetConstructors(flags), x => summarizeConstructor(x)));
+        }
+
         private static string[] summarize(MemberInfo[] members)
         {
             var result = new string[members.Length];
@@ -666,30 +689,53 @@ namespace Rclr
 
         private static string summarize(MemberInfo member)
         {
+            var ctor = member as ConstructorInfo;
+            if (ctor != null) return summarizeConstructor(ctor);
             var field = member as FieldInfo;
             if (field != null) return summarizeField(field);
             var prop = member as PropertyInfo;
             if (prop != null) return summarizeProperty(prop);
             var method = member as MethodInfo;
             if (method != null) return summarizeMethod(method);
-            return "MemberInfo is not a field, property of method-info??";
+            throw new ArgumentException("MemberInfo is not a constructor, field, property of method-info, but of type {1}", member.GetType().ToString());
+        }
+
+        private static string summarizeConstructor(ConstructorInfo ctor)
+        {
+            var result = new StringBuilder();
+            addMethodBaseInfo(ctor, result);
+            result.Append(string.Format("Constructor: {0}", ctor.Name));
+
+            var parameters = ctor.GetParameters();
+            addParametersSummary(result, parameters);
+            return result.ToString();
+        }
+
+        private static void addMethodBaseInfo(MethodBase methodBase, StringBuilder result)
+        {
+            if (methodBase.IsGenericMethod) result.Append("Generic, ");
+            if (methodBase.IsGenericMethodDefinition) result.Append("Generic definition, ");
+            if (methodBase.IsStatic) result.Append("Static, ");
+            if (methodBase.IsAbstract) result.Append("abstract, ");
         }
 
         private static string summarizeMethod(MethodInfo method)
         {
             var result = new StringBuilder();
-            if (method.IsGenericMethod) result.Append("Generic, ");
-            if (method.IsGenericMethodDefinition) result.Append("Generic definition, ");
-            if (method.IsStatic) result.Append("Static, ");
-            if (method.IsAbstract) result.Append("abstract, ");
+            addMethodBaseInfo(method, result);
             result.Append(string.Format("Method: {0} {1}",
                                        method.ReturnType.Name, method.Name));
 
             var parameters = method.GetParameters();
+            addParametersSummary(result, parameters);
+            return result.ToString();
+        }
+
+        private static void addParametersSummary(StringBuilder result, ParameterInfo[] parameters)
+        {
             if (parameters.Length > 0)
                 result.Append(", ");
             result.Append(SummarizeTypes(parameters));
-            return result.ToString();
         }
 
         internal static string SummarizeTypes(ParameterInfo[] parameters)

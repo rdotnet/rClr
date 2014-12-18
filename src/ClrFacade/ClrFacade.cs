@@ -212,6 +212,7 @@ namespace Rclr
             // {
             //     DataConverter.Error(FormatException(ex));
             //     return true;
+
             // }
             // Instead, using the following
             LastCallException = FormatExceptionInnermost(ex);

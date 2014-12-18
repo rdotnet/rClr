@@ -9,19 +9,18 @@
 #' Version: \tab 0.7-2\cr
 #' Purpose: \tab rClr works on Linux/Mono \cr
 #' Date: \tab 2014-12-18\cr
-#' License: \tab LGPL 2.1\cr
+#' License: \tab LGPL 3\cr
 #' }
 #'
 #' 
 #' rClr is a package for low-level access from R to a Common Language
 #' Runtime (CLR). The supported CLR implementations are Microsoft '.NET'
-#' framework on Windows and Mono on several platforms, currently Windows and
-#' Debian Linux. rClr has been used for scientific modelling work since
-#' 2013-06. Running it on Mono is still relatively experimental, but has
-#' significantly improved over 2014.
-#'
-#' Kosei Abe (https://www.codeplex.com/site/users/view/kos59125) is gratefully 
-#' acknowledged as the original author of the R.NET C# library, reused by this package.
+#' framework on Windows and Mono on several platforms, currently Windows and at least 
+#' Debian Linux. rClr has been used at least in scientific modelling work since
+#' 2013-06. Running it on Mono has been relatively experimental, but as of November 2014 
+#' several factors have enabled very near functional parity with the Windows/.NET.
+#' 
+#' I gratefully acknowledge Kosei Abe and others for their work on the dependency R.NET (see https://github.com/jmp75/rdotnet/graphs/contributors)
 #'
 #' @name rClr-package
 #' @aliases rClr

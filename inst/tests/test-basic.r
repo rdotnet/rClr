@@ -391,6 +391,18 @@ test_that("Object members discovery behaves as expected", {
   # TODO test that methods that are explicit implementations of interfaces are found
 })
 
+test_that("Object constructor discovery behaves as expected", {
+  expect_equal(  
+    c("Constructor: .ctor"                              
+      , "Constructor: .ctor, Double"                      
+      , "Constructor: .ctor, Double, Double"              
+      , "Constructor: .ctor, Int32"                       
+      , "Constructor: .ctor, Int32, Int32"                
+      , "Constructor: .ctor, Int32, Int32, Double, Double"),
+    clrGetConstructors(testClassName)
+  )
+})
+
 test_that("Retrieval of object or class (i.e. static) members values behaves as expected", {
   f <- function(obj_or_type, rootMemberName, staticPrefix='') {
     fieldName <- paste(staticPrefix, 'Field', rootMemberName, sep='')

@@ -233,7 +233,7 @@ SEXP rclr_mono_call_method_with_exception_directcall(const char * mnam, CLR_OBJ 
 	CLR_OBJ * result;
 	MonoMethod * method = mono_class_get_method_from_name(klass, mnam, Rf_length(methodParams));
 	if (!method)
-		error_return("r_call_method: cannot find valid method (name and/or parameters)");
+		error_return("rclr_mono_call_method_with_exception_directcall: cannot find valid method (name and/or parameters)");
 
 	exception = NULL;
 
@@ -259,7 +259,7 @@ SEXP rclr_mono_call_method(const char *mnam, CLR_OBJ * obj, SEXP methodParams )
 	MonoClass *klass;
 	klass = mono_object_get_class(obj);
 	if (!klass)
-		error_return("r_call_method: cannot determine object class");
+		error_return("rclr_mono_call_method: cannot determine object class");
 
 #ifdef DEBUG
 	//Rprintf("Seeking method %s, with %i parameters, on class %s\n", mnam, Rf_length(p), mono_type_get_name(mono_class_get_byref_type(klass)));
