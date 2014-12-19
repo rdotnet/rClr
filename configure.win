@@ -62,8 +62,9 @@ GET_MONO_SDK_CMD=`echo ${RCLR_SRC_DIR}/get_monosdk.cmd | sed -e 's/\//\\\\/g'`
 MONO_INSTALL_PATH=`cmd /c "$GET_MONO_SDK_CMD"`
 if [ "$MONO_INSTALL_PATH" = "$NOT_FOUND" ]
 then
-	echo "error: Path to the Mono SDK not found by querying the Windows registry"
-	exit 1
+	echo "warning: Path to the Mono SDK not found by querying the Windows registry. Mono support will be disabled"
+	# echo "error: Path to the Mono SDK not found by querying the Windows registry"
+	# exit 1
 fi
 fi # if [ "$MONO_INSTALL_PATH" = "" ]
 
@@ -78,7 +79,10 @@ fi
 
 # Give info to the R pkg install log
 echo "R_HOME=$R_HOME"
-echo "MONO_INSTALL_PATH=$MONO_INSTALL_PATH"
+if [ "$MONO_INSTALL_PATH" != "$NOT_FOUND" ]
+	echo "MONO_INSTALL_PATH=$MONO_INSTALL_PATH"
+fi
+
 
 ## Update the rClr.props file, so that the build process finds the correct R.dll and mono-2.0.dll
 
