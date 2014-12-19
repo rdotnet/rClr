@@ -1,3 +1,8 @@
+# Nuget integration - need to override file ignore patterns
+!src/.nuget/*.*
+
+
+
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 [Bb]in/
 [Oo]bj/
@@ -87,6 +92,8 @@ ipch/
 
 # Guidance Automation Toolkit
 *.gpState
+
+
 
 # ReSharper is a .NET coding add-in
 _ReSharper*
