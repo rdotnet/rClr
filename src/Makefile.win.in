@@ -10,6 +10,10 @@ ifeq "$(MonoBuildConfiguration)" ""
 MonoBuildConfiguration:=MonoInstall
 endif
 
+ifeq "$(BuildMonoSupport)" ""
+BuildMonoSupport:=False
+endif
+
 SLN:= rClr.sln
 
 MSB:=@MSBUILD_EXE_PATH@
@@ -49,7 +53,7 @@ rClrLibComp: rClr.c
 	@for tgt_platform in x64 Win32; do \
 		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
-	$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA)
+	if [ "$(BuildMonoSupport)" == "True" ] ; then $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
 
 instdir:
 	@for r_architecture in x64 i386; do \
@@ -75,7 +79,7 @@ rClrLib: rClrLibComp
 	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/$$r_architecture/ ;
 	bin_dir=./$(MonoBuildConfiguration); \
 	RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
-	$(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ;
+	if [ "$(BuildMonoSupport)" == "True" ] ; then $(CP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ; fi ;
 	-$(CP_CMD) $(CLR_FACADE_BINS) $(INSTDIR)/libs
 	-$(CP_CMD) $(RDOTNET_BINS) $(INSTDIR)/libs
 	# CLR_FACADE_BINS_LOCAL="./$(CLR_FACADE_BINS)";\
