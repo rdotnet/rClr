@@ -80,6 +80,7 @@ fi
 # Give info to the R pkg install log
 echo "R_HOME=$R_HOME"
 if [ "$MONO_INSTALL_PATH" != "$NOT_FOUND" ]
+then
 	echo "MONO_INSTALL_PATH=$MONO_INSTALL_PATH"
 fi
 
