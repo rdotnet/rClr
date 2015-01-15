@@ -26,6 +26,7 @@ library(devtools)
 install_github("jmp75/rclr-devtools/packages/rClrDevtools")
 library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
 roxyRclr()
+# roxyRclr(pkgDir='~/src/codeplex/rClr')
 ```
 
 ## Vignettes
@@ -61,7 +62,7 @@ Note that a call to R CMD build will now build the vignettes too, so maybe vigne
 
 
 ```{r, eval=FALSE}
-> setwd('c:/src/codeplex/rclr')
+> setwd('c:/src/codeplex/rClr')
 > tools::buildVignettes(dir='.', tangle=TRUE)
 Quitting from lines 224-232 (rclr_intro.Rmd) 
 Error: processing vignette 'rclr_intro.Rmd' failed with diagnostics:
