@@ -249,7 +249,10 @@ perfMeasureFile <- list.files(system.file('tests', package='rClr'), pattern='per
 if(length(perfMeasureFile)==0) {stop('performance_profiling file not found in the installed rClr package')}
 stopifnot(file.exists(perfMeasureFile[1]))
 source(perfMeasureFile[1])
-trials <- createCases(numReps=10, maxArrayLen=7.5e6)
+maxArrayLen<-7.5e6
+# need to reduce the size if we run this on 32 bits machines:
+if(Sys.info()['machine'] == 'x86') {maxArrayLen<-6.5e6}
+trials <- createCases(numReps=10, maxArrayLen=maxArrayLen)
 bench <- rclrNumericPerf(trials, tag='no.r.net')
 plotRate(bench, case = 'CLR->R')
 plotRate(bench, case = 'CLR->R', logy=FALSE)

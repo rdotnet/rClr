@@ -34,6 +34,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DynamicInterop, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DynamicInterop.0.7.2.0\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet, Version=1.5.20.31719, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary, Version=1.5.20.31719, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -42,15 +54,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="DynamicInterop">
-      <HintPath>..\packages\DynamicInterop.0.7.1.0\lib\net40\DynamicInterop.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet">
-      <HintPath>..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.dll</HintPath>
-    </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
-    </Reference>
     <Reference Include="xunit">
       <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
