@@ -38,7 +38,7 @@
       <HintPath>..\..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="DynamicInterop">
-      <HintPath>..\..\packages\DynamicInterop.0.7.2.0\lib\net40\DynamicInterop.dll</HintPath>
+      <HintPath>..\..\packages\DynamicInterop.0.7.3\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
