@@ -43,8 +43,8 @@ vignettesRclr()
 ```
 
 ```{cmd}
-set R="c:\Program Files\R\R-3.1.0\bin\x64\R.exe"
-if not exist %R% set R="c:\Program Files\R\R-3.1.0\bin\i386\R.exe"
+set R="c:\Program Files\R\R-3.1.2\bin\x64\R.exe"
+if not exist %R% set R="c:\Program Files\R\R-3.1.2\bin\i386\R.exe"
 cd F:\src\codeplex
 set BuildConfiguration=Debug
 rm -rf rClr.Rcheck
