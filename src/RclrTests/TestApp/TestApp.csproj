@@ -30,16 +30,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="DynamicInterop">
-      <HintPath>..\..\packages\DynamicInterop.0.7.1.0\lib\net40\DynamicInterop.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="RDotNet">
-      <HintPath>..\..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.dll</HintPath>
+      <HintPath>..\..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.dll</HintPath>
     </Reference>
     <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\..\packages\R.NET.Community.1.5.19\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+      <HintPath>..\..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="System.Numerics" />
+    <Reference Include="DynamicInterop">
+      <HintPath>..\..\packages\DynamicInterop.0.7.2.0\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />

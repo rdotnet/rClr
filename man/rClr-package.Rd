@@ -11,9 +11,9 @@ Accessing the Common Language Runtime (.NET/Mono) from R
 \tabular{ll}{
 Package: \tab rClr\cr
 Type: \tab Package\cr
-Version: \tab 0.7-2\cr
-Purpose: \tab rClr works on Linux/Mono \cr
-Date: \tab 2014-12-18\cr
+Version: \tab 0.7-3\cr
+Purpose: \tab update to use a dynamic interop library that reflects the library search behavior of native libd \cr
+Date: \tab 2015-01-15\cr
 License: \tab LGPL 3\cr
 }
 
