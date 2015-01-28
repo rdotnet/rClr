@@ -47,7 +47,7 @@ vignettesRclr()
 set R="c:\Program Files\R\R-3.1.2\bin\x64\R.exe"
 if not exist %R% set R="c:\Program Files\R\R-3.1.2\bin\i386\R.exe"
 cd F:\src\codeplex
-set BuildConfiguration=Debug
+:: set BuildConfiguration=Debug
 rm -rf rClr.Rcheck
 rm rClr_0.*.tar.gz
 ```
