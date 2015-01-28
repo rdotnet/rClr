@@ -1,6 +1,7 @@
 #!/bin/sh
 
 RCLR_SRC_DIR=./src
+RCLR_NUGET_EXE=${RCLR_SRC_DIR}/.nuget/NuGet.exe
 if [ ! -e ${RCLR_SRC_DIR} ] 
 then
 	echo "error: no suitable package src dir found - last tried ${RCLR_SRC_DIR}"
@@ -55,6 +56,14 @@ then
 	echo "error: glib-2.0 not found"
 	exit 1
 fi
+
+# I do not think the following is needed. The solution file would trigger a Target RestorePackages:
+#if [ -e ${RCLR_NUGET_EXE} ] 
+#then
+#	echo "Found ${RCLR_NUGET_EXE}"
+#	echo "Trying nuget package restore..."
+#    mono ${RCLR_NUGET_EXE} restore -NonInteractive ${RCLR_SRC_DIR}/rClr_monodev.sln
+#fi
 	
 subst_1="s|@MONO_INSTALL_PATH@|$MONO_INSTALL_PATH|g"
 subst_2="s|@MONO_INSTALL_PATH64@|$MONO_INSTALL_PATH64|g"
