@@ -69,11 +69,17 @@
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RDotNet">
-      <HintPath>..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.dll</HintPath>
+    <Reference Include="DynamicInterop, Version=0.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\packages\R.NET.Community.1.5.20\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    <Reference Include="RDotNet, Version=1.5.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.21\lib\net40\RDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RDotNet.NativeLibrary, Version=1.5.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.21\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
