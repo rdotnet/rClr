@@ -425,6 +425,11 @@ namespace Rclr
 
         #endregion
 
+        public static Function GetRFunctionInvoke(string rfunctionName)
+        {
+            var engine = REngine.GetInstance();
+            return engine.GetSymbol(rfunctionName).AsFunction();
+        }
 
         public static void ThrowException(int stackDepth)
         {
