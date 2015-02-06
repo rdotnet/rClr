@@ -10,7 +10,7 @@
     <RootNamespace>Rclr</RootNamespace>
     <AssemblyName>ClrFacade</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -89,6 +89,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="DynamicInterop">
+      <HintPath>..\packages\DynamicInterop.0.7.3\lib\net40\DynamicInterop.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClrFacade.cs" />
