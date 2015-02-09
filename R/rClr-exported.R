@@ -747,12 +747,14 @@ clrCobj <- function(obj, envClassWhere=.GlobalEnv) {
 #' @param env environment where the new generator is created.
 #' @return the object generator function
 setClrRefClass <- function(typeName,
-                            env=topenv(parent.frame()))
+                            # env=topenv(parent.frame())) 
+                            env=as.environment('package:rClr'))  
 {
   isAbstract <- function(type) { clrGet(type, 'IsAbstract' ) }
   isInterface <- function(type) { clrGet(type, 'IsInterface' ) }
 
-  tryCatch(getRefClass(typeName),
+  # Get rid of the try-catch; this was only as a workaround for using R5'd getRefClass, looks like
+  tryCatch(getR6RefClass(typeName),
         error=function(e) {
           type <- clrGetType(typeName)
           if(is.null(type)) stop(paste('CLR type not found for type name', typeName))
@@ -800,7 +802,7 @@ setClrRefClass <- function(typeName,
           })
 
           if (typeName == "System.Object")
-          setRefClass("System.Object",
+          setR6RefClass("System.Object",
                       fields = list(ref = 'cobjRef'),
                       methods = c(methods,
                         initialize = function(...) {
@@ -823,7 +825,7 @@ setClrRefClass <- function(typeName,
                         }),
                       contains = contains,
                       where = env)
-          else setRefClass(typeName,
+          else setR6RefClass(typeName,
                           methods = methods,
                           contains = contains,
                           where = env)
