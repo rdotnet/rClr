@@ -1514,6 +1514,13 @@ SEXP clr_object_to_SEXP(CLR_OBJ * objptr) {
 
 #ifdef MONO_CLR
 
+void release_transient_objects() {
+	for (size_t i = 0; i < transientArgs.size(); i++) {
+		delete transientArgs.at(i);
+	}
+	transientArgs.clear();
+}
+
 double * clr_datetimearray_obj_to_numeric(CLR_OBJ * datetimearray_ptr, MonoMethod * method) {
 	MonoObject * exception;
 	void ** params;
@@ -1786,6 +1793,7 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 	static_mparams[0] = &el;
 	result = mono_runtime_invoke(method, NULL, static_mparams, &exception);
 	print_if_exception(exception);
+	transientArgs.push_back(result);
 	free(static_mparams);
 	return result;
 }

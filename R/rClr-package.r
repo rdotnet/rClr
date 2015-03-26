@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.7-3\cr
-#' Purpose: \tab update to use a dynamic interop library that reflects the library search behavior of native libd \cr
-#' Date: \tab 2015-01-15\cr
+#' Version: \tab 0.7-4\cr
+#' Purpose: \tab Fix an issue whereby  memory could leak on passing argument to rClr functions. This was happening if setRDotNet(TRUE). Which was the default setting. \cr
+#' Date: \tab 2015-03-26\cr
 #' License: \tab LGPL 3\cr
 #' }
 #'

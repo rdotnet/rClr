@@ -355,11 +355,6 @@ test_that("CLR type compatibility checking", {
   expect_error(clrIs(testObj, testObj))
 })
 
-test_that("Double indirection function callback works", {
-  wrappedRFunction <- clrCallStatic(cTypename, 'GetRFunctionInvoke', 'abs')
-  expect_equal( 4.5, clrCall(wrappedRFunction, 'Invoke', -4.5))
-})
-
 test_that("Loaded assemblies discovery", {
   expect_that(all(c('ClrFacade', 'mscorlib') %in% clrGetLoadedAssemblies()), is_true())
   d <- clrGetLoadedAssemblies(fullname=TRUE, filenames=TRUE)

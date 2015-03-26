@@ -97,10 +97,8 @@ typedef bool RCLR_BOOL;
 using namespace mscorlib;
 typedef variant_t CLR_OBJ;
 
-// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-std::vector<VARIANT*> transientArgs;
-
 #endif
+
 
 typedef struct {
 	CLR_OBJ * objptr;
@@ -280,6 +278,9 @@ MonoAssembly *assembly;
 MonoImage *image;
 MonoClass * spTypeClrFacade = NULL;
 
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<CLR_OBJ*> transientArgs;
+
 MonoDomain * get_domain();
 MonoAssembly * get_assembly();
 MonoImage * get_image();
@@ -323,6 +324,10 @@ IUnknownPtr spAppDomainThunk = NULL;
 bstr_t bstrClassName(L"Rclr.ClrFacade");
 _TypePtr spTypeClrFacade = NULL;
 variant_t vtEmpty;
+
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<VARIANT*> transientArgs;
+
 
 char * bstr_to_c_string(bstr_t * src);
 char * getComErrorMsg(HRESULT hr);
