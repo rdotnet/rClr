@@ -1525,7 +1525,7 @@ double * clr_datetimearray_obj_to_numeric(CLR_OBJ * datetimearray_ptr, MonoMetho
 	MonoObject * exception;
 	void ** params;
 	params = (void**) &(datetimearray_ptr);
-	return create_array_double_from_monoarray(mono_runtime_invoke(method, NULL, params, &exception));
+	return create_array_double_from_monoarray((MonoArray*)mono_runtime_invoke(method, NULL, params, &exception));
 }
 
 double * clr_datetimearray_obj_to_r_date_numeric(CLR_OBJ * datetimearray_ptr) {
@@ -1636,7 +1636,7 @@ SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 			}
 			else if(strcmp(klassName, "DateTime[]") == 0)
 			{
-				values = clr_datetimearray_obj_to_r_posixct_numeric(monoarray);
+				values = clr_datetimearray_obj_to_r_posixct_numeric((MonoObject*)monoarray);
 				result = make_POSIXct_sexp(n, values);
 				free(values);
 				break;

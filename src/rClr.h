@@ -113,8 +113,12 @@ typedef struct {
 /////////////////////////////////////////
 
 
-#ifdef MS_CLR
+
+#ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef MS_CLR
 	SEXP rclr_ms_get_type_name(SEXP clrObj);
 	SEXP rclr_ms_reflect_object(CLR_OBJ * objptr);
 	SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &pobj);
@@ -146,6 +150,7 @@ extern "C" {
 #elif MS_CLR
 	VARIANT ** build_method_parameters(SEXP largs);
 #endif
+    SEXP clr_object_to_SEXP(CLR_OBJ *o);
 	void get_ns_and_type( SEXP p, char ** name_space, char ** type_short_name );
 	void get_FullTypeName( SEXP p, char ** tname);
 	void rclr_load_assembly(char ** filename);
@@ -154,7 +159,8 @@ extern "C" {
 	void rclr_cleanup();
 	static void clr_object_finalizer(SEXP ref);
 	int use_rdotnet = 0;
-#ifdef MS_CLR
+
+#ifdef __cplusplus
 } // end of extern "C" block
 #endif
 
@@ -172,17 +178,21 @@ CLR_OBJ * rclr_create_array_objects( SEXP s );
 CLR_OBJ * rclr_wrap_data_frame( SEXP s );
 CLR_OBJ * get_clr_object( SEXP clrObj );
 CLR_OBJ * create_clr_complex_direct(Rcomplex * complex, int length);
-SEXP clr_object_to_SEXP(CLR_OBJ *o);
 const char * get_type_full_name(CLR_OBJ *objptr);
 
 
 
+#ifdef MS_CLR
 #ifndef  __cplusplus
 #define STR_DUP strdup
 #else
 #define STR_DUP _strdup
 #endif
+#endif
 
+#ifdef MONO_CLR
+#define STR_DUP strdup
+#endif
 
 
 // Getting the offset for VT_DATE between R and .NET: the information is contradictory. Following the SECOND seems to work.
