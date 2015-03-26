@@ -81,6 +81,7 @@ typedef bool RCLR_BOOL;
 #include <Rversion.h>
 #include <R_ext/Callbacks.h>
 #include <stdint.h>
+#include <vector>
 
 #ifdef MS_CLR
 #pragma comment(lib, "mscoree.lib")
@@ -95,6 +96,9 @@ typedef bool RCLR_BOOL;
 #endif
 using namespace mscorlib;
 typedef variant_t CLR_OBJ;
+
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<VARIANT*> transientArgs;
 
 #endif
 
@@ -356,6 +360,7 @@ SAFEARRAY * create_safe_array(VARIANT ** values, int length);
 VARIANT * rclr_ms_create_vt_array(SAFEARRAY * safeArray, VARTYPE vartype);
 
 void free_variant_array(VARIANT ** a, int size);
+void release_transient_objects();
 void rclr_ms_fill_array_from_index_two(SAFEARRAY * psaStaticMethodArgs, VARIANT ** params, int paramsArgLength);
 
 #endif
