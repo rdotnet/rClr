@@ -106,6 +106,12 @@ namespace Rclr
             int breakpoint = 1;
         }
 
+        public static double[] CreateArrayMemFootprint(long memFp)
+        {
+            var arraySize = memFp/8;
+            return new double[arraySize];
+        }
+
         public static int GetWorkingSetMemoryMegabtyes()
         {
             return (int)(Process.GetCurrentProcess().WorkingSet64 / 1e6);

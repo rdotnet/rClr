@@ -87,3 +87,28 @@ test_package('rClr')
 # restore:
 options(warn=0)
 ```
+
+Had an issue with memory footprint on 2015-03-26. A way to diagnose things:
+
+```{r, eval=FALSE}
+library(rClr)
+cTypename <- "Rclr.TestCases"
+testClassName <- "Rclr.TestObject"
+callGcMethname <- "CallGC"
+forceDotNetGc <- function() { callTestCase( callGcMethname) }
+forceGc <- function() {gc() ; forceDotNetGc() ; gc() ; forceDotNetGc() ; }
+
+callTestCase <- function(...) {
+  clrCallStatic(cTypename, ...)
+}
+
+blah <- clrCallStatic(cTypename, "CreateArrayMemFootprint", 100L * 1024L * 1024L)
+forceGc()
+forceGc()
+clrCallStatic(cTypename, "SinkLargeObject", blah)
+forceGc()
+forceGc()
+rm(blah)
+forceGc()
+forceGc()
+```
