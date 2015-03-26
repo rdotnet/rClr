@@ -579,6 +579,7 @@ SEXP r_create_clr_object( SEXP p ) {
 	VARIANT ** params = build_method_parameters(methodParams);
 	hr = rclr_ms_create_object(ns_qualified_typename, params, argLength, &obj);
 	free_variant_array(params, argLength);
+	release_transient_objects();
 	if (FAILED(hr))
 	{
 		error("Failed to create a new object of class %s", ns_qualified_typename);
@@ -686,6 +687,7 @@ SEXP r_call_static_method(SEXP p) {
 	CLR_OBJ result;
 	hr = rclr_ms_call_static_method_tname(ns_qualified_typename, (char *)mnam, params, argLength, &result);
 	free_variant_array(params, argLength);
+	release_transient_objects();
 	free(ns_qualified_typename);
 	if (FAILED(hr))
 	{
@@ -726,6 +728,7 @@ SEXP r_call_method(SEXP par) {
 	CLR_OBJ result;
 	rclr_ms_call_method(objptr, (char *)mnam, params, argLength, &result);
 	free_variant_array(params, argLength);
+	release_transient_objects();
 	return clr_obj_ms_convert_to_SEXP(result);
 #endif
 
@@ -1105,6 +1108,17 @@ VARIANT ** build_method_parameters(SEXP largs) {
 }
 
 #if MS_CLR
+
+void release_transient_objects()
+{
+	for (size_t i = 0; i < transientArgs.size(); i++)
+	{
+		VariantClear(transientArgs.at(i));
+	}
+	transientArgs.clear();
+}
+
+
 void free_variant_array(VARIANT ** a, int size) {
 	SAFEARRAY * a_ptr;
 	for (int i = 0; i < size; i++)
@@ -1145,7 +1159,9 @@ CLR_OBJ * rclr_ms_convert_element_rdotnet(SEXP el)
 		error("%s", "Failure in rclr_convert_element_rdotnet");
 	}
 	SafeArrayDestroy(psaStaticMethodArgs);
-	return new CLR_OBJ(vtResult);
+	auto result = new CLR_OBJ(vtResult);
+	transientArgs.push_back(result);
+	return result;
 }
 
 HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
@@ -1498,11 +1514,18 @@ SEXP clr_object_to_SEXP(CLR_OBJ * objptr) {
 
 #ifdef MONO_CLR
 
+void release_transient_objects() {
+	for (size_t i = 0; i < transientArgs.size(); i++) {
+		delete transientArgs.at(i);
+	}
+	transientArgs.clear();
+}
+
 double * clr_datetimearray_obj_to_numeric(CLR_OBJ * datetimearray_ptr, MonoMethod * method) {
 	MonoObject * exception;
 	void ** params;
 	params = (void**) &(datetimearray_ptr);
-	return create_array_double_from_monoarray(mono_runtime_invoke(method, NULL, params, &exception));
+	return create_array_double_from_monoarray((MonoArray*)mono_runtime_invoke(method, NULL, params, &exception));
 }
 
 double * clr_datetimearray_obj_to_r_date_numeric(CLR_OBJ * datetimearray_ptr) {
@@ -1613,7 +1636,7 @@ SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj) {
 			}
 			else if(strcmp(klassName, "DateTime[]") == 0)
 			{
-				values = clr_datetimearray_obj_to_r_posixct_numeric(monoarray);
+				values = clr_datetimearray_obj_to_r_posixct_numeric((MonoObject*)monoarray);
 				result = make_POSIXct_sexp(n, values);
 				free(values);
 				break;
@@ -1770,6 +1793,7 @@ CLR_OBJ * rclr_mono_convert_element_rdotnet(SEXP el)
 	static_mparams[0] = &el;
 	result = mono_runtime_invoke(method, NULL, static_mparams, &exception);
 	print_if_exception(exception);
+	transientArgs.push_back(result);
 	free(static_mparams);
 	return result;
 }

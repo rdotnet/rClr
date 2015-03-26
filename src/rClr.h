@@ -81,6 +81,7 @@ typedef bool RCLR_BOOL;
 #include <Rversion.h>
 #include <R_ext/Callbacks.h>
 #include <stdint.h>
+#include <vector>
 
 #ifdef MS_CLR
 #pragma comment(lib, "mscoree.lib")
@@ -98,6 +99,7 @@ typedef variant_t CLR_OBJ;
 
 #endif
 
+
 typedef struct {
 	CLR_OBJ * objptr;
 	uint32_t handle; // TOCHECK: is this useful for both Mono and ms.net?
@@ -111,8 +113,12 @@ typedef struct {
 /////////////////////////////////////////
 
 
-#ifdef MS_CLR
+
+#ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef MS_CLR
 	SEXP rclr_ms_get_type_name(SEXP clrObj);
 	SEXP rclr_ms_reflect_object(CLR_OBJ * objptr);
 	SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &pobj);
@@ -144,6 +150,7 @@ extern "C" {
 #elif MS_CLR
 	VARIANT ** build_method_parameters(SEXP largs);
 #endif
+    SEXP clr_object_to_SEXP(CLR_OBJ *o);
 	void get_ns_and_type( SEXP p, char ** name_space, char ** type_short_name );
 	void get_FullTypeName( SEXP p, char ** tname);
 	void rclr_load_assembly(char ** filename);
@@ -152,7 +159,8 @@ extern "C" {
 	void rclr_cleanup();
 	static void clr_object_finalizer(SEXP ref);
 	int use_rdotnet = 0;
-#ifdef MS_CLR
+
+#ifdef __cplusplus
 } // end of extern "C" block
 #endif
 
@@ -170,17 +178,21 @@ CLR_OBJ * rclr_create_array_objects( SEXP s );
 CLR_OBJ * rclr_wrap_data_frame( SEXP s );
 CLR_OBJ * get_clr_object( SEXP clrObj );
 CLR_OBJ * create_clr_complex_direct(Rcomplex * complex, int length);
-SEXP clr_object_to_SEXP(CLR_OBJ *o);
 const char * get_type_full_name(CLR_OBJ *objptr);
 
 
 
+#ifdef MS_CLR
 #ifndef  __cplusplus
 #define STR_DUP strdup
 #else
 #define STR_DUP _strdup
 #endif
+#endif
 
+#ifdef MONO_CLR
+#define STR_DUP strdup
+#endif
 
 
 // Getting the offset for VT_DATE between R and .NET: the information is contradictory. Following the SECOND seems to work.
@@ -276,6 +288,9 @@ MonoAssembly *assembly;
 MonoImage *image;
 MonoClass * spTypeClrFacade = NULL;
 
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<CLR_OBJ*> transientArgs;
+
 MonoDomain * get_domain();
 MonoAssembly * get_assembly();
 MonoImage * get_image();
@@ -320,6 +335,10 @@ bstr_t bstrClassName(L"Rclr.ClrFacade");
 _TypePtr spTypeClrFacade = NULL;
 variant_t vtEmpty;
 
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<VARIANT*> transientArgs;
+
+
 char * bstr_to_c_string(bstr_t * src);
 char * getComErrorMsg(HRESULT hr);
 void ms_rclr_cleanup();
@@ -356,6 +375,7 @@ SAFEARRAY * create_safe_array(VARIANT ** values, int length);
 VARIANT * rclr_ms_create_vt_array(SAFEARRAY * safeArray, VARTYPE vartype);
 
 void free_variant_array(VARIANT ** a, int size);
+void release_transient_objects();
 void rclr_ms_fill_array_from_index_two(SAFEARRAY * psaStaticMethodArgs, VARIANT ** params, int paramsArgLength);
 
 #endif

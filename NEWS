@@ -1,6 +1,16 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
+0.7-4	2014-03-26  beta
+    o	Quite a few months and internal versions later, more than 
+	enough has been done to have a public release. The main change 
+	under the hood is the use by default of R.NET in preference to C, 
+	which has opened the conversion of more complicated data structures.
+	
+0.7-3	2014-01-15  beta
+    o	Make data conversion using R.NET the default. 
+    o	Feature parity on Linux and Windows
+	
 0.7-1	2014-12-11  beta
     o	Quite a few months and internal versions later, more than 
 	enough has been done to have a public release. The main change 

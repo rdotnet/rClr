@@ -87,15 +87,17 @@ clean:
 
 rClrMono$(SHLIB_EXT): rClrMono.o
 	#gcc -std=gnu99 -shared -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
-	$(CC) -std=gnu99 -shared -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS) 
+	g++ -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+	#g++ -shared -L/usr/lib/R/lib -Wl,-z,relro -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
 
 rClrMono.o:
-	$(CC) $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.c -o rClrMono.o
+	gcc -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 
 printarch:
 	-@echo R_ARCH=$(R_ARCH)
 	-@echo OBJECTS=$(OBJECTS)
 	-@echo SHLIB_EXT=$(SHLIB_EXT)
+	-@echo CC=$(CC)
 
 instdir:
 	-@rm -rf $(INSTDIR)/libs$(R_ARCH)

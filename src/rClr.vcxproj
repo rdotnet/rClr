@@ -43,13 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="rClr.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoDebug|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoInstallDebug|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoInstall|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoDebug|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoInstallDebug|Win32'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MonoInstall|Win32'">CompileAsC</CompileAs>
+    <ClCompile Include="rClr.cpp">
     </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">

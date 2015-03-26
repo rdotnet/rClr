@@ -295,6 +295,7 @@ namespace Rclr
             {
                 engine = REngine.GetInstance(initialize: false);
                 engine.Initialize(setupMainLoop: false);
+                engine.AutoPrint = false;
             }
         }
 

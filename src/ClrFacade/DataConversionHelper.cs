@@ -210,11 +210,18 @@ namespace Rclr
     /// </summary>
     public class SymbolicExpressionWrapper
     {
+        private static int counter = 0;
         public SymbolicExpressionWrapper(SymbolicExpression sexp)
         {
             this.Sexp = sexp;
+            counter++;
         }
         public SymbolicExpression Sexp { get; private set; }
+
+        ~SymbolicExpressionWrapper()
+        {
+            counter--;
+        }
 
         public object ToClrEquivalent()
         {

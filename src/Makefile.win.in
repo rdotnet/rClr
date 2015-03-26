@@ -49,7 +49,7 @@ winarch:
 	#-@echo 	"env variable TEMP is $(TEMP)"
 	#-@echo 	"env variable TMP is $(TMP)"
 
-rClrLibComp: rClr.c
+rClrLibComp: rClr.cpp
 	@for tgt_platform in x64 Win32; do \
 		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
