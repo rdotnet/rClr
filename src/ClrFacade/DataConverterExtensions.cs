@@ -9,7 +9,7 @@ namespace Rclr
     {
         public static double[][] ToDouble(this float[][] array)
         {
-            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (float)x);
+            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (double)x);
         }
 
         public static double[,] ToDoubleRect(this float[][] array)
@@ -46,7 +46,7 @@ namespace Rclr
 
         public static double[,] ToDoubleRect(this float[,] array)
         {
-            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (float)x);
+            return ArrayConverter.ArrayConvertAll<float, double>(array, x => (double)x);
         }
 
         public static float[,] ToFloatRect(this float[][] array)
