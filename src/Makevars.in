@@ -58,8 +58,8 @@ BuildConfiguration:=Unix
 else
 BuildConfiguration:=UnixDebug
 endif
-PKG_CFLAGS_LOCAL:=`pkg-config --cflags mono-2 glib-2.0`
-PKG_LIBS_LOCAL:=`pkg-config --libs mono-2 glib-2.0`
+PKG_CFLAGS_LOCAL:=`pkg-config --cflags monosgen-2 glib-2.0`
+PKG_LIBS_LOCAL:=`pkg-config --libs monosgen-2 glib-2.0`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
 PKG_LIBS:=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
