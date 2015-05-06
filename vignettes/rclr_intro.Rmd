@@ -200,8 +200,8 @@ The **rClr** functions `clrCall` and `clrCallStatic` currently relies mostly on 
 
 C# has a feature to handle elegantly methods allowing for a variable number of arguments, the `params` keyword. This helps handle concisely methods that would otherwise have a large number of overloads. 
 
-```{Csharp}
-   public static int TestParams(string a, string b, params int[] c)
+```
+public static int TestParams(string a, string b, params int[] c)
 ```
 
 You can call such a method qith a variable number of arguments; however the types must match that in the CLR method.
@@ -216,7 +216,7 @@ clrCall(testObj, 'TestParams', "Hello, ", "World!", 1:5)
 
 C# also has a way to define functions with optional parameters, or rather parameters with default values. 
 
-```{Csharp}
+```
 public void TestDefaultValues(string a, int b, int c=1, int d=2) { }
 ```
 

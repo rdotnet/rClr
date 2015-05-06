@@ -7,32 +7,32 @@
 # WARNING: Makevars is generated from Makevars.in
 # You may loose direct modifications to the file Makevars!
 
-BUILDTYPE:=Release
-BUILDTYPE:=Debug
+BUILDTYPE=Release
+BUILDTYPE=Debug
 
-TGTPLATFORM:=Any CPU
+TGTPLATFORM=Any CPU
 
-MONO_INSTALL_PATH:=@MONO_INSTALL_PATH@
-MONO_INSTALL_PATH64:=@MONO_INSTALL_PATH64@
+MONO_INSTALL_PATH=@MONO_INSTALL_PATH@
+MONO_INSTALL_PATH64=@MONO_INSTALL_PATH64@
 OBJECTS=rClrMono.o
 ifeq "$(MONO_INSTALL_PATH)" ""
-XBUILD:=xbuild
+XBUILD=xbuild
 else
-XBUILD:=$(MONO_INSTALL_PATH)/bin/xbuild
+XBUILD=$(MONO_INSTALL_PATH)/bin/xbuild
 endif
-SLN:= rClr_monodev.sln
-# SLN:= rClr.sln
+SLN= rClr_monodev.sln
+# SLN= rClr.sln
 
 ######## O/S dependent config
 ifeq "$(R_OSTYPE)" "windows"
 
 ifeq "$(BUILDTYPE)" "Release"
-BuildConfiguration:=MonoInstall
+BuildConfiguration=MonoInstall
 else
-BuildConfiguration:=MonoInstallDebug
+BuildConfiguration=MonoInstallDebug
 endif
 
-RCLR_LIBS:=rClrMono$(SHLIB_EXT)
+RCLR_LIBS=rClrMono$(SHLIB_EXT)
 
 # On a Win7 machine,  'pkg-config --cflags mono-2 glib-2.0'   returns
 # -mno-cygwin -mms-bitfields -mwindows -IF:/bin/Mono/include/mono-2.0 -IF:/bin/Mono/include/glib-2.0 -IF:/bin/Mono/lib/glib-2.0/include
@@ -49,30 +49,30 @@ ifeq "$(R_ARCH)" "/x64"
 PKG_LIBS =		-mms-bitfields -mwindows -L"$(MONO_INSTALL_PATH64)/" -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
 # PKG_LIBS =		-mms-bitfields -mwindows -LF:/bin/mono_built/lib -LF:/bin/mono_built/bin -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
 endif
-RCLRBINDIRFACADE:= ./$(BuildConfiguration)
+RCLRBINDIRFACADE= ./$(BuildConfiguration)
 
 else
 # the OS is not 'windows'
 ifeq "$(BUILDTYPE)" "Release"
-BuildConfiguration:=Unix
+BuildConfiguration=Unix
 else
-BuildConfiguration:=UnixDebug
+BuildConfiguration=UnixDebug
 endif
-PKG_CFLAGS_LOCAL:=`pkg-config --cflags monosgen-2 glib-2.0`
-PKG_LIBS_LOCAL:=`pkg-config --libs monosgen-2 glib-2.0`
+PKG_CFLAGS_LOCAL=`pkg-config --cflags monosgen-2 glib-2.0`
+PKG_LIBS_LOCAL=`pkg-config --libs monosgen-2 glib-2.0`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
-PKG_LIBS:=$(PKG_LIBS_LOCAL)
+PKG_LIBS=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
-RCLRBINDIRFACADE:= ./$(BUILDTYPE)
+RCLRBINDIRFACADE= ./$(BUILDTYPE)
 endif    
 # i.e. end of conditional setup on ifeq "$(R_OSTYPE)" "windows"
 
-CLR_FACADE_BINS:=$(RCLRBINDIRFACADE)/*.dll*
+CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
 
-INSTDIR:= ../inst
+INSTDIR= ../inst
 
-MODE:=Rebuild
-SLNPROPERTIES:=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)"
+MODE=Rebuild
+SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)"
 
 
 RM = 		rm -f

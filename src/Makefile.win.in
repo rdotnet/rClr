@@ -4,24 +4,24 @@
 
 # defaults the build configurations to the 'release' ones (i.e. no debug symbols)
 ifeq "$(BuildConfiguration)" ""
-BuildConfiguration:=Release
+BuildConfiguration=Release
 endif
 ifeq "$(MonoBuildConfiguration)" ""
-MonoBuildConfiguration:=MonoInstall
+MonoBuildConfiguration=MonoInstall
 endif
 
 ifeq "$(BuildMonoSupport)" ""
-BuildMonoSupport:=False
+BuildMonoSupport=False
 endif
 
-SLN:= rClr.sln
+SLN= rClr.sln
 
-MSB:=@MSBUILD_EXE_PATH@
+MSB=@MSBUILD_EXE_PATH@
 
-INSTDIR:= ../inst
+INSTDIR= ../inst
 
-# MODE:=Rebuild
-MODE:=Build
+# MODE=Rebuild
+MODE=Build
 
 # This can be helpful to diagnose the msbuild procedure
 # DEBUG_BUILD_CMD=/v:diag
@@ -33,12 +33,12 @@ ifneq "$(VS120COMNTOOLS)" ""
 MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0
 endif
 
-CLR_FACADE_BINS:=./$(BuildConfiguration)/ClrFacade.*
-RDOTNET_BINS:=./$(BuildConfiguration)/RDotNet.* ./$(BuildConfiguration)/RDotNet.NativeLibrary.* ./$(BuildConfiguration)/DynamicInterop.*
-RCLRMS:=rClrMs
+CLR_FACADE_BINS=./$(BuildConfiguration)/ClrFacade.*
+RDOTNET_BINS=./$(BuildConfiguration)/RDotNet.* ./$(BuildConfiguration)/RDotNet.NativeLibrary.* ./$(BuildConfiguration)/DynamicInterop.*
+RCLRMS=rClrMs
 
-CP_CMD:=cp -u -p
-CP_CMD:=cp -f
+CP_CMD=cp -u -p
+CP_CMD=cp -f
 
 all: winarch instdir rClrLib 
 

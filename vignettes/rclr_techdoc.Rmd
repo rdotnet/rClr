@@ -43,7 +43,7 @@ setwd(docDir)
 vignettesRclr()
 ```
 
-```{cmd}
+```
 set R="c:\Program Files\R\R-3.1.2\bin\x64\R.exe"
 if not exist %R% set R="c:\Program Files\R\R-3.1.2\bin\i386\R.exe"
 cd F:\src\codeplex
@@ -55,7 +55,7 @@ del rClr_0.*.zip
 
 Note that a call to R CMD build will now build the vignettes too, so maybe vignettesRclr is redundant.
 
-```{cmd}
+```
 %R% CMD build rClr > logbuild.txt 2>&1
 %R% CMD check --as-cran rClr_0.*.tar.gz > logcheck.txt 2>&1
 %R% CMD INSTALL --build rClr_0.*.tar.gz
