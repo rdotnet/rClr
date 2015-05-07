@@ -99,10 +99,13 @@ rClrMono.o:
 	# g++ -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
 printarch:
+	-@echo **Variable (information only for diagnosis purposes)**
 	-@echo R_ARCH=$(R_ARCH)
 	-@echo OBJECTS=$(OBJECTS)
 	-@echo SHLIB_EXT=$(SHLIB_EXT)
 	-@echo CC=$(CC)
+	-@echo CXX=$(CXX)
+	-@echo **END Variable**
 
 instdir:
 	-@rm -rf $(INSTDIR)/libs$(R_ARCH)
