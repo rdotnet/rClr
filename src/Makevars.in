@@ -87,16 +87,16 @@ clean:
 
 rClrMono$(SHLIB_EXT): rClrMono.o
 	#gcc -std=gnu99 -shared -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
-	g++ -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
-	#g++ -shared -L/usr/lib/R/lib -Wl,-z,relro -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
+	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+	#$(CXX) -shared -L/usr/lib/R/lib -Wl,-z,relro -o rClr.so rClrMono.o -L/usr/lib/pkgconfig/../../lib -lmono-2.0 -lm -lrt -ldl -lpthread -lglib-2.0 -L/usr/lib/R/lib -lR
 
 rClrMono.o:
-	g++ -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
+	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 	# On a CentOS OS, I needed to use the following. The CPP and C flags would otherwise return two options not understood:
 	# -xHOST -fp-model precise  
 	# @echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
 	# @echo ALL_CFLAGS=$(ALL_CFLAGS)
-	# g++ -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
+	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
 printarch:
 	-@echo **Variable (information only for diagnosis purposes)**
