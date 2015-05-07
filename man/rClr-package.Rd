@@ -14,7 +14,7 @@ Package: \tab rClr\cr
 Type: \tab Package\cr
 Version: \tab 0.7-6\cr
 Notes: \tab update the R Markdown vignettes to work with the latest version of knitr \cr
-Date: \tab 2015-04-06\cr
+Date: \tab 2015-05-07\cr
 License: \tab LGPL 3\cr
 }
 
@@ -24,7 +24,7 @@ framework on Windows and Mono on several platforms, currently Windows and at lea
 
 \tabular{lll}{
 Version \tab Date \tab Notes \cr
-0.7-5: \tab N/A \tab Internal release for work project. Compile against mono sgen rather than boehm. \cr
+0.7-5: \tab 2015-04-06 \tab Internal release for work project. Compile against mono sgen rather than boehm. \cr
 }
 
 I gratefully acknowledge Kosei Abe and others for their work on the dependency R.NET (see https://github.com/jmp75/rdotnet/graphs/contributors)
