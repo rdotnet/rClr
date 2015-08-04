@@ -61,7 +61,6 @@ Note that a call to R CMD build will now build the vignettes too, so maybe vigne
 %R% CMD INSTALL --build rClr_0.*.tar.gz
 ```
 
-
 ```{r, eval=FALSE}
 > setwd('c:/src/codeplex/rClr')
 > tools::buildVignettes(dir='.', tangle=TRUE)
@@ -111,4 +110,26 @@ forceGc()
 rm(blah)
 forceGc()
 forceGc()
+```
+
+## Investigating issues with Mono.
+
+While investigating [rClr issue 7](https://github.com/jmp75/rClr/issues/7)
+
+```
+git reset --hard HEAD
+git pull
+git branch mono-4.0.2.5 mono-4.0.2.5
+git checkout mono-4.0.2.5
+git submodule foreach git submodule init && git submodule update --recursive
+```
+
+Follow instructions on [Linux](http://www.mono-project.com/docs/compiling-mono/linux/)
+
+```
+PREFIX=/usr/local
+PATH=$PREFIX/bin:$PATH
+./autogen.sh --prefix=$PREFIX
+make
+make install
 ```

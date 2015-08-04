@@ -1,0 +1,39 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Troubleshooting issues}
+-->
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(out.extra='style="display:block; margin: auto"', fig.align="center")
+```
+
+Troubleshooting issues
+=======================================
+
+# Package building issues
+
+## "Package glib-2.0 was not found in the pkg-config search path" when building on Linux
+
+You get this error message when doing:
+
+```
+R CMD build rClr
+```
+
+You are missing the development files for the GLib library (On debian and related distributions, package `libglib2.0-dev`)
+
+## "Package monosgen-2 was not found in the pkg-config search path."
+
+You are missing the development files "Mono JIT libraries - Development files (SGen GC)" (On debian and related distributions, package `libmonosgen2.0-dev`) 
+
+
+## Assertion at sgen-alloc.c:XXX, condition XXXXXXXXXXX not met
+
+For instance:
+
+```
+** testing if installed package can be loaded
+* Assertion at sgen-alloc.c:774, condition `tlab_next_addr_offset != -1' not met
+```
+
