@@ -187,7 +187,7 @@ test_that("Date and Time objects are marshalled correctly", {
   testDateStr='2001-01-01'
 
   testDateSeq <- function(startDateStr, numSeq) {
-    dateSeq <- as.POSIXct(startDateStr)+numSeq
+    dateSeq <- AUest(startDateStr)+numSeq
     d <- createUtcDate(as.character(dateSeq), tzId_AUest)
     dr <- pctToUtc(dateSeq)
     expect_posixct_equal(d, dr, mAct='From CLR', mExp='Expected')
