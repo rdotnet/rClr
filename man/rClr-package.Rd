@@ -12,9 +12,9 @@ Accessing the Common Language Runtime (.NET/Mono) from R
 \tabular{ll}{
 Package: \tab rClr\cr
 Type: \tab Package\cr
-Version: \tab 0.7-7\cr
-Notes: \tab Update to use R.NET 1.6.4. Functionally unchanged otherwise. \cr
-Date: \tab 2015-06-18\cr
+Version: \tab 0.7-8\cr
+Notes: \tab Update to use R.NET 1.6.5. Allow for backward compatibility down to R 2.15.3 - While all relevant tests work, note that the level of testing is not on par with tests on R 3.2.x. \cr
+Date: \tab 2015-08-04\cr
 License: \tab LGPL 3\cr
 }
 
@@ -24,7 +24,8 @@ framework on Windows and Mono on several platforms, currently Windows and at lea
 
 \tabular{lll}{
 Version \tab Date \tab Notes \cr
-0.7-6: \tab 2015-04-06 \tab update the R Markdown vignettes to work with the latest version of knitr \cr
+0.7-7: \tab 2015-06-18 \tab Update to use R.NET 1.6.4. Functionally unchanged otherwise. Not a public release \cr
+0.7-6: \tab 2015-05-07 \tab update the R Markdown vignettes to work with the latest version of knitr. Not a public release \cr
 0.7-5: \tab 2015-04-06 \tab Internal release for work project. Compile against mono sgen rather than boehm. \cr
 }
 

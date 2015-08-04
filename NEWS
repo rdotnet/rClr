@@ -1,13 +1,19 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
-0.7-4	2014-03-26  beta
+0.7-8	2015-08-04	beta
+    o	Update to use R.NET 1.6.5. Following up on a few requests, 
+	allow for backward compatibility down to 
+	R 2.15.3 - While all relevant tests work, note that the level 
+	of testing is not on par with that on R 3.2.x.
+
+0.7-4	2015-03-26  beta
     o	Quite a few months and internal versions later, more than 
 	enough has been done to have a public release. The main change 
 	under the hood is the use by default of R.NET in preference to C, 
 	which has opened the conversion of more complicated data structures.
 	
-0.7-3	2014-01-15  beta
+0.7-3	2015-01-15  beta
     o	Make data conversion using R.NET the default. 
     o	Feature parity on Linux and Windows
 	
