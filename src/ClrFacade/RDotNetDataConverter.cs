@@ -28,7 +28,7 @@ namespace Rclr
                 var libDir = Path.GetDirectoryName(assmbPath);
       
                 if (NativeUtility.IsUnix)
-                    dllName = Path.Combine(libDir, "rClrMono.so");
+                    dllName = Path.Combine(libDir, "rClr.so");
                 else
                 {
                     dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", 

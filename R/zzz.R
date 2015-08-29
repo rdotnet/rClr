@@ -53,7 +53,7 @@ startupMsg <- ''
       appendStartupMsg('Loading the dynamic library for Microsoft .NET runtime...')
       chname <- getFnameNoExt(msDll) 
       loadAndInit(chname, pkgname, libname, srcPkgLibPath) 
-    } else {
+    } else {  # on Windows, but we are requesting to load Mono.
       appendStartupMsg('Loading the dynamic library for Mono runtime...')
       if(!(monoDll %in% dlls)) {
         stop(paste('rClr library for Mono not found - looked under', archLibPath)) 
@@ -64,9 +64,9 @@ startupMsg <- ''
         loadAndInit(chname, pkgname, libname, srcPkgLibPath) 
       }
     }
-  } else {
+  } else { # not on Windows.
     appendStartupMsg('Loading the dynamic library for Mono runtime...')
-    chname <- getFnameNoExt(monoDll) 
+    chname <- "rClr"
     loadAndInit(chname, pkgname, libname, srcPkgLibPath)
   }
 }

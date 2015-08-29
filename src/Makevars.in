@@ -88,8 +88,8 @@ RM = 		rm -f
 
 # .PHONY: 	all clean
 
-all:		printarch  rClrMono$(SHLIB_EXT) instdir rClrLib
-#all:		printarch  $(SHLIB) instdir rClrLib
+#all:		printarch  rClrMono$(SHLIB_EXT) instdir rClrInstRclrMono rClrLib
+all:		printarch  $(SHLIB) instdir rClrLib
 
 clean:
 	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
@@ -121,8 +121,10 @@ instdir:
 	-@mkdir -p $(INSTDIR)/libs$(R_ARCH) 2>/dev/null
 
 # Note: see explanation for -u -p in Makefile.win. May be unnecessary on Linux?
-rClrLib: rClrLibComp 
+rClrInstRclrMono:
 	cp -u -p rClrMono$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
+
+rClrLib: rClrLibComp 
 	if [ -e symbols.rds ] ; then cp -u -p symbols.rds $(INSTDIR)/libs$(R_ARCH) ; fi
 	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
 	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
