@@ -1,6 +1,12 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
+0.7-9	2015-08-30	beta
+    o	Update to use R.NET 1.6.5. Following up on a few requests, 
+	allow for backward compatibility down to 
+	R 2.15.3 - While all relevant tests work, note that the level 
+	of testing is not on par with that on R 3.2.x.
+
 0.7-8	2015-08-04	beta
     o	Update to use R.NET 1.6.5. Following up on a few requests, 
 	allow for backward compatibility down to 

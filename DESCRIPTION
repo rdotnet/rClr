@@ -1,8 +1,8 @@
 Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
-Version: 0.7-8
-Date: 2015-08-04
+Version: 0.7-9
+Date: 2015-08-30
 Authors@R: c( person("Jean-Michel", "Perraud", email =
     "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
 Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
