@@ -175,3 +175,4 @@ else
 	fi # if [ "$VS_COMNTOOLS" = "" ]
 fi # end check on "${MSBUILD_EXE}"
 
+exit 0

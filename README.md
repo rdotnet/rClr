@@ -7,9 +7,7 @@ Accessing the Common Language Runtime (.NET or Mono) from the R statistical soft
 
 # Installing
 
-## Windows packages
-
-You can find windows binaries of the latest version at [https://rclr.codeplex.com](https://rclr.codeplex.com).
+As of September 2015, the latest source and binary releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases)
 
 ## From source
 
@@ -25,12 +23,14 @@ A Linux distribution with R, g++ and the Mono toolchain (including xbuild) shoul
 
 You should be able to install the package using the `install_github` function of the package `devtools`. The following commands have been tested successfully on Windows with VS2013 and Linux with Mono 3.10, on 2014-12-19. 
 
-```S
+```R
 # Optionally you may remove a prior package
 remove.packages('rClr')
 library(devtools)
 install_github("jmp75/rClr", build_vignettes=TRUE)
 ```
+
+NOTE: you must have a fully working devtools package. If devtools, on loading, reports a warning about not finding a suitable version of RTools (on Windows), this may prevent it from installing rClr. The issue has been seen for instance using devtools 1.7.0, installed from CRAN, via R 3.2.2. Package devtools 1.7.0 seems to require RTools 3.1, even when run from R 3.2.2. One way to overcome this is to install devtools from a more recent download, from its github repository.
 
 # Getting started
 
