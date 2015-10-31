@@ -3,16 +3,12 @@
 # rClr makefile specific for compilation on Windows, using the Visual CPP compiler.
 
 # defaults the build configurations to the 'release' ones (i.e. no debug symbols)
-ifeq "$(BuildConfiguration)" ""
-BuildConfiguration=Release
-endif
-ifeq "$(MonoBuildConfiguration)" ""
-MonoBuildConfiguration=MonoInstall
-endif
-
-ifeq "$(BuildMonoSupport)" ""
-BuildMonoSupport=False
-endif
+BuildConfiguration ?= Release
+MonoBuildConfiguration ?= MonoInstall
+MODE ?= Build
+BuildMonoSupport ?= False
+MSB_OPTIONS_CONSOLELOGGER ?= /consoleloggerparameters:ErrorsOnly 
+## /consoleloggerparameters:ErrorsOnly;WarningsOnly;Verbosity=minimal
 
 SLN= rClr.sln
 
@@ -20,17 +16,14 @@ MSB=@MSBUILD_EXE_PATH@
 
 INSTDIR= ../inst
 
-# MODE=Rebuild
-MODE=Build
-
 # This can be helpful to diagnose the msbuild procedure
 # DEBUG_BUILD_CMD=/v:diag
-DEBUG_BUILD_CMD=
+DEBUG_BUILD_CMD ?= 
 
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD)
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) $(MSB_OPTIONS_CONSOLELOGGER)
 ifneq "$(VS120COMNTOOLS)" ""
 # work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
 endif
 
 CLR_FACADE_BINS=ClrFacade.*
@@ -46,13 +39,15 @@ ROBOCP_CMD=cmd /c win_cp.cmd
 
 all: configinfo instdir rClrLib 
 
+# all: diagnose
+
 diagnose: detailedconfiginfo instdir rClrLib 
 
 configinfo:
 	-@echo Build configuration "$(BuildConfiguration)"
 
 detailedconfiginfo:
-	-@echo **Variable (information only for diagnosis purposes)**
+	-@echo **Variable information only for diagnosis purposes**
 	-@echo Windows architecture "$(R_ARCH)"
 	-@echo "env variable TEMP is $(TEMP)"
 	-@echo "env variable TMP is $(TMP)"
@@ -65,6 +60,7 @@ detailedconfiginfo:
 	-@echo CXX=$(CXX)
 	-@echo ALL_CFLAGS=$(ALL_CFLAGS)
 	-@echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
+	-@echo build cmd line: $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="inserted" $(MSB_OPTIONS_EXTRA)
 	-@echo **END Variable**
 
 rClrLibComp: rClr.cpp
