@@ -2,7 +2,7 @@
 REM This utility uses the native windows xcopy to overcome an issue that can arise with 'cp' coming with MinGW.
 set unix_args=%*
 set dos_paths=%unix_args:/=\%
-robocopy /MIR /MT:1 /R:2 /NJS /NJH /NFL /NDL /XX %dos_paths%
+robocopy /MT:1 /R:2 /NJS /NJH %dos_paths%
 @set exit_code=0
 
 REM http://ss64.com/nt/robocopy-exit.html

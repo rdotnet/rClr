@@ -1,7 +1,9 @@
-testDir <- system.file('tests', package='rClr') 
-stopifnot(file.exists(testDir))
-source(file.path(testDir, 'load_libs.r'))
-source(file.path(testDir, 'datetime-functions.r'))
+# print(paste('current directory is', getwd(), 'and contains files' , paste(list.files( getwd()), collapse=',')))
+
+# adapting to behavior as of testthat_0.11.0
+wd <- getwd()
+source(file.path(wd, 'load_libs.r'))
+source(file.path(wd, 'datetime-functions.r'))
 
 context("Date and times")
 

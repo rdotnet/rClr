@@ -245,7 +245,7 @@ While the primary concern of the package is the numerical correctness, attention
 The following code and figures show the effective transfer rate for numeric vectors, i.e. double precision array in the .NET world. The experimental design is such that 10 repetitions of the measurement are made for a given vector size. Performance is measured in both direction, with comparable speed. Note that the speed of execution is calculated by removing an estimate of the cost of measurement itself; you _may_ thus notice outliers and even negative transfer rates if the measurement was perturbed by garbage collection in R or the CLR.
 
 ```{r cache = T, tidy = TRUE, comment = NA, results = "asis", fig.width=11}
-perfMeasureFile <- list.files(system.file('tests', package='rClr'), pattern='performance_profiling', full.names=TRUE)
+perfMeasureFile <- list.files(system.file('extras', package='rClr'), pattern='performance_profiling', full.names=TRUE)
 if(length(perfMeasureFile)==0) {stop('performance_profiling file not found in the installed rClr package')}
 stopifnot(file.exists(perfMeasureFile[1]))
 source(perfMeasureFile[1])

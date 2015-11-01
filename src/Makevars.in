@@ -7,16 +7,11 @@
 # WARNING: Makevars is generated from Makevars.in
 # You may loose direct modifications to the file Makevars!
 
-ifeq "$(BUILDTYPE)" ""
-BUILDTYPE=Release
-endif
+BUILDTYPE ?= Release
 
 # as of mono 4.0.3 on Debian, using monosgen fails. Need to offer the option to revert to boehm GC.
-ifeq "$(MONO_LIB)" ""
-MONO_LIB=monosgen-2
-else
-MONO_LIB=mono-2
-endif
+MONO_LIB ?= monosgen-2
+# other acceptable option is MONO_LIB = mono-2
 
 TGTPLATFORM=Any CPU
 

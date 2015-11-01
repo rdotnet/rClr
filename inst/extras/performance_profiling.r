@@ -1,3 +1,8 @@
+##############
+# This file contains code used in a vignette. The code is not included directly in the vignette 
+# as it is fairly advanced compared to the purpose of the vignette.
+##############
+
 # library(utils)
 library(ggplot2)
 # Sys.setenv(RCLR='Mono')

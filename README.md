@@ -7,17 +7,19 @@ Accessing the Common Language Runtime (.NET or Mono) from the R statistical soft
 
 # Installing
 
-As of September 2015, the latest source and binary releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases)
+As of September 2015, the source code snapshot of tagged releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases). Binary R packages for Windows cannot be released via github, and you can get them from [https://rclr.codeplex.com](https://rclr.codeplex.com).
+
+## Pre-compiled binaries
+
+You can install pre-compiled rClr for Windows via [https://rclr.codeplex.com](https://rclr.codeplex.com). You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
 
 ## From source
 
 Installing on Linux is always installing from source anyway, be it from a tarball, cloning the repo, or using `devtools`. 
 
-You may find source package tarball of the latest version at [https://rclr.codeplex.com](https://rclr.codeplex.com).
-
 rClr is not your average R package and requires a few more tools than is typical for most R packages. 
 
-On Windows you will need a C# and C and/or Visual C++ compiler. Using the Visual Studio 2013 toolchain is recommended. Read [the current build instructions](https://r2clr.codeplex.com/wikipage?title=Build%20instructions&referringTitle=Documentation). As of December 2014 Mono is optional on Windows.
+On Windows you will need a C# and C and/or Visual C++ compiler. Using the Visual Studio 2013 toolchain is recommended. Read [the current build instructions](https://r2clr.codeplex.com/wikipage?title=Build%20instructions&referringTitle=Documentation). Note that as of September 2015 using Mono on Windows is not maintained.
 
 A Linux distribution with R, g++ and the Mono toolchain (including xbuild) should work. Note that while a range of Mono versions in the 3.X series may work, I recommend you use versions 3.8 or above. This may require you to look for adequate versions (for instance Debian is lagging behind currently). You may want to have a look at the instructions at the [mono download page for Linux](http://www.mono-project.com/download/#download-lin) and use the Xamarin packages.
 
