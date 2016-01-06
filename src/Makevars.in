@@ -77,7 +77,8 @@ CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
 INSTDIR= ../inst
 
 MODE=Rebuild
-SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)"
+# Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
+SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
 
 RM = 		rm -f
 
