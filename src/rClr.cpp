@@ -2321,7 +2321,7 @@ HRESULT rclr_ms_get_facade_typeref(_Type ** spType) {
 
 char * bstr_to_c_string(bstr_t * src) {
 #ifndef  UNICODE                     // r_winnt
-	return src;
+	return (char*) src;
 #else
 	// Convert the wchar_t string to a char* string.
 	// see http://msdn.microsoft.com/en-us/library/ms235631.aspx
@@ -2510,6 +2510,5 @@ SAFEARRAY * create_array_bool( int * values, int length )
 {
 	return create_array_int_or_bool( values, length, VT_BOOL);
 }
-
 
 #endif
