@@ -198,6 +198,8 @@ VARIANT* rclr_ms_create_vt_array(SAFEARRAY* safeArray, VARTYPE vartype);
 
 void free_variant_array(VARIANT** a, int size);
 void release_transient_objects();
-void rclr_ms_fill_array_from_index_two(SAFEARRAY* psaStaticMethodArgs, VARIANT** params, int paramsArgLength);
+
+// TBD likely aborted attempt.
+//void rclr_ms_fill_array_from_index_two(SAFEARRAY* psaStaticMethodArgs, VARIANT** params, int paramsArgLength);
 
 #endif // MS_CLR
