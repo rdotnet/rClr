@@ -47,18 +47,18 @@
     <RootNamespace>rClr</RootNamespace>
     <!--VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath-->
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)/Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <!-- See https://github.com/jmp75/vcpp-commons for reusable property sheets -->
     <Import Project="$(UserProfile)/vcpp_config.props" Condition="exists('$(UserProfile)/vcpp_config.props')" />
     <Import Project="rClr.props" />
@@ -66,72 +66,72 @@
   <!-- TODO: rationalise and condense the following -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(RInstallPath)\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\i386;$(RInstallPath)\bin\i386</LibraryPath>
-    <ReferencePath>.\libfiles\i386;$(RInstallPath)\bin\i386</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/i386;$(RLibPath)</LibraryPath>
+    <ReferencePath>./libfiles/i386;$(RLibPath)</ReferencePath>
     <TargetName>$(ProjectName)Ms</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoSrcPath);$(MonoSrcPath)\eglib\src</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\i386;$(RInstallPath)\bin\i386;$(MonoSrcPath)\msvc\Win32\lib</LibraryPath>
-    <ReferencePath>.\libfiles\i386;$(RInstallPath)\bin\i386</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoSrcPath);$(MonoSrcPath)/eglib/src</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/i386;$(RLibPath);$(MonoSrcPath)/msvc/Win32/lib</LibraryPath>
+    <ReferencePath>./libfiles/i386;$(RLibPath)</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoInstallDebug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoInstallPath)\include;$(MonoInstallPath)\include\mono-2.0;$(MonoInstallPath)\include\glib-2.0;$(MonoInstallPath)\lib\glib-2.0\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\i386;$(RInstallPath)\bin\i386;$(MonoInstallPath)\lib;$(MonoInstallPath)\bin</LibraryPath>
-    <ReferencePath>.\libfiles\i386;$(RInstallPath)\bin\i386</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoInstallPath)/include;$(MonoInstallPath)/include/mono-2.0;$(MonoInstallPath)/include/glib-2.0;$(MonoInstallPath)/lib/glib-2.0/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/i386;$(RLibPath);$(MonoInstallPath)/lib;$(MonoInstallPath)/bin</LibraryPath>
+    <ReferencePath>./libfiles/i386;$(RLibPath)</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoInstall|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoInstallPath)\include;$(MonoInstallPath)\include\mono-2.0;$(MonoInstallPath)\include\glib-2.0;$(MonoInstallPath)\lib\glib-2.0\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\i386;$(RInstallPath)\bin\i386;$(MonoInstallPath)\lib;$(MonoInstallPath)\bin</LibraryPath>
-    <ReferencePath>.\libfiles\i386;$(RInstallPath)\bin\i386</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoInstallPath)/include;$(MonoInstallPath)/include/mono-2.0;$(MonoInstallPath)/include/glib-2.0;$(MonoInstallPath)/lib/glib-2.0/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/i386;$(RLibPath);$(MonoInstallPath)/lib;$(MonoInstallPath)/bin</LibraryPath>
+    <ReferencePath>./libfiles/i386;$(RLibPath)</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(RInstallPath)\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\x64;$(RInstallPath)\bin\x64</LibraryPath>
-    <ReferencePath>.\libfiles\x64;$(RInstallPath)\bin\x64</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/x64;$(RInstallPath)/bin/x64</LibraryPath>
+    <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Ms</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoSrcPath);$(MonoSrcPath)\eglib\src</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\x64;$(RInstallPath)\bin\x64;$(MonoSrcPath)\msvc\x64\lib</LibraryPath>
-    <ReferencePath>.\libfiles\x64;$(RInstallPath)\bin\x64</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoSrcPath);$(MonoSrcPath)/eglib/src</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/x64;$(RInstallPath)/bin/x64;$(MonoSrcPath)/msvc/x64/lib</LibraryPath>
+    <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoInstallDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoInstallPath)\include;$(MonoInstallPath)\include\mono-2.0;$(MonoInstallPath)\include\glib-2.0;$(MonoInstallPath)\lib\glib-2.0\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\x64;$(RInstallPath)\bin\x64;$(MonoInstallPath)\lib;$(MonoInstallPath)\bin</LibraryPath>
-    <ReferencePath>.\libfiles\x64;$(RInstallPath)\bin\x64</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoInstallPath)/include;$(MonoInstallPath)/include/mono-2.0;$(MonoInstallPath)/include/glib-2.0;$(MonoInstallPath)/lib/glib-2.0/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/x64;$(RInstallPath)/bin/x64;$(MonoInstallPath)/lib;$(MonoInstallPath)/bin</LibraryPath>
+    <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MonoInstall|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(RInstallPath)\include;$(MonoInstallPath)\include;$(MonoInstallPath)\include\mono-2.0;$(MonoInstallPath)\include\glib-2.0;$(MonoInstallPath)\lib\glib-2.0\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\x64;$(RInstallPath)\bin\x64;$(MonoInstallPath)\lib;$(MonoInstallPath)\bin</LibraryPath>
-    <ReferencePath>.\libfiles\x64;$(RInstallPath)\bin\x64</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include;$(MonoInstallPath)/include;$(MonoInstallPath)/include/mono-2.0;$(MonoInstallPath)/include/glib-2.0;$(MonoInstallPath)/lib/glib-2.0/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/x64;$(RInstallPath)/bin/x64;$(MonoInstallPath)/lib;$(MonoInstallPath)/bin</LibraryPath>
+    <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Mono</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(RInstallPath)\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\i386;$(RInstallPath)\bin\i386</LibraryPath>
-    <ReferencePath>.\libfiles\i386;$(RInstallPath)\bin\i386</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/i386;$(RLibPath)</LibraryPath>
+    <ReferencePath>./libfiles/i386;$(RLibPath)</ReferencePath>
     <TargetName>$(ProjectName)Ms</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(VCInstallDir)atlmfc\include;$(RInstallPath)\include</IncludePath>
-    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;.\libfiles\x64;$(RInstallPath)\bin\x64</LibraryPath>
-    <ReferencePath>.\libfiles\x64;$(RInstallPath)\bin\x64</ReferencePath>
+    <IncludePath>$(IncludePath);$(RInstallPath)/include</IncludePath>
+    <LibraryPath>$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib;./libfiles/x64;$(RInstallPath)/bin/x64</LibraryPath>
+    <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Ms</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,7 +160,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions);MONO_CLR</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MonoSrcPath)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MonoSrcPath)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -221,7 +221,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);MONO_CLR</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MonoSrcPath)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MonoSrcPath)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
@@ -242,7 +242,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);MONO_CLR;MONO_INST</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MonoSrcPath)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MonoSrcPath)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
@@ -281,7 +281,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;;%(PreprocessorDefinitions);MONO_CLR;MONO_INST</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MonoSrcPath)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MonoSrcPath)/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -340,7 +340,7 @@
     <ClInclude Include="rClr_mono.h" />
     <ClInclude Include="rClr_windows_dotnet.h" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

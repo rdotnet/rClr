@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 	SEXP rclr_ms_get_type_name(SEXP clrObj);
-	SEXP rclr_ms_reflect_object(CLR_OBJ* objptr);
+	//SEXP rclr_ms_reflect_object(CLR_OBJ* objptr);
 	SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &pobj);
 	VARIANT** build_method_parameters(SEXP largs);
 
@@ -166,6 +166,7 @@ char* getComErrorMsg(HRESULT hr);
 void ms_rclr_cleanup();
 void start_ms_clr();
 void rclr_ms_create_domain(char** appBaseDir);
+void get_array_variant( CLR_OBJ * pobj, SAFEARRAY ** array, int * n_ptr, LONG * plUbound );
 
 HRESULT rclr_ms_call_static_method_facade(char* methodName, CLR_OBJ* objptr, VARIANT* result);
 HRESULT rclr_ms_load_assembly(char** filename, VARIANT* vtResult);

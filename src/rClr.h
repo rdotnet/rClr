@@ -89,5 +89,17 @@ RCLR_BOOL r_is_date( SEXP s );
 RCLR_BOOL r_is_POSIXlt( SEXP s );
 RCLR_BOOL r_is_POSIXct( SEXP s );
 
+SEXP make_numeric_sexp( int n, double* values );
+SEXP make_POSIXct_sexp( int n, double* values );
+SEXP make_int_sexp( int n, int* values );
+SEXP make_char_sexp( int n, char** values );
+SEXP make_uchar_sexp( int n, unsigned char* values );
+
+#ifdef MONO_CLR
+SEXP make_bool_sexp( int n, MonoBoolean* values );
+#elif MS_CLR
+SEXP make_bool_sexp( int n, bool* values );
+#endif
+
 // Obsolete or not yet implemented:
 //CLR_OBJ* rclr_wrap_data_frame( SEXP s );

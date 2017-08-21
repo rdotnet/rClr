@@ -159,6 +159,11 @@ HRESULT rclr_ms_call_static_method_facade( char * methodName, CLR_OBJ * objptr, 
     return hr;
 }
 
+SEXP rclr_ms_get_type_name( SEXP clrObj ) {
+    CLR_OBJ * objptr = get_clr_object( clrObj );
+    return make_char_single_sexp( get_type_full_name( objptr ) );
+}
+
 const char * get_type_full_name( CLR_OBJ * objptr ) {
     CLR_OBJ tmpResult;
     HRESULT hr = rclr_ms_call_static_method_facade( "GetObjectTypeName", objptr, &tmpResult );
@@ -180,6 +185,255 @@ const char * get_type_full_name( CLR_OBJ * objptr ) {
     return bstr_to_c_string(&bstrTypeName);
     */
 }
+
+void get_array_variant( CLR_OBJ * pobj, SAFEARRAY ** array, int * n_ptr, LONG * plUbound )
+{
+    *array = pobj->parray;
+    SafeArrayGetUBound( *array, 1, plUbound );
+    (*n_ptr) = ((int)(*plUbound)) + 1;
+}
+
+SEXP clr_obj_ms_convert_to_SEXP( CLR_OBJ &obj ) {
+    CLR_OBJ * pobj = new CLR_OBJ( obj ); // the allocation of a pobj here will hold a reference (handle) to the managed object.
+    SEXP result = NULL;
+    int * iVals = NULL;
+    double * rVals = NULL;
+    bool * bVals = NULL;
+    unsigned char * ucharVals = NULL;
+    char ** strVals = NULL;
+    int n = 1;
+    SAFEARRAY * array = NULL;
+    long uBound = 0;
+    HRESULT hr;
+
+    switch (pobj->vt) {
+    case VT_UNKNOWN: // this is what we get for instance on a call to ModelRunner.get_Model. Maybe, when an interface type is returned rather than a class.
+    case VT_DISPATCH:
+        return clr_object_to_SEXP( pobj );
+    case VT_ARRAY | VT_R8:
+        get_array_variant( pobj, &array, &n, &uBound );
+        rVals = (double*)malloc( sizeof( double )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &(rVals[i]) );
+        }
+        result = make_numeric_sexp( n, rVals );
+        free( rVals );
+        break;
+    case VT_DATE | VT_ARRAY:
+        //hr = rclr_ms_call_static_method_facade("DateTimeArrayToUtc", pobj, &date_time_utc);
+        //get_array_variant(&date_time_utc, &array, &n, &uBound);
+        get_array_variant( pobj, &array, &n, &uBound );
+        rVals = (double*)malloc( sizeof( double )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &(rVals[i]) );
+            rVals[i] = COMdatetimeToPosixCt( rVals[i] );
+        }
+        result = make_POSIXct_sexp( n, rVals );
+        free( rVals );
+        break;
+    case VT_ARRAY | VT_I2:
+    case VT_ARRAY | VT_I4:
+        get_array_variant( pobj, &array, &n, &uBound );
+        iVals = (int*)malloc( sizeof( int )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &(iVals[i]) );
+        }
+        result = make_int_sexp( n, iVals );
+        free( iVals );
+        break;
+    case VT_ARRAY | VT_BOOL:
+        get_array_variant( pobj, &array, &n, &uBound );
+        bVals = (bool*)malloc( sizeof( bool )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &(bVals[i]) );
+        }
+        result = make_bool_sexp( n, bVals );
+        free( bVals );
+        break;
+    case VT_ARRAY | VT_BSTR:
+        array = pobj->parray;
+        SafeArrayGetUBound( array, 1, &uBound );
+        n = ((int)uBound) + 1;
+        BSTR bstrVal;
+        strVals = (char**)malloc( sizeof( char* )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &bstrVal );
+            bstr_t bstrtVal( bstrVal );
+            strVals[i] = bstr_to_c_string( &bstrtVal );
+        }
+        result = make_char_sexp( n, strVals );
+        // TOCHECK: does R copy the char array, and do I need to free each (char*) too?
+        free( strVals );
+        break;
+    case VT_ARRAY | VT_UI1:  // byte[]:  8209
+        get_array_variant( pobj, &array, &n, &uBound );
+        ucharVals = (unsigned char*)malloc( sizeof( unsigned char )*n );
+        for (long i = 0; i < n; i++) {
+            SafeArrayGetElement( array, &i, &(ucharVals[i]) );
+        }
+        result = make_uchar_sexp( n, ucharVals );
+        free( ucharVals );
+        break;
+        // The following would be handling .NET characters; however these are unicode characters, not ANSI characters.
+        //case VT_ARRAY | VT_UI2:  // char[]:  8210. 
+    case VT_EMPTY:
+    case VT_NULL:
+    case VT_VOID:
+        result = R_NilValue;
+        break;
+    case VT_I2:
+        iVals = (int*)malloc( sizeof( int )*n );
+        iVals[0] = pobj->iVal;
+        result = make_int_sexp( 1, iVals );
+        free( iVals );
+        break;
+    case VT_I4:
+        iVals = (int*)malloc( sizeof( int )*n );
+        iVals[0] = pobj->intVal;
+        result = make_int_sexp( 1, iVals );
+        free( iVals );
+        break;
+    case VT_R4:
+        rVals = (double*)malloc( sizeof( double )*n );
+        rVals[0] = pobj->fltVal;
+        result = make_numeric_sexp( n, rVals );
+        free( rVals );
+        break;
+    case VT_R8:
+        rVals = (double*)malloc( sizeof( double )*n );
+        rVals[0] = pobj->dblVal;
+        result = make_numeric_sexp( n, rVals );
+        free( rVals );
+        break;
+    case VT_DATE:
+    {
+        //bstr_t format("yyyy-MM-dd HH:mm:ss");
+        //BSTR date;
+        //VarFormat(pobj, format, 0, 0, VAR_CALENDAR_GREGORIAN, &date);
+        //bstr_t bstrDate(date);
+        //char * chDate = bstr_to_c_string(&bstrDate);
+        //result = make_char_sexp(n, &chDate);
+        //hr = rclr_ms_call_method_argless(pobj, "DateTimeArrayToUtc", &date_time_utc);
+        //double rDateNumericValue = COMdatetimeToPosixCt(date_time_utc.dblVal);
+        double rDateNumericValue = COMdatetimeToPosixCt( pobj->dblVal );
+        result = make_POSIXct_sexp( n, &rDateNumericValue );
+        break;
+    }
+    case VT_BSTR:
+    {
+        strVals = (char**)malloc( sizeof( char* )*n );
+        bstr_t tmpBstr( pobj->bstrVal );
+        strVals[0] = bstr_to_c_string( &tmpBstr );
+        result = make_char_sexp( n, strVals );
+        free( strVals );
+        break;
+    }
+    case VT_BOOL:
+        bVals = (bool*)malloc( sizeof( bool )*n );
+        bVals[0] = (bool)pobj->boolVal;
+        result = make_bool_sexp( n, bVals );
+        free( bVals );
+        break;
+    case VT_INT:
+        // This seems to be the case when an IntPtr is returned, native handle to an R.NET object.
+        // However, this is not intVal that we need to retrieve. This is not well documented, but 
+        // on 64 bits you would have nasty surprises. ullVal reports the same value as the IntPtr in the managed world
+        return (SEXP)pobj->ullVal;
+        //case VT_CY:
+        //case VT_ERROR:
+        //case VT_VARIANT:
+        //case VT_DECIMAL:
+        //case VT_I1:
+        //case VT_UI1:
+        //case VT_UI2:
+        //case VT_UI4:
+        //case VT_I8:
+        //case VT_UI8:
+        //case VT_INT_PTR:
+        //case VT_UINT:
+        //case VT_HRESULT:
+        //case VT_PTR:
+        //case VT_SAFEARRAY:
+        //case VT_CARRAY:
+        //case VT_USERDEFINED:
+        //case VT_LPSTR:
+        //case VT_LPWSTR:
+        //case VT_RECORD:
+        //case VT_UINT_PTR:
+        //case VT_FILETIME:
+        //case VT_BLOB:
+        //case VT_STREAM:
+        //case VT_STORAGE:
+        //case VT_STREAMED_OBJECT:
+        //case VT_STORED_OBJECT:
+        //case VT_BLOB_OBJECT:
+        //case VT_CF:
+        //case VT_CLSID:
+        //case VT_VERSIONED_STREAM:
+        //case VT_BSTR_BLOB:
+        //case VT_VECTOR:
+        //case VT_BYREF:
+        //case VT_RESERVED:
+        //case VT_ILLEGAL:
+    default:
+        error( "clr_obj_ms_convert_to_SEXP: COM variant type code %d unsupported. Returning NULL", pobj->vt );
+        result = R_NilValue;
+    }
+    delete(pobj); // Should this function be responsible for this delete?
+    return result;
+}
+
+
+//case VT_EMPTY:
+//case VT_NULL:
+//case VT_UNKNOWN:
+//case VT_VOID:
+//case VT_I2:
+//case VT_I4:
+//case VT_R4:
+//case VT_R8:
+//case VT_CY:
+//case VT_DATE:
+//case VT_BSTR:
+//case VT_DISPATCH:
+//case VT_ERROR:
+//case VT_BOOL:
+//case VT_VARIANT:
+//case VT_DECIMAL:
+//case VT_I1:
+//case VT_UI1:
+//case VT_UI2:
+//case VT_UI4:
+//case VT_I8:
+//case VT_UI8:
+//case VT_INT:
+//case VT_INT_PTR:
+//case VT_UINT:
+//case VT_HRESULT:
+//case VT_PTR:
+//case VT_SAFEARRAY:
+//case VT_CARRAY:
+//case VT_USERDEFINED:
+//case VT_LPSTR:
+//case VT_LPWSTR:
+//case VT_RECORD:
+//case VT_UINT_PTR:
+//case VT_FILETIME:
+//case VT_BLOB:
+//case VT_STREAM:
+//case VT_STORAGE:
+//case VT_STREAMED_OBJECT:
+//case VT_STORED_OBJECT:
+//case VT_BLOB_OBJECT:
+//case VT_CF:
+//case VT_CLSID:
+//case VT_VERSIONED_STREAM:
+//case VT_BSTR_BLOB:
+//case VT_VECTOR:
+//case VT_ARRAY:
+//case VT_BYREF:
+//case VT_RESERVED:
+//case VT_ILLEGAL:
 
 // Create a safe array to contain the arguments of the method.
 HRESULT rclr_ms_create_object( char * longtypename, VARIANT ** params, int argLength, VARIANT * vtResult ) {
