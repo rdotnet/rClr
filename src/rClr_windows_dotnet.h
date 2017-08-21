@@ -155,10 +155,10 @@ ICLRRuntimeHost* pRuntimeHost = nullptr;
 IUnknownPtr spAppDomainThunk = NULL;
 _TypePtr spTypeClrFacade = NULL;
 
-//variant_t vtEmpty;
+variant_t vtEmpty;
 
 // A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-//std::vector<VARIANT*> transientArgs;
+std::vector<VARIANT*> transientArgs;
 
 
 char* bstr_to_c_string(bstr_t* src);
@@ -195,6 +195,7 @@ SAFEARRAY* create_array_strings(char** values, int length);
 SAFEARRAY* create_array_bytes(unsigned char* values, int length);
 SAFEARRAY* create_safe_array(VARIANT** values, int length);
 VARIANT* rclr_ms_create_vt_array(SAFEARRAY* safeArray, VARTYPE vartype);
+CLR_OBJ * rclr_ms_convert_element_rdotnet( SEXP el );
 
 void free_variant_array(VARIANT** a, int size);
 void release_transient_objects();
