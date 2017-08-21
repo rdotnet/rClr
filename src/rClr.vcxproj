@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -52,7 +52,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -61,7 +61,7 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <!-- See https://github.com/jmp75/vcpp-commons for reusable property sheets -->
     <Import Project="$(UserProfile)/vcpp_config.props" Condition="exists('$(UserProfile)/vcpp_config.props')" />
-    <!-- <Import Project="rClr.props" /> -->
+    <Import Project="rClr.props" />
   </ImportGroup>
   <!-- TODO: rationalise and condense the following -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -330,9 +330,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="rClr.cpp" />
+    <ClCompile Include="rClr_mono.cpp" />
+    <ClCompile Include="rClr_platform_neutral.cpp" />
+    <ClCompile Include="rClr_windows_dotnet.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common_imports.h" />
     <ClInclude Include="rClr.h" />
+    <ClInclude Include="rClr_mono.h" />
+    <ClInclude Include="rClr_windows_dotnet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
