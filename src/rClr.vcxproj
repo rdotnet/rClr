@@ -339,6 +339,7 @@
     <ClInclude Include="rClr.h" />
     <ClInclude Include="rClr_mono.h" />
     <ClInclude Include="rClr_windows_dotnet.h" />
+    <ClInclude Include="r_imports.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

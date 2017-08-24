@@ -29,11 +29,15 @@
 using namespace mscorlib;
 typedef variant_t CLR_OBJ;
 
+// we have do do the R imports AFTER all the windows SDK otherwise R 
+// defined macros with generic names (Realloc and co) override function names in winsdk header files
+#include "r_imports.h"
+
 // Hard-wired Constants
 
-PCWSTR pszVersion = L"v4.0.30319"; 
-PCWSTR pwzDllName = L"ClrFacade";
-bstr_t bstrClassName(L"Rclr.ClrFacade");
+static PCWSTR pszVersion = L"v4.0.30319"; 
+static PCWSTR pwzDllName = L"ClrFacade";
+static bstr_t bstrClassName(L"Rclr.ClrFacade");
 
 /////////////////////////////////////////
 // Exported methods, specific to Windows platform
@@ -138,27 +142,27 @@ inline double linear_to_oleautdate(double linear_date) {
 /////////////////////////////////////////
 
 
-ICLRMetaHost* pMetaHost = NULL;
-ICLRRuntimeInfo* pRuntimeInfo = NULL;
-ICLRRuntimeHost* pClrRuntimeHost = NULL;
-_AssemblyPtr spAssembly = NULL;
-_AppDomainPtr spDefaultAppDomain = NULL;
-DWORD domainId = NULL;
-FExecuteInAppDomainCallback callback = NULL; 
+static ICLRMetaHost* pMetaHost;
+static ICLRRuntimeInfo* pRuntimeInfo;
+static ICLRRuntimeHost* pClrRuntimeHost;
+static _AssemblyPtr spAssembly;
+static _AppDomainPtr spDefaultAppDomain;
+static DWORD domainId;
+static FExecuteInAppDomainCallback callback; 
 
 #ifdef USE_COR_RUNTIME_HOST
-ICorRuntimeHost* pCorRuntimeHost = NULL;
+static ICorRuntimeHost* pCorRuntimeHost;
 #else
-ICLRRuntimeHost* pRuntimeHost = nullptr;
+static ICLRRuntimeHost* pRuntimeHost;
 #endif
 
-IUnknownPtr spAppDomainThunk = NULL;
-_TypePtr spTypeClrFacade = NULL;
+static IUnknownPtr spAppDomainThunk;
+static _TypePtr spTypeClrFacade;
 
-variant_t vtEmpty;
+static variant_t vtEmpty;
 
 // A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-std::vector<VARIANT*> transientArgs;
+static std::vector<VARIANT*> transientArgs;
 
 
 char* bstr_to_c_string(bstr_t* src);

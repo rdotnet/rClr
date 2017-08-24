@@ -41,5 +41,8 @@
     <ClInclude Include="rClr_windows_dotnet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="r_imports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

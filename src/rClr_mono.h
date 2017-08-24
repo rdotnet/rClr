@@ -45,6 +45,11 @@ struct _MonoReflectionType {
 
 typedef MonoObject CLR_OBJ;
 
+
+// Import R headers after mono's, to limit the risk of 
+// defined macros with generic names (Realloc and co) override function names. Was an issue with WinSDK
+#include "r_imports.h"
+
 /////////////////////////////////////////
 // Exported methods, specific to hosting Mono
 /////////////////////////////////////////

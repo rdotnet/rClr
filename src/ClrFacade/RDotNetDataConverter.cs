@@ -170,11 +170,15 @@ namespace Rclr
 
         public object CurrentObject { get { return CurrentObjectToConvert; } }
 
+        private delegate void use_rdotnet_for_conversions_csdelegate(int useIt);
+
         private static void SetUseRDotNet(bool useIt)
         {
-            IntPtr UseRDotNet = DataConversionHelper.RclrNativeDll.GetFunctionAddress("use_rdotnet");
-            if (UseRDotNet == IntPtr.Zero) { throw new EntryPointNotFoundException("Native symbol use_rdotnet not found"); }
-            Marshal.WriteInt32(UseRDotNet, useIt ? 1 : 0);
+            var setUseConvFunc = DataConversionHelper.RclrNativeDll.Dll.GetFunction<use_rdotnet_for_conversions_csdelegate>("use_rdotnet_for_conversions");
+            setUseConvFunc(useIt ? 1 : 0);
+            //IntPtr UseRDotNet = DataConversionHelper.RclrNativeDll.GetFunctionAddress("use_rdotnet");
+            //if (UseRDotNet == IntPtr.Zero) { throw new EntryPointNotFoundException("Native symbol use_rdotnet not found"); }
+            //Marshal.WriteInt32(UseRDotNet, useIt ? 1 : 0);
         }
 
         /// <summary>

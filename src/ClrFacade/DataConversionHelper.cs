@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using RDotNet.Internals;
+using DynamicInterop;
 
 namespace Rclr
 {
@@ -15,6 +16,7 @@ namespace Rclr
     {
         ClrObjectToSexpDelegate ClrObjectToSexp { get; set; }
         IntPtr GetFunctionAddress(string entryPointName);
+        UnmanagedDll Dll { get; }
     }
 
     /// <summary>
@@ -41,7 +43,7 @@ namespace Rclr
             public Int32 data02;
         }
        
-        public static IUnmanagedDll RclrNativeDll= null;
+        public static IUnmanagedDll RclrNativeDll = null;
         static Int32 VariantClear(IntPtr pvarg)
         {
             if(ClrFacade.IsMonoRuntime)

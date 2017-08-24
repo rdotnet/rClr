@@ -58,8 +58,8 @@ extern "C" {
     void rclr_load_assembly( char** filename );
     void rclr_create_domain( char** appBaseDir, char** filename, int* mono_debug );
     int is_microsoft_clr();
-    static void clr_object_finalizer( SEXP ref );
-    int use_rdotnet = 0;
+    void clr_object_finalizer( SEXP ref );
+    void use_rdotnet_for_conversions(int use_it);
 
     // These remaining are obsolete or not yet implemented.
     //SEXP r_reflect_on_object( SEXP clrobj );
@@ -70,6 +70,7 @@ extern "C" {
 } // end of extern "C" block
 #endif
 
+static int uses_rdotnet_for_conversion = 0;
 
 CLR_OBJ* rclr_convert_element( SEXP el );
 CLR_OBJ* rclr_mono_convert_element_rdotnet( SEXP el );

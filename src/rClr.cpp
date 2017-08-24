@@ -1,6 +1,5 @@
 #include "rClr.h"
 
-
 int is_microsoft_clr() {
 #ifdef MS_CLR 
 	return 1;
@@ -334,7 +333,7 @@ CLR_OBJ* rclr_convert_element( SEXP el )
 			return rclr_create_array_objects(el);
 		break;
 	}
-	if (use_rdotnet)
+	if (uses_rdotnet_for_conversion)
 	{
 		return rclr_convert_element_rdotnet(el);
 	}
@@ -549,6 +548,10 @@ CLR_OBJ* rclr_convert_element( SEXP el )
 		break;
 	}
 	return (CLR_OBJ* ) result;
+}
+
+void use_rdotnet_for_conversions( int use_it ) {
+    uses_rdotnet_for_conversion = use_it;
 }
 
 CLR_OBJ* rclr_create_array_objects( SEXP s ) {

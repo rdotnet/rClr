@@ -1,8 +1,8 @@
-#include "rClr_mono.h"
+#ifdef MONO_CLR
+
 #include "rClr.h"
 
 
-#ifdef MONO_CLR
 
 MonoDomain* get_domain() { return domain; }
 MonoAssembly* get_assembly() { return assembly; }

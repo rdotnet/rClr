@@ -1,9 +1,30 @@
-#include "rClr_windows_dotnet.h"
-#include "rClr.h"
-
 #ifdef MS_CLR
 
+#include "rClr.h"
+
+
+void init_global_msdotnet()
+{
+	pMetaHost = NULL;
+	pRuntimeInfo = NULL;
+	pClrRuntimeHost = NULL;
+	spAssembly = NULL;
+	spDefaultAppDomain = NULL;
+	domainId = 0;
+	callback = NULL;
+
+#ifdef USE_COR_RUNTIME_HOST
+	pCorRuntimeHost = NULL;
+#else
+	pRuntimeHost = nullptr;
+#endif
+
+	spAppDomainThunk = NULL;
+	spTypeClrFacade = NULL;
+}
+
 void start_ms_clr() {
+	init_global_msdotnet();
     HRESULT hr;
     hr = CLRCreateInstance( CLSID_CLRMetaHost, IID_PPV_ARGS( &pMetaHost ) );
     if (FAILED( hr ))
@@ -69,6 +90,7 @@ void ms_rclr_cleanup()
         pClrRuntimeHost->Release();
         pClrRuntimeHost = NULL;
     }
+	init_global_msdotnet();
 }
 
 void release_transient_objects()
