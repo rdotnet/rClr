@@ -27,4 +27,4 @@ License: LGPL-3
 Depends:
     R (>= 2.15.0),
     methods
-RoxygenNote: 5.0.0
+RoxygenNote: 6.0.1

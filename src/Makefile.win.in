@@ -12,7 +12,8 @@ MSB_OPTIONS_CONSOLELOGGER ?= /consoleloggerparameters:ErrorsOnly
 
 SLN= rClr.sln
 
-MSB=@MSBUILD_EXE_PATH@
+# MSB=@MSBUILD_EXE_PATH@
+MSB=MSBuild.exe
 
 INSTDIR= ../inst
 
@@ -21,10 +22,10 @@ INSTDIR= ../inst
 DEBUG_BUILD_CMD ?= 
 
 MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) $(MSB_OPTIONS_CONSOLELOGGER)
-ifneq "$(VS120COMNTOOLS)" ""
-# work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
-endif
+# ifneq "$(VS120COMNTOOLS)" ""
+# # work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
+# MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
+# endif
 
 CLR_FACADE_BINS=ClrFacade.*
 RDOTNET_BINS=RDotNet.* DynamicInterop.*

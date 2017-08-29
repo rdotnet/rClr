@@ -12,6 +12,7 @@
 .*\.obj
 .*\.sdf
 .*\.suo
+.*\.vssettings
 .*ipch.*
 .*\.lastbuildstate
 .*\.intermediate\..*

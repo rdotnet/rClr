@@ -9,6 +9,25 @@ then
 	exit 1
 fi
 
+RSCRIPT="${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe"
+
+if [ ! -e "${RSCRIPT}" ] 
+then
+	echo "error: file ${RSCRIPT} not found"
+	CURDIR=`pwd`
+	echo "Current directory (pwd) is $CURDIR"	       
+	exit 1
+fi
+
+HAS_MSVS=`${RSCRIPT} -e "msvs_available <- require('msvs', quietly=TRUE) ; cat(msvs_available)"`
+
+if [ "$HAS_MSVS" = "FALSE" ]
+then
+	echo "ERROR: package swift requires R package msvs"
+	exit 1
+fi
+
+
 # On Windows the Mono installer contains the 32 bit architecture only. 
 # It is nevertheless possible to compile for 64 bits, including with Visual Studio,
 # but this is a manual process to set this up.
@@ -112,17 +131,12 @@ then
 	echo "note: Found the flag IGNORE_VISUALSTUDIO. Build will be made with gcc, Mono and xbuild"
 fi
 
-VS_COMNTOOLS=${VS120COMNTOOLS}
-# echo "$VS_COMNTOOLS"
-if [ "$VS_COMNTOOLS" = "" ]
-then
-	VS_COMNTOOLS=${VS110COMNTOOLS}
-fi
+VS_COMNTOOLS=${VS140COMNTOOLS}
 
 if [ "$VS_COMNTOOLS" = "" ]
 then
 	USE_GCC=1
-	echo "note: No VS120COMNTOOLS or VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
+	echo "note: No VS140COMNTOOLS environment variable. Fallback will try to build with gcc, Mono and xbuild"
 fi
 
 # echo "Passed detection of VS_COMNTOOLS"
@@ -160,7 +174,7 @@ else
 	# Note: == seems not supported in sh (ash??)
 	if [ "$VS_COMNTOOLS" = "" ]
 	then
-		echo "note: No VS120COMNTOOLS or VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
+		echo "note: No VS140COMNTOOLS or VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
 		# exit 1
 	else
 		# echo $WINMAKE_FILE
