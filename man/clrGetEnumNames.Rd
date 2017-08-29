@@ -21,4 +21,3 @@ library(rClr)
 clrGetEnumNames('Rclr.TestEnum')
 }
 }
-

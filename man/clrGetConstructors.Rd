@@ -22,4 +22,3 @@ testClassName <- "Rclr.TestObject";
 clrGetConstructors(testClassName)
 }
 }
-

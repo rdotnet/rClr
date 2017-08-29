@@ -2,8 +2,8 @@
 % Please edit documentation in R/rClr-package.r
 \docType{package}
 \name{rClr-package}
-\alias{rClr}
 \alias{rClr-package}
+\alias{rClr}
 \title{R accessing .NET/Mono}
 \description{
 Accessing the Common Language Runtime (.NET/Mono) from R
@@ -40,4 +40,3 @@ Jean-Michel Perraud \email{jean-michel.perraud_at_csiro.au}
 \keyword{CLR}
 \keyword{Mono}
 \keyword{package}
-

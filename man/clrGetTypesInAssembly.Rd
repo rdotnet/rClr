@@ -22,4 +22,3 @@ clrGetLoadedAssemblies()
 clrGetTypesInAssembly('ClrFacade')
 }
 }
-

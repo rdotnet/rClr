@@ -15,4 +15,3 @@ A list, with columns including mode, type,class,length and the string of the cor
 \description{
 Gets the type of a CLR object resulting from converting an R object. This function is mostly for documentation purposes, but may be of use to end users.
 }
-

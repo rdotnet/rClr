@@ -21,4 +21,3 @@ library(rClr)
 peekClrArgs("a", numeric(0))
 }
 }
-

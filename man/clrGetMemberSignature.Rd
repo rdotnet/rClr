@@ -29,4 +29,3 @@ clrGetMemberSignature(testObj, 'FieldIntegerOne')
 clrGetMemberSignature(testObj, 'PropertyIntegerTwo')
 }
 }
-

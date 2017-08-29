@@ -17,4 +17,3 @@ Guess the directory where to expect the architecture dependent native library of
 e.g. for the package rClr, ${R_HOME}/library/rClr/libs/x64
 This is a utility that is not specific to the rClr package
 }
-

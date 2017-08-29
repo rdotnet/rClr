@@ -17,4 +17,3 @@ Inspect one or more R object to get information on its representation in the eng
 This function is mostly useful for R/rClr developers. It is derived from the 'showArgs' 
 example in the R extension manual
 }
-

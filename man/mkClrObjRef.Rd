@@ -19,4 +19,3 @@ otherwise returned unchanged if null or not an external pointer.
 Create if possible and adequate the S4 object that wraps the external pointer to a CLR object. 
 Currently not exported, as this is unlikely to be recommended for use outside of unit tests and internal to rClr.
 }
-

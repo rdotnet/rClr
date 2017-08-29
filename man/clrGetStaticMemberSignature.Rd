@@ -14,4 +14,3 @@ clrGetStaticMemberSignature(typename, memberName)
 \description{
 Gets the signature of a static member of a type
 }
-

@@ -17,4 +17,3 @@ the reference object.
 \description{
 (EXPERIMENTAL) Create a reference object wrapper around a CLR object
 }
-

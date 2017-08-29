@@ -26,4 +26,3 @@ cTypename <- "Rclr.TestCases"
 clrCallStatic(cTypename, "IsTrue", TRUE)
 }
 }
-

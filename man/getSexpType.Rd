@@ -15,4 +15,3 @@ the type code, an integer, as defined in Rinternals.h
 \description{
 Get the type code for a SEXP, as returned by the TYPEOF macro
 }
-

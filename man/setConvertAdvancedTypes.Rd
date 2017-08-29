@@ -22,4 +22,3 @@ setConvertAdvancedTypes(FALSE)
 clrCallStatic(cTypename, "CreateStringDictionary")
 }
 }
-

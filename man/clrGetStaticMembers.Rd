@@ -22,4 +22,3 @@ testObj <- clrNew(testClassName)
 clrGetStaticMembers(testObj)
 }
 }
-
