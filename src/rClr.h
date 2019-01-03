@@ -230,9 +230,9 @@ inline double oleautdate_to_linear(double oleaut_date) {
 	// 1899-12-30 00:00:00 to be zero   i.e. result from conversion of oleaut 0
 	// 1899-12-29 18:00:00 to be -0.25	i.e. result from conversion of oleaut -1.75
 	// 1899-12-28 18:00:00 to be -1.25	i.e. result from conversion of oleaut -2.75  (-1.25 = (-2) + 0.75 = (ceiling(-2.75)+ abs(-2.75)- floor(abs(-2.75)))
-	double absval = abs(oleaut_date); 
+	double absval = std::abs(oleaut_date); 
 	if ( oleaut_date < 0.0 ) {
-		absval = abs(oleaut_date); 
+		absval = std::abs(oleaut_date); 
 		return (ceil(oleaut_date) + absval - floor(absval));
 	}
 	else 
@@ -249,7 +249,7 @@ inline double linear_to_oleautdate(double linear_date) {
 	double absval;
 	double decimal_abs, floorval;
 	if ( linear_date < 0.0 ) {
-		absval = abs(linear_date); 
+		absval = std::abs(linear_date); 
 		decimal_abs = absval - floor(absval);
 		floorval = floor(linear_date);
 		return floorval -(ceil(linear_date)-floorval) + decimal_abs; 
