@@ -1,4 +1,3 @@
-#!/bin/sh
 
 RCLR_SRC_DIR=./src
 if [ ! -e ${RCLR_SRC_DIR} ] 
@@ -106,7 +105,7 @@ sed -e "s/@R_INSTALL_PATH@/$R_HOME_BSLASH/" -e "s/@MONO_SRC_PATH@/$MONO_SRC_PATH
 	-e "s/@MONO_INSTALL_PATH@/$MONO_INSTALL_PATH_BSLASH/" $RCLR_PROPS_INFILE > $RCLR_PROPS_FILE
 	
 USE_GCC=0
-if [ "$IGNORE_VISUALSTUDIO" -ne "" ]
+if [ "$IGNORE_VISUALSTUDIO" != "" ]
 then
 	USE_GCC=1
 	echo "note: Found the flag IGNORE_VISUALSTUDIO. Build will be made with gcc, Mono and xbuild"
@@ -148,31 +147,34 @@ GET_MSBUILD_CMD=`echo ${RCLR_SRC_DIR}/get_msbuildpath.cmd | sed -e 's/\//\\\\/g'
 # Do note that this one returns a slashified path already. See get_msbuildpath
 MSBUILD_EXE_SLASH=`cmd /c "$GET_MSBUILD_CMD"`
 # MSBUILD_EXE=`${RCLR_SRC_DIR}/get_msbuildpath.cmd`
-# echo "$MSBUILD_EXE_SLASH"
-if [ ! -e $MSBUILD_EXE_SLASH ]
-# if [ "" != "" ]
+echo "$MSBUILD_EXE_SLASH"
+if [ $MSBUILD_EXE_SLASH != "MSBuild.exe" ]
 then
-	echo "error: Msbuild.exe not found at required location ${MSBUILD_TOOLS_PATH}"
-	exit 1
-else
-	# Check the compiler and dependencies required for buliding on Windows
-	# VS2012 Express edition
-	# Note: == seems not supported in sh (ash??)
-	if [ "$VS_COMNTOOLS" = "" ]
+	if [ ! -e $MSBUILD_EXE_SLASH ]
+	# if [ "" != "" ]
 	then
-		echo "note: No VS120COMNTOOLS or VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
-		# exit 1
-	else
-		# echo $WINMAKE_FILE
-		subst="s|@MSBUILD_EXE_PATH@|$MSBUILD_EXE_SLASH|"
-		# echo $subst
-		sed -e $subst $WINMAKE_INFILE > $WINMAKE_FILE
-		#################
-		# create the RDll.lib and Mono.lib files for compiling with VC++. Do not assume they are set up (even if very likely for the CRAN winbuilder)
-		# Thanks to http://cygwin.com/ml/cygwin/2011-09/msg00232.html for how to call cmd files from sh.
-		CREATE_LIB_CMD=`echo ${RCLR_SRC_DIR}/create_lib.cmd | sed -e 's/\//\\\\/g'`
-		cmd /c "$CREATE_LIB_CMD"
-	fi # if [ "$VS_COMNTOOLS" = "" ]
+		echo "error: Msbuild.exe not found at required location ${MSBUILD_TOOLS_PATH}"
+		exit 1
+	fi
 fi # end check on "${MSBUILD_EXE}"
+
+# Check the compiler and dependencies required for buliding on Windows
+# VS2012 Express edition
+# Note: == seems not supported in sh (ash??)
+if [ "$VS_COMNTOOLS" = "" ]
+then
+	echo "note: No VS120COMNTOOLS or VS110COMNTOOLS environment variable. Build will be made with gcc, Mono and xbuild"
+	# exit 1
+else
+	# echo $WINMAKE_FILE
+	subst="s|@MSBUILD_EXE_PATH@|$MSBUILD_EXE_SLASH|"
+	# echo $subst
+	sed -e $subst $WINMAKE_INFILE > $WINMAKE_FILE
+	#################
+	# create the RDll.lib and Mono.lib files for compiling with VC++. Do not assume they are set up (even if very likely for the CRAN winbuilder)
+	# Thanks to http://cygwin.com/ml/cygwin/2011-09/msg00232.html for how to call cmd files from sh.
+	CREATE_LIB_CMD=`echo ${RCLR_SRC_DIR}/create_lib.cmd | sed -e 's/\//\\\\/g'`
+	cmd /c "$CREATE_LIB_CMD"
+fi # if [ "$VS_COMNTOOLS" = "" ]
 
 exit 0

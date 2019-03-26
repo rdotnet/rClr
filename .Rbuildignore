@@ -28,3 +28,5 @@
 ./src/RclrTests/bin
 ./src/RclrTests/obj/.*
 ./inst/libs/.*
+.*/.vs/.*
+./src/.vs/.*

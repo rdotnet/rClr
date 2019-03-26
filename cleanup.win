@@ -1,4 +1,3 @@
-#!/bin/sh
 
 if ["$RCLR_SRC_DIR" = ""]
 then

@@ -7,10 +7,14 @@ BuildConfiguration ?= Release
 MonoBuildConfiguration ?= MonoInstall
 MODE ?= Build
 BuildMonoSupport ?= False
-MSB_OPTIONS_CONSOLELOGGER ?= /consoleloggerparameters:ErrorsOnly 
+MSB_OPTIONS_CONSOLELOGGER ?= //consoleloggerparameters:ErrorsOnly 
 ## /consoleloggerparameters:ErrorsOnly;WarningsOnly;Verbosity=minimal
 
 SLN= rClr.sln
+
+# NOTE: do NOT use a nuget.exe under c:\bin\ even if in your path
+# somehow nuget would not be found because /bin has a special meaning in RTools. 
+NUGET_CMD=nuget.exe 
 
 MSB=@MSBUILD_EXE_PATH@
 
@@ -23,7 +27,7 @@ DEBUG_BUILD_CMD ?=
 MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) $(MSB_OPTIONS_CONSOLELOGGER)
 ifneq "$(VS120COMNTOOLS)" ""
 # work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) //p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
 endif
 
 CLR_FACADE_BINS=ClrFacade.*
@@ -37,9 +41,10 @@ RCLRMS=rClrMs
 
 ROBOCP_CMD=cmd /c win_cp.cmd
 
-all: configinfo instdir rClrLib 
 
-# all: diagnose
+# all: configinfo instdir rClrLib 
+
+all: diagnose
 
 diagnose: detailedconfiginfo instdir rClrLib 
 
@@ -63,9 +68,12 @@ detailedconfiginfo:
 	-@echo build cmd line: $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="inserted" $(MSB_OPTIONS_EXTRA)
 	-@echo **END Variable**
 
-rClrLibComp: rClr.cpp
+rClrNugetRestore: rClr.cpp
+	-$(NUGET_CMD) restore $(SLN) ;
+
+rClrLibComp: rClrNugetRestore
 	@for tgt_platform in x64 Win32; do \
-		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
+		$(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
 	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
 
