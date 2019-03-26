@@ -153,4 +153,8 @@ UpgradeLog*.XML
 
 src/\.vs/
 \.vs/
+\.vscode/
 src/libfiles
+
+inst/libs/*.*
+inst/libs/i386/*.*

@@ -77,7 +77,8 @@ CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
 INSTDIR= ../inst
 
 MODE=Rebuild
-SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)"
+# Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
+SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
 
 RM = 		rm -f
 
@@ -89,9 +90,6 @@ all:		printarch  $(SHLIB) instdir rClrLib
 clean:
 	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
 
-rClrMono$(SHLIB_EXT): rClrMono.o
-	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
-
 rClrMono.o:
 	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 	###### NOTE:
@@ -100,6 +98,9 @@ rClrMono.o:
 	# @echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
 	# @echo ALL_CFLAGS=$(ALL_CFLAGS)
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
+
+rClrMono$(SHLIB_EXT): rClrMono.o
+	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
 
 printarch:
 	-@echo **Variable (information only for diagnosis purposes)**
