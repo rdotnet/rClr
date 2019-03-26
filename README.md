@@ -3,6 +3,8 @@ rClr
 
 R package for accessing .NET
 
+The latest is on the [testing branch](https://github.com/jmp75/rClr/tree/testing). As of March 2019 testing support for R 3.5.
+
 Accessing the Common Language Runtime (.NET or Mono) from the R statistical software, in-process.
 
 # Installing
