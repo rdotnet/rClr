@@ -1,21 +1,24 @@
-rClr
-====
+# rClr
 
-R package for accessing .NET
+## R package for accessing .NET
 
 The latest is on the [testing branch](https://github.com/jmp75/rClr/tree/testing). As of March 2019 testing support for R 3.5.
 
 Accessing the Common Language Runtime (.NET or Mono) from the R statistical software, in-process.
 
-# Installing
+## Installing
 
 As of September 2015, the source code snapshot of tagged releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases). Binary R packages for Windows cannot be released via github, and you can get them from [https://rclr.codeplex.com](https://rclr.codeplex.com).
 
-## Pre-compiled binaries
+### Pre-compiled binaries
 
 You can install pre-compiled rClr for Windows via [https://rclr.codeplex.com](https://rclr.codeplex.com). You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
 
-## From source
+### From source
+
+#### Windows
+
+Under construction as of 2019-04:
 
 ```bat
 REM important to not have nuget.exe under c:\bin 
@@ -26,6 +29,8 @@ echo %R_EXE%
 %R_EXE% CMD build --no-build-vignettes rClr
 %R_EXE% CMD INSTALL rClr_0.8.tar.gz
 ```
+
+#### Windows
 
 Installing on Linux is always installing from source anyway, be it from a tarball, cloning the repo, or using `devtools`. 
 
@@ -38,7 +43,7 @@ A Linux distribution with R, g++ and the Mono toolchain (including xbuild) shoul
 You should be able to install the package using the `install_github` function of the package `devtools`. The following commands have been tested successfully on Windows with VS2013 and Linux with Mono 3.10, on 2014-12-19. 
 
 ```R
-# Optionally you may remove a prior package
+## Optionally you may remove a prior package
 remove.packages('rClr')
 library(devtools)
 install_github("jmp75/rClr", build_vignettes=TRUE)
@@ -46,20 +51,20 @@ install_github("jmp75/rClr", build_vignettes=TRUE)
 
 NOTE: you must have a fully working devtools package. If devtools, on loading, reports a warning about not finding a suitable version of RTools (on Windows), this may prevent it from installing rClr. The issue has been seen for instance using devtools 1.7.0, installed from CRAN, via R 3.2.2. Package devtools 1.7.0 seems to require RTools 3.1, even when run from R 3.2.2. One way to overcome this is to install devtools from a more recent download, from its github repository.
 
-# Getting started
+## Getting started
 
 The package contains documentation, code sample and a vignette to get started.
 
 ```S
 library(rClr)
 ?rClr
-# There is an HTML vignette:
+## There is an HTML vignette:
 browseVignettes('rClr')
 ```
 
 You will otherwise find some documentation at [https://r2clr.codeplex.com/documentation](https://r2clr.codeplex.com/documentation)
 
-# Feedback and contributions
+## Feedback and contributions
 
 While this package is sometimes used for the author's paid day job, this is largely a personal endeavour. Support is appreciated in many forms.
 
@@ -67,7 +72,7 @@ While this package is sometimes used for the author's paid day job, this is larg
 * Documentation: reporting issues, feature requests or discussion threads as such can be very valuable material if done well.  
 * Consulting or contract work is an option that may be arranged.
 
-# Related work
+## Related work
 
 A few packages using rClr are publicly accessible, and may be of interest if you want to build your own package with dependencies on rClr.
 
