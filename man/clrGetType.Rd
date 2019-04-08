@@ -15,4 +15,3 @@ the CLR Type.
 \description{
 Gets the type of a CLR object given its type name
 }
-

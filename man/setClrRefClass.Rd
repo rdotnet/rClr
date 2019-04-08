@@ -17,4 +17,3 @@ the object generator function
 \description{
 EXPERIMENTAL Create reference classes for an object hierarchy. Gratefully acknowledge Peter D. and its rJavax work.
 }
-

@@ -33,4 +33,3 @@ clrIs(testObj, clrGetType('Rclr.TestMethodBinding'))
 clrIs(testObj, clrGetType('System.Reflection.Assembly'))
 }
 }
-

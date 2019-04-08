@@ -15,4 +15,3 @@ the external pointer to the CLR object
 \description{
 Gets the external pointer CLR object. End user are unlikely to need this.
 }
-

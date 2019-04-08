@@ -20,4 +20,3 @@ Initialize a new CLR application domain
 library(rClr)
 }
 }
-

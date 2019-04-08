@@ -12,4 +12,3 @@ the version of the common language runtime in use
 \description{
 Gets the version of the common language runtime in use.
 }
-

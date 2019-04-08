@@ -12,4 +12,3 @@ nothing is returned by this function
 \description{
 Shuts down the current runtime.
 }
-

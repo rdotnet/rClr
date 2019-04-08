@@ -26,4 +26,3 @@ clrGetProperties(testObj)
 clrGetProperties(testObj, 'One')
 }
 }
-

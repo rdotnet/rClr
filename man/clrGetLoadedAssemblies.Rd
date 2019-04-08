@@ -23,4 +23,3 @@ library(rClr)
 clrGetLoadedAssemblies()
 }
 }
-

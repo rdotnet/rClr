@@ -26,4 +26,3 @@ clrGetMethods(testObj)
 clrGetMethods(testObj, 'Get')
 }
 }
-

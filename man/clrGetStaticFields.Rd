@@ -14,4 +14,3 @@ clrGetStaticFields(objOrType, contains = "")
 \description{
 Gets the static fields for a type
 }
-

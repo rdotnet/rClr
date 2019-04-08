@@ -14,4 +14,3 @@ This function needs to be exported, but is highly unlikely to be of any use to a
 This is indirectly needed to unlock the benefits of using R.NET convert data structures between R and .NET. 
 Using this function is a critical part of solving the rather complicated issue rClr #33.
 }
-

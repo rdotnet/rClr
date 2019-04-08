@@ -14,4 +14,3 @@ clrGetStaticMethods(objOrType, contains = "")
 \description{
 Gets the static members for a type
 }
-

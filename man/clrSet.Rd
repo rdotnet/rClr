@@ -33,4 +33,3 @@ clrSet(f, 'Text', "Hello from '.NET'")
 clrCall(f, 'Show')
 }
 }
-

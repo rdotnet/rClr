@@ -23,4 +23,3 @@ setRDotNet(FALSE)
 clrCallStatic(cTypename, "CreateStringDictionary")
 }
 }
-

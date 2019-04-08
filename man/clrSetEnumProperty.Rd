@@ -18,4 +18,3 @@ clrSetEnumProperty(objOrType, name, enumtype, enumval)
 \description{
 Sets the value of an enum field or property of an object or class
 }
-

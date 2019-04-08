@@ -26,4 +26,3 @@ clrGetFields(testObj)
 clrGetFields(testObj, 'ieldInt')
 }
 }
-

@@ -23,4 +23,3 @@ testObj <- clrNew(testClassName)
 clrReflect(testObj)
 }
 }
-

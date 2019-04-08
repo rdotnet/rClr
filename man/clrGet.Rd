@@ -27,4 +27,3 @@ clrGet(testObj, 'FieldIntegerOne')
 clrGet(testClassName, 'StaticPropertyIntegerOne')
 }
 }
-
