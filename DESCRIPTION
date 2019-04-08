@@ -1,8 +1,8 @@
 Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
-Version: 0.8
-Date: 2015-11-01
+Version: 0.8.1
+Date: 2019-04-08
 Authors@R: c( person("Jean-Michel", "Perraud", email =
     "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
 Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
@@ -22,9 +22,9 @@ Suggests:
     testthat,
     knitr,
     xtable
-URL: http://rclr.codeplex.com
+URL: https://github.com/jmp75/rClr
 License: LGPL-3
 Depends:
     R (>= 2.15.0),
     methods
-RoxygenNote: 5.0.0
+RoxygenNote: 6.1.1

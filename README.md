@@ -17,6 +17,16 @@ You can install pre-compiled rClr for Windows via [https://rclr.codeplex.com](ht
 
 ## From source
 
+```bat
+REM important to not have nuget.exe under c:\bin 
+set PATH=C:\cmd_bin;%PATH%
+cd c:\src\github_jm
+setup_dev
+echo %R_EXE%
+%R_EXE% CMD build --no-build-vignettes rClr
+%R_EXE% CMD INSTALL rClr_0.8.tar.gz
+```
+
 Installing on Linux is always installing from source anyway, be it from a tarball, cloning the repo, or using `devtools`. 
 
 rClr is not your average R package and requires a few more tools than is typical for most R packages. 
