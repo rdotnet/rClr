@@ -23,11 +23,13 @@ Under construction as of 2019-04:
 ```bat
 REM important to not have nuget.exe under c:\bin 
 set PATH=C:\cmd_bin;%PATH%
+REM and make sure we use a recent msbuild, otherwise issues with netstandard2 formats.
+set PATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\MSBuild\15.0\Bin\;%PATH%
 cd c:\src\github_jm
-setup_dev
-echo %R_EXE%
-%R_EXE% CMD build --no-build-vignettes rClr
-%R_EXE% CMD INSTALL rClr_0.8.tar.gz
+set R_EXE="c:\Program Files\R\R-3.5.2\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+%R_VANILLA% CMD build rClr
+%R_VANILLA% CMD INSTALL --build rClr_0.8.x.tar.gz
 ```
 
 #### Windows

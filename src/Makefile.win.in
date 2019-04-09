@@ -56,6 +56,7 @@ detailedconfiginfo:
 	-@echo Windows architecture "$(R_ARCH)"
 	-@echo "env variable TEMP is $(TEMP)"
 	-@echo "env variable TMP is $(TMP)"
+	-@echo BuildConfiguration=$(BuildConfiguration)
 	-@echo BuildMonoSupport=$(BuildMonoSupport)
 	-@echo Mono Build configuration "$(MonoBuildConfiguration)"
 	-@echo R_ARCH=$(R_ARCH)
@@ -65,7 +66,7 @@ detailedconfiginfo:
 	-@echo CXX=$(CXX)
 	-@echo ALL_CFLAGS=$(ALL_CFLAGS)
 	-@echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
-	-@echo build cmd line: $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="inserted" $(MSB_OPTIONS_EXTRA)
+	-@echo build cmd line: $(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="replaced_tgt_platform" $(MSB_OPTIONS_EXTRA);
 	-@echo **END Variable**
 
 rClrNugetRestore: rClr.cpp
@@ -75,7 +76,7 @@ rClrLibComp: rClrNugetRestore
 	@for tgt_platform in x64 Win32; do \
 		$(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
-	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
+	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) //p:Configuration=$(MonoBuildConfiguration) ///p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
 
 instdir:
 	@for r_architecture in x64 i386; do \
@@ -98,11 +99,11 @@ rClrLib: rClrLibComp
 	bin_dir=./$(MonoBuildConfiguration); \
 	RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
 	if [ "$(BuildMonoSupport)" = "True" ] ; then $(ROBOCP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ; fi ;
-	-$(ROBOCP_CMD) ./$(BuildConfiguration)/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
-	-$(ROBOCP_CMD) ./$(BuildConfiguration)/ $(INSTDIR)/libs/ $(RDOTNET_BINS)   
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)   
 
 clean: 
-	$(MSB) $(SLN) /t:Clean
+	$(MSB) $(SLN) //t:Clean
 
 distclean: clean
 	-rm -rf $(INSTDIR)
