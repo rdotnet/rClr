@@ -22,8 +22,8 @@ startupMsg <- ''
   monoexepath <- Sys.which('mono')
   ext <- .Platform$dynlib.ext
   nativeLibsNames <- paste(c('rClrMono', 'rClrMs'), ext, sep='')
-  msDll <- nativeLibsNames[2]
   monoDll <- nativeLibsNames[1]
+  msDll <- nativeLibsNames[2]
   getFnameNoExt <- function(x) {strsplit(x, '\\.')[[1]][1]}
   rClrPkgDir <- file.path(libname, pkgname)
   archLibPath <- file.path(rClrPkgDir, 'libs', Sys.getenv('R_ARCH'))
@@ -43,20 +43,25 @@ startupMsg <- ''
   }
   dlls <- list.files(archLibPath, pattern=ext)
   if ( Sys.info()[['sysname']] == 'Windows') {
-    if ( msDll %in% dlls && rclr_env!='Mono') {
-      if( Sys.which('msvcr120.dll') == '') {
-        stop(paste("'msvcr120.dll' was not found on this Windows system.",
-          "You are probably missing the Visual C++ Redistributable for Visual Studio 2013.",
-          "Check instructions at https://r2clr.codeplex.com/wikipage?title=Installing%20R%20packages&referringTitle=Documentation", 
+    if ( rclr_env!='Mono') {
+      msvcrFileName <- 'msvcp140.dll'
+      if( Sys.which(msvcrFileName) == '') {
+        stop(paste(msvcrFileName, "was not found on this Windows system.",
+          "You are probably missing the Visual C++ Redistributable for Visual Studio 2019.",
+          "Go to https://visualstudio.microsoft.com/downloads/ and dowload 'Microsoft Visual C++ Redistributable for Visual Studio 2019'", 
           sep="\n"))
+      }
+      if(!(msDll %in% dlls)) {
+        stop(paste('rClr library .NET framework not found - looked under', archLibPath, 'but not found in', paste(dlls, collapse=','))) 
       }
       appendStartupMsg('Loading the dynamic library for Microsoft .NET runtime...')
       chname <- getFnameNoExt(msDll) 
       loadAndInit(chname, pkgname, libname, srcPkgLibPath) 
-    } else {  # on Windows, but we are requesting to load Mono.
+    } else if ( rclr_env=='Mono') {
+    # on Windows, but we are requesting to load Mono.
       appendStartupMsg('Loading the dynamic library for Mono runtime...')
       if(!(monoDll %in% dlls)) {
-        stop(paste('rClr library for Mono not found - looked under', archLibPath)) 
+        stop(paste('rClr library for Mono not found - looked under', archLibPath, 'but not found in', paste(dlls, collapse=','))) 
       } else if (monoexepath=='') {
         stop("mono.exe was not found by 'Sys.which'. You must add the mono bin directory (e.g. c:\\Program Files\\Mono-3.0.6\\bin) to your PATH environment variable")
       } else {
