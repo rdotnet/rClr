@@ -21,6 +21,7 @@ Build process
 ----------------------------
 
 ## .Rd file documentation
+
 ```{r, eval=FALSE}
 library(devtools)
 install_github("jmp75/rclr-devtools/packages/rClrDevtools")

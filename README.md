@@ -4,17 +4,27 @@
 
 Accessing the Common Language Runtime (.NET or Mono) from the R statistical software, in-process.
 
+## Prerequisites
+
+As of May 2019, on Windows Clr requires the .NET Framework (4.6.1+, 4.7.2+ recommended). Groundwork towards running on .NET Core started but it is unclear how to embed the .NET Core runtime into R.
+
+As of September 2015 using Mono on Windows is not maintained.
+
 ## Installing
 
 As of 2019-04, releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases).
 
 ### Pre-compiled binaries
 
-You can install pre-compiled rClr for Windows via [https://rclr.codeplex.com](https://rclr.codeplex.com). You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
+You can install pre-compiled rClr for Windows via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases). May 2019 has binary packages for R 3.4 and 3.5.
+
+`7z a rClr_windows_pkgs.7z` then `cd R_pkgs\bin\windows\contrib\3.5\` for R 3.5.x.
+
+You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
 
 ### From source
 
-If you want to compile from source note that you may be interested in using the [testing branch](https://github.com/jmp75/rClr/tree/testing).
+If you want to compile from source, you may be interested in using the [testing branch](https://github.com/jmp75/rClr/tree/testing).
 
 rClr is not your average R package and requires a few more tools than is typical for most R packages.
 
@@ -24,10 +34,17 @@ On Windows you will need a C# and C and/or Visual C++ compiler. Using the Visual
 
 Under construction as of 2019-04:
 
+You should work from the windows command prompt. I normally use and love ConEmu but for odd reasons the package install fails with `/Rtools/bin/sh: ./configure.win: No such file or directory`.
+
 ```bat
 REM IMPORTANT to not have nuget.exe or other commands under c:\bin; RTools mingw cannot find these commands
 set PATH=C:\cmd_bin;%PATH%
-cd c:\src\github_jm
+set SRC_ROOT=c:\src\github_jm
+
+cd %SRC_ROOT%
+rm rClr*.zip rClr*.tar.gz
+
+set PKG_VERSION=0.8.3
 ```
 
 Make sure we use a recent msbuild, otherwise there may be issues with targetting .NET netstandard2.0. `.\rClr\src\setup_vcpp.cmd` may help detect the most recent `msbuild.exe` you have if you have installed visual studio (unsure it works for Build Tools for Visual Studio). You can start a development prompt as a fallback if setup_vcpp fails to work on your machine.
@@ -37,19 +54,55 @@ REM https://github.com/jmp75/rClr/issues/42 may need to use VS2019
 .\rClr\src\setup_vcpp.cmd
 ```
 
+After that `where msbuild` returns e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe`
+
+Optionally to `roxygenize` the package, launch R but from the same command prompt e.g.:
+
+```bat
+Rgui.bat
+```
+
+```R
+library(devtools)
+install_github("jmp75/rclr-devtools/packages/rClrDevtools")
+library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+roxyRclr('c:/src/github_jm/rClr')
+```
+
+back to windows cmd, to build the tarball:
+
 ```bat
 set R_EXE="c:\Program Files\R\R-3.5.2\bin\x64\R.exe"
 set R_VANILLA=%R_EXE% --no-save --no-restore-data
 %R_VANILLA% CMD build rClr
-%R_VANILLA% CMD INSTALL --build rClr_0.8.2.tar.gz
-
-set R_EXE="c:\Program Files\R\R-3.4.4\bin\x64\R.exe"
-set R_VANILLA=%R_EXE% --no-save --no-restore-data
-REM %R_VANILLA% CMD build rClr
-%R_VANILLA% CMD INSTALL --build rClr_0.8.2.tar.gz
 ```
 
-Note that as of September 2015 using Mono on Windows is not maintained.
+```bat
+set R_REPO_DIR=c:\build\software\R_pkgs\
+```
+
+```bat
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.5\
+if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+cd %R_WINBIN_REPO_DIR%
+rm *
+%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
+```
+
+and to build for R 3.4:
+
+```bat
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.4\
+if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+set R_EXE="c:\Program Files\R\R-3.4.4\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+cd %R_WINBIN_REPO_DIR%
+rm *
+%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
+
+cd %R_REPO_DIR%..
+7z a rClr_windows_pkgs.7z R_pkgs
+```
 
 #### Linux
 

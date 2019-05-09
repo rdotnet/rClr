@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab rClr\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.8.2\cr
-#' Notes: \tab preview release - Target netstandard2.0. Work on R 3.5.x, which has significant changes under the hood \cr
-#' Date: \tab 2019-04-09\cr
+#' Version: \tab 0.8.3\cr
+#' Notes: \tab Works with R 3.5.x series. .NET code targets netstandard2.0.\cr
+#' Date: \tab 2019-05-09\cr
 #' License: \tab LGPL 3\cr
 #' }
 #'
@@ -18,6 +18,7 @@
 #'
 #' \tabular{lll}{
 #' Version \tab Date \tab Notes \cr
+#' 0.8.2: \tab 2019-04-09 \tab preview release - work on R 3.5.x, which has significant changes under the hood. \cr
 #' 0.8.1: \tab 2019-04-08 \tab preview release - work on R 3.5.x, which has significant changes under the hood. \cr
 #' 0.8.0: \tab 2015-11-01 \tab Tidy up build process and upgrade to latest recommended practices, notably with testthat. \cr
 #' 0.7-9: \tab 2015-08-30 \tab allow compilation against boehm and SGen versions of mono lib. minor build improvements. \cr
