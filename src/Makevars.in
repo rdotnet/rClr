@@ -25,6 +25,12 @@ XBUILD=xbuild
 else
 XBUILD=$(MONO_INSTALL_PATH)/bin/xbuild
 endif
+
+# May 2019: >>>> xbuild tool is deprecated and will be removed in future updates, use msbuild instead <<<<
+XBUILD=msbuild
+
+NUGET_CMD=nuget
+
 SLN=rClr_monodev.sln
 
 ######## O/S dependent config
@@ -103,7 +109,7 @@ rClrMono$(SHLIB_EXT): rClrMono.o
 	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
 
 printarch:
-	-@echo **Variable (information only for diagnosis purposes)**
+	-@echo **Variable information only for diagnosis purposes**
 	-@echo R_ARCH=$(R_ARCH)
 	-@echo OBJECTS=$(OBJECTS)
 	-@echo SHLIB_EXT=$(SHLIB_EXT)
@@ -127,7 +133,10 @@ rClrLib: rClrLibComp
 	-rm -f $(INSTDIR)/libs/*.*
 	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
-rClrLibComp:
+rClrNugetRestore: rClr.cpp
+	-$(NUGET_CMD) restore $(SLN) ;
+
+rClrLibComp: rClrNugetRestore
 	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
 	
 
