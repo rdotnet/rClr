@@ -81,7 +81,7 @@ loadAndInit <- function(chname, pkgname, libname, srcPkgLibPath=NULL) {
   # cater for devtools 'load_all'; library.dynam fails otherwise. 
   if(!is.null(srcPkgLibPath)) {
     ext <- .Platform$dynlib.ext
-    // srcPkgLibPath ends with platform separator (e.g. '/')
+    # srcPkgLibPath ends with platform separator (e.g. '/')
     f <- paste0(srcPkgLibPath, chname, ext)
     dyn.load(f)
   } else {
