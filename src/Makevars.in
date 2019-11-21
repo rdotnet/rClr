@@ -75,7 +75,7 @@ PKG_LIBS_LOCAL=`pkg-config --libs $(MONO_LIB) glib-2.0`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
 PKG_LIBS=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
-RCLRBINDIRFACADE= ./$(BUILDTYPE)
+RCLRBINDIRFACADE= ./ClrFacade/bin/$(BUILDTYPE)/netstandard2.0
 endif  ## end if statement testing on  "$(R_OSTYPE)" is "windows" or not
 
 CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
@@ -91,7 +91,7 @@ RM = 		rm -f
 # .PHONY: 	all clean
 
 #all:		printarch  rClrMono$(SHLIB_EXT) instdir rClrInstRclrMono rClrLib
-all:		printarch  $(SHLIB) instdir rClrLib
+all:		printarch  $(SHLIB) instdir rClrLib rClrInstRclrMono
 
 clean:
 	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
@@ -122,9 +122,8 @@ instdir:
 	-@mkdir -p $(INSTDIR) 2>/dev/null
 	-@mkdir -p $(INSTDIR)/libs$(R_ARCH) 2>/dev/null
 
-# Note: see explanation for -u -p in Makefile.win. May be unnecessary on Linux?
-rClrInstRclrMono:
-	cp -u -p rClrMono$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
+rClrInstRclrMono: $(SHLIB)
+	cp -u -p rClr$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
 
 rClrLib: rClrLibComp 
 	if [ -e symbols.rds ] ; then cp -u -p symbols.rds $(INSTDIR)/libs$(R_ARCH) ; fi
