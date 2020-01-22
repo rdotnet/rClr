@@ -28,6 +28,9 @@ endif
 
 # May 2019: >>>> xbuild tool is deprecated and will be removed in future updates, use msbuild instead <<<<
 XBUILD=msbuild
+# however, the msbuild that comes with dotnet 2.2 fails (error MSB4018: System.TypeLoadException: Could not load type of field 'Microsoft.NET.Build.Tasks.DependencyContextBuilder) 
+# so still:
+# XBUILD=xbuild
 
 NUGET_CMD=nuget
 
@@ -61,7 +64,8 @@ PKG_LIBS =		-mms-bitfields -mwindows -L"$(MONO_INSTALL_PATH64)/" -lmono-2.0 -lws
 # PKG_LIBS =		-mms-bitfields -mwindows -LF:/bin/mono_built/lib -LF:/bin/mono_built/bin -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
 endif  ## ifeq "$(R_ARCH)" "/x64"
 
-RCLRBINDIRFACADE= ./$(BuildConfiguration)
+# not sure the following works anymore. Mono on windows deprecated but with .netcore may revive.
+RCLRBINDIRFACADE= ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0
 
 else  ## the OS is not 'windows'
 ifeq "$(BUILDTYPE)" "Release"
@@ -75,7 +79,7 @@ PKG_LIBS_LOCAL=`pkg-config --libs $(MONO_LIB) glib-2.0`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
 PKG_LIBS=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
-RCLRBINDIRFACADE= ./$(BUILDTYPE)
+RCLRBINDIRFACADE= ./ClrFacade/bin/$(BUILDTYPE)/netstandard2.0
 endif  ## end if statement testing on  "$(R_OSTYPE)" is "windows" or not
 
 CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
@@ -83,6 +87,7 @@ CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
 INSTDIR= ../inst
 
 MODE=Rebuild
+MODE=Build
 # Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
 SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
 
@@ -131,6 +136,8 @@ rClrLib: rClrLibComp
 	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
 	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
 	-rm -f $(INSTDIR)/libs/*.*
+	-@echo PWD=$(PWD)
+	-@echo CLR_FACADE_BINS=$(CLR_FACADE_BINS)
 	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
 rClrNugetRestore: rClr.cpp
