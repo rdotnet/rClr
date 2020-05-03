@@ -3,6 +3,13 @@
 
 // #define RCLR_VER 0x000100 /* RCLR v0.1-0 */
 
+// 202005 Temporarily to faciliate debugging from VSCode
+#ifndef MONO_CLR
+#ifdef __linux__
+#define MONO_CLR
+#endif 
+#endif 
+
 #ifndef MS_CLR
 #ifndef MONO_CLR
 #define MS_CLR 1

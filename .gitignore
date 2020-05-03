@@ -158,3 +158,13 @@ src/libfiles
 
 inst/libs/*.*
 inst/libs/i386/*.*
+
+*.so
+
+*.o
+
+.ionide/
+
+mono_crash.*.json
+
+src/Makevars

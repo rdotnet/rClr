@@ -72,6 +72,7 @@ ifeq "$(BUILDTYPE)" "Release"
 BuildConfiguration=Unix
 else
 BuildConfiguration=UnixDebug
+GDEBUG_FLAGS = -ggdb3 -Og # See e.g. https://gcc.gnu.org/onlinedocs/gcc-4.5.4/gcc/Debugging-Options.html#Debugging-Options
 endif  ## ifeq "$(BUILDTYPE)" "Release"
 
 PKG_CFLAGS_LOCAL=`pkg-config --cflags $(MONO_LIB) glib-2.0`
@@ -102,7 +103,7 @@ clean:
 	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
 
 rClrMono.o:
-	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 	###### NOTE:
 	# On a CentOS OS, I needed to use the following. The CPP and C flags would otherwise return two options not understood:
 	# -xHOST -fp-model precise  
@@ -111,7 +112,7 @@ rClrMono.o:
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
 rClrMono$(SHLIB_EXT): rClrMono.o
-	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
 
 printarch:
 	-@echo **Variable information only for diagnosis purposes**
