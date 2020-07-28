@@ -48,11 +48,11 @@ testRtoClr <- function(dateStr, pfun=as.POSIXct, tzIdR=tzIdR_AUest, tzId=tzId_AU
   dayComponent <- format(rdate, '%Y-%m-%d')
   # when converting an R Date to a POSIXct it becomes encoded as the date plus 00:00:00 UTC. 
   # Let's check this is the equivalent seen from the CLR
-  expect_that( clrDateEquals(rdate, dayComponent, tzIdClr='UTC'), is_true(), label=paste('R Date',rdate,'becomes UTC DateTime',dayComponent));
+  expect_true( clrDateEquals(rdate, dayComponent, tzIdClr='UTC'), label=paste('R Date',rdate,'becomes UTC DateTime',dayComponent));
   
   # if an R POSIXct date is created for a timezone, it is equal to a DateTime time zone
   dr <- pfun(dateStr, tz=tzIdR)
-  expect_that( clrDateEquals( dr, dateStr, tzIdClr=tzId ), is_true(), label=paste('R POSIXct',pctToString(dr),'becomes',tzId,'DateTime',dateStr));
+  expect_true( clrDateEquals( dr, dateStr, tzIdClr=tzId ), label=paste('R POSIXct',pctToString(dr),'becomes',tzId,'DateTime',dateStr));
 }
 
 expect_posixct_equal <- function(actual, expected, mAct='Actual', mExp='Expected') {
