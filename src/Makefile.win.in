@@ -39,7 +39,7 @@ RCLRMS=rClrMs
 # and R CMD check would fail with a misleading error message about not being a valid Win32 application.
 # CP_CMD=cp -u -p -f
 
-ROBOCP_CMD=cmd /c win_cp.cmd
+ROBOCP_CMD=cmd //c win_cp.cmd
 
 
 # all: configinfo instdir rClrLib 

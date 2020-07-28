@@ -57,8 +57,8 @@ then
 	exit 1
 fi
 GET_MONO_SDK_CMD=`echo ${RCLR_SRC_DIR}/get_monosdk.cmd | sed -e 's/\//\\\\/g'`
-#  echo "cmd /c $CREATE_LIB_CMD" > blah.txt 
-MONO_INSTALL_PATH=`cmd /c "$GET_MONO_SDK_CMD"`
+#  echo "cmd //c $CREATE_LIB_CMD" > blah.txt 
+MONO_INSTALL_PATH=`cmd //c "$GET_MONO_SDK_CMD"`
 if [ "$MONO_INSTALL_PATH" = "$NOT_FOUND" ]
 then
 	echo "warning: Path to the Mono SDK not found by querying the Windows registry. Mono support will be disabled"
@@ -145,7 +145,7 @@ GET_MSBUILD_CMD=`echo ${RCLR_SRC_DIR}/get_msbuildpath.cmd | sed -e 's/\//\\\\/g'
 # echo $GET_MSBUILD_CMD
 
 # Do note that this one returns a slashified path already. See get_msbuildpath
-MSBUILD_EXE_SLASH=`cmd /c "$GET_MSBUILD_CMD"`
+MSBUILD_EXE_SLASH=`cmd //c "$GET_MSBUILD_CMD"`
 # MSBUILD_EXE=`${RCLR_SRC_DIR}/get_msbuildpath.cmd`
 echo "$MSBUILD_EXE_SLASH"
 if [ $MSBUILD_EXE_SLASH != "MSBuild.exe" ]
@@ -174,7 +174,7 @@ else
 	# create the RDll.lib and Mono.lib files for compiling with VC++. Do not assume they are set up (even if very likely for the CRAN winbuilder)
 	# Thanks to http://cygwin.com/ml/cygwin/2011-09/msg00232.html for how to call cmd files from sh.
 	CREATE_LIB_CMD=`echo ${RCLR_SRC_DIR}/create_lib.cmd | sed -e 's/\//\\\\/g'`
-	cmd /c "$CREATE_LIB_CMD"
+	cmd //c "$CREATE_LIB_CMD"
 fi # if [ "$VS_COMNTOOLS" = "" ]
 
 exit 0
