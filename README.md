@@ -58,10 +58,6 @@ After that `where msbuild` returns e.g. `C:\Program Files (x86)\Microsoft Visual
 
 Optionally to `roxygenize` the package, launch R but from the same command prompt e.g.:
 
-```bat
-Rgui.bat
-```
-
 ```R
 library(devtools)
 install_github("jmp75/rclr-devtools/packages/rClrDevtools")
