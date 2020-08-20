@@ -12,19 +12,22 @@ As of September 2015 using Mono on Windows is not maintained.
 
 ## Installing
 
-As of 2019-04, releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases).
+As of 2019-04, releases can be found via the [release tab of the rClr GitHub repository](https://github.com/rdotnet/rClr/releases).
 
 ### Pre-compiled binaries
 
-You can install pre-compiled rClr for Windows via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases). May 2019 has binary packages for R 3.4 and 3.5.
+You can install pre-compiled rClr for Windows via the [release tab of the rClr GitHub repository](https://github.com/rdotnet/rClr/releases). May 2019 has binary packages for R 3.4 and 3.5. August 2020 has a package for version 4.0.x. 
 
-`7z a rClr_windows_pkgs.7z` then `cd R_pkgs\bin\windows\contrib\3.5\` for R 3.5.x.
+`7z a rClr_windows_pkgs.7z` then:
+
+* `cd R_pkgs\bin\windows\contrib\3.5\` for R 3.5.x
+* `cd R_pkgs\bin\windows\contrib\4.0\` for R 4.0.x
 
 You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
 
 ### From source
 
-If you want to compile from source, you may be interested in using the [testing branch](https://github.com/jmp75/rClr/tree/testing).
+If you want to compile from source, you may be interested in using the [testing branch](https://github.com/rdotnet/rClr/tree/testing).
 
 rClr is not your average R package and requires a few more tools than is typical for most R packages.
 
@@ -44,13 +47,13 @@ set SRC_ROOT=c:\src\github_jm
 cd %SRC_ROOT%
 rm rClr*.zip rClr*.tar.gz
 
-set PKG_VERSION=0.8.3
+set PKG_VERSION=0.9.0
 ```
 
 Make sure we use a recent msbuild, otherwise there may be issues with targetting .NET netstandard2.0. `.\rClr\src\setup_vcpp.cmd` may help detect the most recent `msbuild.exe` you have if you have installed visual studio (unsure it works for Build Tools for Visual Studio). You can start a development prompt as a fallback if setup_vcpp fails to work on your machine.
 
 ```bat
-REM https://github.com/jmp75/rClr/issues/42 may need to use VS2019
+REM https://github.com/rdotnet/rClr/issues/42 may need to use VS2019
 .\rClr\src\setup_vcpp.cmd
 ```
 
@@ -59,21 +62,25 @@ After that `where msbuild` returns e.g. `C:\Program Files (x86)\Microsoft Visual
 Optionally to `roxygenize` the package, launch R but from the same command prompt e.g.:
 
 ```bat
-Rgui.bat
+REM set R_EXE="c:\Program Files\R\R-3.5.2\bin\x64\R.exe"
+set R_EXE="c:\Program Files\R\R-4.0.2\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+
+%R_VANILLA%
 ```
 
 ```R
 library(devtools)
 install_github("jmp75/rclr-devtools/packages/rClrDevtools")
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
-roxyRclr('c:/src/github_jm/rClr')
+library(rClrDevtools) # https://github.com/rdotnet/rClr-devtools
+rClrDevtools::roxyRclr('c:/src/github_jm/rClr')
+# possibly, to build vignettes
+install.packages(c('knitr', 'xtable', 'formatR'))
 ```
 
-back to windows cmd, to build the tarball:
+back to windows cmd, to build the tarball. 
 
 ```bat
-set R_EXE="c:\Program Files\R\R-3.5.2\bin\x64\R.exe"
-set R_VANILLA=%R_EXE% --no-save --no-restore-data
 %R_VANILLA% CMD build rClr
 ```
 
@@ -82,7 +89,7 @@ set R_REPO_DIR=c:\build\software\R_pkgs\
 ```
 
 ```bat
-set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.5\
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\4.0\
 if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
 cd %R_WINBIN_REPO_DIR%
 rm *
@@ -118,7 +125,7 @@ You should be able to install the package using the `install_github` function of
 ## Optionally you may remove a prior package
 remove.packages('rClr')
 library(devtools)
-install_github("jmp75/rClr", build_vignettes=TRUE)
+install_github("rdotnet/rClr", build_vignettes=TRUE)
 ```
 
 NOTE: you must have a fully working devtools package. If devtools, on loading, reports a warning about not finding a suitable version of RTools (on Windows), this may prevent it from installing rClr. The issue has been seen for instance using devtools 1.7.0, installed from CRAN, via R 3.2.2. Package devtools 1.7.0 seems to require RTools 3.1, even when run from R 3.2.2. One way to overcome this is to install devtools from a more recent download, from its github repository.

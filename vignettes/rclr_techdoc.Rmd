@@ -25,7 +25,7 @@ Build process
 ```{r, eval=FALSE}
 library(devtools)
 install_github("jmp75/rclr-devtools/packages/rClrDevtools")
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+library(rClrDevtools) # https://github.com/rdotnet/rClr-devtools
 roxyRclr()
 # roxyRclr(pkgDir='~/src/codeplex/rClr')
 ```
@@ -34,7 +34,7 @@ roxyRclr()
 You should start from a new R session; if you have regenerated doc from Roxygen, there may be some surprises with the result of the `system.file` function.
 
 ```{r, eval=FALSE}
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+library(rClrDevtools) # https://github.com/rdotnet/rClr-devtools
 library(rClr)
 pkgDir <- tryFindPkgDir()
 # seem to need to move working directory. Oddities with knitr figure output otherwise
@@ -115,7 +115,7 @@ forceGc()
 
 ## Investigating issues with Mono.
 
-While investigating [rClr issue 7](https://github.com/jmp75/rClr/issues/7)
+While investigating [rClr issue 7](https://github.com/rdotnet/rClr/issues/7)
 
 ```
 git reset --hard HEAD

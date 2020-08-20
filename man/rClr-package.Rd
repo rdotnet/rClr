@@ -34,7 +34,7 @@ Version \tab Date \tab Notes \cr
 0.7-5: \tab 2015-04-06 \tab Internal release for work project. Compile against mono sgen rather than boehm. \cr
 }
 
-I gratefully acknowledge Kosei Abe and others for their work on the dependency R.NET (see https://github.com/jmp75/rdotnet/graphs/contributors)
+I gratefully acknowledge Kosei Abe and others for their work on the dependency R.NET (see https://github.com/rdotnet/rdotnet/graphs/contributors)
 }
 \author{
 Jean-Michel Perraud \email{jean-michel.perraud_at_csiro.au}
