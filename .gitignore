@@ -78,6 +78,21 @@ x64/
 *.vssscc
 .builds
 
+# Build results on Linux/GCC
+*.o
+*.so
+*.rds
+# R packages, cmake
+*.Rcheck/
+
+.vscode/*
+.ionide/*
+*/.vs/
+
+*inst/libs/
+
+*src/Makevars
+
 # Visual C++ cache files
 ipch/
 *.aps
