@@ -33,6 +33,7 @@ XBUILD=msbuild
 # XBUILD=xbuild
 
 NUGET_CMD=nuget
+DOTNET_CMD=dotnet
 
 SLN=rClr_monodev.sln
 
@@ -91,6 +92,8 @@ MODE=Rebuild
 MODE=Build
 # Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
 SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
+# 2020-12:
+SLN_BUILD_OPT_DOTNET=-c $(BuildConfiguration) -nologo --no-restore -v minimal
 
 RM = 		rm -f
 
@@ -142,11 +145,9 @@ rClrLib: rClrLibComp
 	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
 rClrNugetRestore: rClr.cpp
-	-$(NUGET_CMD) restore $(SLN) ;
+	-$(DOTNET_CMD) restore $(SLN) ;
 
 rClrLibComp: rClrNugetRestore
-	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
-	
-
-
+	# "$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
+	$(DOTNET_CMD) build $(SLN) $(SLN_BUILD_OPT_DOTNET)
 
