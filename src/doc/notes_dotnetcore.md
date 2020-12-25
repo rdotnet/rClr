@@ -7,6 +7,9 @@ These notes gather information and assessment regarding the possibility to targe
 
 ## Generic information
 
+* [dotnet sample on latest hosting design](https://github.com/dotnet/samples/tree/master/core/hosting/HostWithHostFxr)
+* [Native hosting post .NET core 3](https://github.com/dotnet/runtime/blob/master/docs/design/features/native-hosting.md)
+
 * [MS doc - .NET Core hosting](https://docs.microsoft.com/en-us/dotnet/core/tutorials/netcore-hosting)
 * [MS doc - CLR Hosting](https://docs.microsoft.com/en-us/dotnet/framework/unmanaged-api/hosting/index)
 * [Blog post hoswing coreclr](http://yizhang82.me/hosting-coreclr)
