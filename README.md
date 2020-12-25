@@ -143,6 +143,10 @@ Installing on Linux is always installing from source anyway, be it from a tarbal
 
 A Linux distribution with R, g++ and the Mono toolchain (including xbuild) should work. Note that while a range of Mono versions in the 3.X series may work, I recommend you use versions 3.8 or above. This may require you to look for adequate versions (for instance Debian is lagging behind currently). You may want to have a look at the instructions at the [mono download page for Linux](http://www.mono-project.com/download/#download-lin) and use the Xamarin packages.
 
+```sh
+sudo apt install mono-xbuild
+```
+
 #### Using devtools
 
 You should be able to install the package using the `install_github` function of the package `devtools`. The following commands have been tested successfully on Windows with VS2013 and Linux with Mono 3.10, on 2014-12-19.
