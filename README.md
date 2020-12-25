@@ -91,14 +91,32 @@ set R_REPO_DIR=c:\build\software\R_pkgs\
 ```bat
 set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\4.0\
 if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+set R_EXE="c:\Program Files\R\R-4.0.2\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
 cd %R_WINBIN_REPO_DIR%
 rm *
 %R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
 ```
 
-and to build for R 3.4:
+and to build for R 3.x:
 
 ```bat
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.6\
+if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+set R_EXE="c:\Program Files\R\R-3.6.1\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+cd %R_WINBIN_REPO_DIR%
+rm *
+%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
+
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.5\
+if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+set R_EXE="c:\Program Files\R\R-3.5.3\bin\x64\R.exe"
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+cd %R_WINBIN_REPO_DIR%
+rm *
+%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
+
 set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.4\
 if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
 set R_EXE="c:\Program Files\R\R-3.4.4\bin\x64\R.exe"
@@ -106,7 +124,15 @@ set R_VANILLA=%R_EXE% --no-save --no-restore-data
 cd %R_WINBIN_REPO_DIR%
 rm *
 %R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
+```
 
+```R
+library(testthat)
+library(rClr)
+test_dir('c:/src/github_jm/rClr/tests/testthat')
+```
+
+```bat
 cd %R_REPO_DIR%..
 7z a rClr_windows_pkgs.7z R_pkgs
 ```
