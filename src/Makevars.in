@@ -104,6 +104,8 @@ clean:
 
 rClrMono.o:
 	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr_mono.cpp -o rClrMonoImpl.o -lsupc++
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr_platform_neutral.cpp -o rClrPn.o -lsupc++
 	###### NOTE:
 	# On a CentOS OS, I needed to use the following. The CPP and C flags would otherwise return two options not understood:
 	# -xHOST -fp-model precise  
@@ -112,7 +114,7 @@ rClrMono.o:
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
 rClrMono$(SHLIB_EXT): rClrMono.o
-	$(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o rClrMonoImpl rClrPn.o $(ALL_LIBS)
 
 printarch:
 	-@echo **Variable information only for diagnosis purposes**

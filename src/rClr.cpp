@@ -40,7 +40,7 @@ void rclr_shutdown_clr()
 #endif
 }
 
-static void clr_object_finalizer(SEXP clrSexp) {
+void clr_object_finalizer(SEXP clrSexp) {
 	ClrObjectHandle* clroh_ptr;
 	if (TYPEOF(clrSexp)==EXTPTRSXP) {
 #ifdef MONO_CLR
