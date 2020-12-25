@@ -2,6 +2,14 @@
 
 #include "rClr.h"
 
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+std::vector<CLR_OBJ*> transientArgs;
+
+// Initialise global variables here, not in the header
+MonoDomain* domain = nullptr;
+MonoAssembly* assembly = nullptr;
+MonoImage* image = nullptr;
+MonoClass* spTypeClrFacade = nullptr;
 
 
 MonoDomain* get_domain() { return domain; }
@@ -604,7 +612,7 @@ CLR_OBJ* rclr_mono_call_inst_method(const char* mnam, CLR_OBJ* obj, void** param
 void rclr_mono_create_domain( char* filename, int mono_debug) {
 	if(domain != NULL)
 	{
-		warning("rclr_mono_create_domain called with argument %s, but the domain is already set. Ignoring.", filename);
+		warning("rclr_mono_create_domain called with argument %s, but the domain appears to already set. Exiting and ignoring this call.", filename);
 		return;
 	}
 	if(mono_debug) {
@@ -616,7 +624,7 @@ void rclr_mono_create_domain( char* filename, int mono_debug) {
 	else {
 		domain = mono_jit_init_version("rClr_domain", RCLR_DEFAULT_RUNTIME_VERSION);
 		if (!domain) {
-			error("Failed to create rClr MonoDomain. Requested runtime was %s", RCLR_DEFAULT_RUNTIME_VERSION);
+			error("Failed to create the rClr MonoDomain. Requested runtime was %s", RCLR_DEFAULT_RUNTIME_VERSION);
 			return;
 		}
 		else {
@@ -629,12 +637,12 @@ void rclr_mono_create_domain( char* filename, int mono_debug) {
 
 	assembly = mono_domain_assembly_open (domain, filename);
 	if (!assembly) {
-		error("Mono assembly seems to be NULL??");
+		error("Failed to open the assembly containing the CLR facade. Mono assembly seems to be a null pointer");
 		return;
 	}
 	image = mono_assembly_get_image (assembly);
 	if (!image) {
-		error("Mono image seems to be NULL??");
+		error("Failed to get an image of the assembly containing the CLR facade. Mono image seems to be a null pointer");
 		return;
 	}
 	/*
@@ -645,6 +653,10 @@ void rclr_mono_create_domain( char* filename, int mono_debug) {
 	mono_jit_exec (domain, assembly, 1, &filename);
 
 	spTypeClrFacade = mono_class_from_name( image, "Rclr", "ClrFacade");
+	if (!spTypeClrFacade) {
+		error("Failed to load the CLR facade: MonoClass pointer for Rclr.ClrFacade seems to still be a null pointer");
+		return;
+	}
 }
 
 void rclr_mono_load_assembly( char** filename )

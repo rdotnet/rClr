@@ -5,9 +5,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{00CD413A-C00E-45D5-940D-2C6C6F65F520}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
-    <Version>0.8.1</Version>
-    <Copyright>(c) 2014-2019 Jean-Michel Perraud</Copyright>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Version>0.9.0</Version>
+    <Copyright>(c) 2014-2020 Jean-Michel Perraud</Copyright>
     <Description>.NET interoperability on top of R.NET for the rClr package</Description>
     <Product>rClr</Product>
     <Company />

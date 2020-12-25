@@ -7,8 +7,8 @@
 #' Package: \tab rClr \cr
 #' Type: \tab Package \cr
 #' Version: \tab 0.9.0 \cr
-#' Notes: \tab Works with R 4.0.x series. Credits to Pete Thompson https://github.com/pete-thompson for the changes. \cr
-#' Date: \tab 2020-05-09\cr
+#' Notes: \tab Works with R 4.0.x series. Credits to Pete Thompson https://github.com/pete-thompson for some of the changes. Uses R.NET 1.9.0. \cr
+#' Date: \tab 2020-10-05\cr
 #' License: \tab LGPL 3\cr
 #' }
 #'

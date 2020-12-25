@@ -6,8 +6,8 @@
     <ProjectGuid>{024B0C26-BED0-467D-B332-E9796B756133}</ProjectGuid>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.8.1</Version>
-    <Copyright>(c) 2014-2019 Jean-Michel Perraud</Copyright>
+    <Version>0.9.0</Version>
+    <Copyright>(c) 2014-2020 Jean-Michel Perraud</Copyright>
     <Description>.NET interoperability on top of R.NET for the rClr package</Description>
     <Product>rClr</Product>
     <Company />
@@ -21,6 +21,6 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="R.NET" Version="1.8.1" />
+    <PackageReference Include="R.NET" Version="1.9.0" />
   </ItemGroup>
 </Project>

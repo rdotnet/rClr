@@ -10,11 +10,11 @@ Accessing the Common Language Runtime (.NET/Mono) from R
 }
 \details{
 \tabular{ll}{
-Package: \tab rClr\cr
-Type: \tab Package\cr
-Version: \tab 0.8.3\cr
-Notes: \tab Works with R 3.5.x series. .NET code targets netstandard2.0.\cr
-Date: \tab 2019-05-09\cr
+Package: \tab rClr \cr
+Type: \tab Package \cr
+Version: \tab 0.9.0 \cr
+Notes: \tab Works with R 4.0.x series. Credits to Pete Thompson https://github.com/pete-thompson for some of the changes. Uses R.NET 1.9.0. \cr
+Date: \tab 2020-10-05\cr
 License: \tab LGPL 3\cr
 }
 
@@ -24,6 +24,7 @@ framework on Windows and Mono on several platforms, currently Windows and at lea
 
 \tabular{lll}{
 Version \tab Date \tab Notes \cr
+0.8.3: \tab 2019-05-09 \tab Works with R 3.5.x series. .NET code targets netstandard2.0. \cr
 0.8.2: \tab 2019-04-09 \tab preview release - work on R 3.5.x, which has significant changes under the hood. \cr
 0.8.1: \tab 2019-04-08 \tab preview release - work on R 3.5.x, which has significant changes under the hood. \cr
 0.8.0: \tab 2015-11-01 \tab Tidy up build process and upgrade to latest recommended practices, notably with testthat. \cr

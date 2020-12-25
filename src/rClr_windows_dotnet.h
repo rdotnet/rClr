@@ -161,10 +161,6 @@ static _TypePtr spTypeClrFacade;
 
 static variant_t vtEmpty;
 
-// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-static std::vector<VARIANT*> transientArgs;
-
-
 char* bstr_to_c_string(bstr_t* src);
 char* getComErrorMsg(HRESULT hr);
 void ms_rclr_cleanup();

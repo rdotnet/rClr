@@ -19,7 +19,7 @@ PKG_CPPFLAGS = --std=c++11 -lsupc++
 
 MONO_INSTALL_PATH=@MONO_INSTALL_PATH@
 MONO_INSTALL_PATH64=@MONO_INSTALL_PATH64@
-OBJECTS=rClrMono.o
+OBJECTS=rClrMono.o rClrMonoImpl.o rClrPn.o
 ifeq "$(MONO_INSTALL_PATH)" ""
 XBUILD=xbuild
 else
@@ -33,6 +33,7 @@ XBUILD=msbuild
 # XBUILD=xbuild
 
 NUGET_CMD=nuget
+DOTNET_CMD=dotnet
 
 SLN=rClr_monodev.sln
 
@@ -91,6 +92,8 @@ MODE=Rebuild
 MODE=Build
 # Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
 SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
+# 2020-12:
+SLN_BUILD_OPT_DOTNET=-c $(BuildConfiguration) -nologo --no-restore -v minimal
 
 RM = 		rm -f
 
@@ -113,7 +116,15 @@ rClrMono.o:
 	# @echo ALL_CFLAGS=$(ALL_CFLAGS)
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
+rClrPn.o:
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr_platform_neutral.cpp -o rClrPn.o -lsupc++
+
+rClrMonoImpl.o:
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr_mono.cpp -o rClrMonoImpl.o -lsupc++
+
 rClrMono$(SHLIB_EXT): rClrMono.o
+	-@echo **YO, doing linking**
+	-@echo $(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o rClrMonoImpl rClrPn.o $(ALL_LIBS)
 	$(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o rClrMonoImpl rClrPn.o $(ALL_LIBS)
 
 printarch:
@@ -144,11 +155,9 @@ rClrLib: rClrLibComp
 	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
 rClrNugetRestore: rClr.cpp
-	-$(NUGET_CMD) restore $(SLN) ;
+	-$(DOTNET_CMD) restore $(SLN) ;
 
 rClrLibComp: rClrNugetRestore
-	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
-	
-
-
+	# "$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
+	$(DOTNET_CMD) build $(SLN) $(SLN_BUILD_OPT_DOTNET)
 

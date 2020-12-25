@@ -3,6 +3,9 @@
 #include "rClr.h"
 
 
+// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
+static std::vector<VARIANT*> transientArgs;
+
 void init_global_msdotnet()
 {
 	pMetaHost = NULL;

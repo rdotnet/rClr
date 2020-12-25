@@ -81,13 +81,10 @@ SEXP rclr_mono_call_method_with_exception(const char* mnam, CLR_OBJ* obj, MonoCl
 void rclr_mono_load_assembly(char** filename);
 
 #define INIT_CLR_FROM_FILE FALSE
-MonoDomain* domain = NULL;
-MonoAssembly* assembly;
-MonoImage* image;
-MonoClass* spTypeClrFacade = NULL;
-
-// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-std::vector<CLR_OBJ*> transientArgs;
+extern MonoDomain* domain;
+extern MonoAssembly* assembly;
+extern MonoImage* image;
+extern MonoClass* spTypeClrFacade;
 
 MonoDomain* get_domain();
 MonoAssembly* get_assembly();
