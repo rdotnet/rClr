@@ -25,6 +25,15 @@ XBUILD=xbuild
 else
 XBUILD=$(MONO_INSTALL_PATH)/bin/xbuild
 endif
+
+# May 2019: >>>> xbuild tool is deprecated and will be removed in future updates, use msbuild instead <<<<
+XBUILD=msbuild
+# however, the msbuild that comes with dotnet 2.2 fails (error MSB4018: System.TypeLoadException: Could not load type of field 'Microsoft.NET.Build.Tasks.DependencyContextBuilder) 
+# so still:
+# XBUILD=xbuild
+
+NUGET_CMD=nuget
+
 SLN=rClr_monodev.sln
 
 ######## O/S dependent config
@@ -55,13 +64,15 @@ PKG_LIBS =		-mms-bitfields -mwindows -L"$(MONO_INSTALL_PATH64)/" -lmono-2.0 -lws
 # PKG_LIBS =		-mms-bitfields -mwindows -LF:/bin/mono_built/lib -LF:/bin/mono_built/bin -lmono-2.0 -lws2_32 -lpsapi -lole32 -lwinmm -loleaut32 -ladvapi32 -lversion
 endif  ## ifeq "$(R_ARCH)" "/x64"
 
-RCLRBINDIRFACADE= ./$(BuildConfiguration)
+# not sure the following works anymore. Mono on windows deprecated but with .netcore may revive.
+RCLRBINDIRFACADE= ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0
 
 else  ## the OS is not 'windows'
 ifeq "$(BUILDTYPE)" "Release"
 BuildConfiguration=Unix
 else
 BuildConfiguration=UnixDebug
+GDEBUG_FLAGS = -ggdb3 -Og # See e.g. https://gcc.gnu.org/onlinedocs/gcc-4.5.4/gcc/Debugging-Options.html#Debugging-Options
 endif  ## ifeq "$(BUILDTYPE)" "Release"
 
 PKG_CFLAGS_LOCAL=`pkg-config --cflags $(MONO_LIB) glib-2.0`
@@ -69,7 +80,7 @@ PKG_LIBS_LOCAL=`pkg-config --libs $(MONO_LIB) glib-2.0`
 PKG_CFLAGS = $(PKG_CFLAGS_LOCAL) -g -D MONO_CLR -D MONO_INST
 PKG_LIBS=$(PKG_LIBS_LOCAL)
 # TODO: can I avoid having this platform dependent? Why did I not use BuildConfiguration folder under Linux?
-RCLRBINDIRFACADE= ./$(BUILDTYPE)
+RCLRBINDIRFACADE= ./ClrFacade/bin/$(BUILDTYPE)/netstandard2.0
 endif  ## end if statement testing on  "$(R_OSTYPE)" is "windows" or not
 
 CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
@@ -77,6 +88,7 @@ CLR_FACADE_BINS=$(RCLRBINDIRFACADE)/*.dll*
 INSTDIR= ../inst
 
 MODE=Rebuild
+MODE=Build
 # Note: consoleloggerparameters:ErrorsOnly works with msbuild.exe, but xbuild does not support it
 SLNPROPERTIES=/p:Configuration=$(BuildConfiguration) /p:Platform="$(TGTPLATFORM)" /nologo /consoleloggerparameters:ErrorsOnly /verbosity:minimal
 
@@ -90,11 +102,8 @@ all:		printarch  $(SHLIB) instdir rClrLib
 clean:
 	${RM} $(OBJECTS) $(SHLIB) $(RCLR_LIBS)
 
-rClrMono$(SHLIB_EXT): rClrMono.o
-	$(CXX) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
-
 rClrMono.o:
-	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 	###### NOTE:
 	# On a CentOS OS, I needed to use the following. The CPP and C flags would otherwise return two options not understood:
 	# -xHOST -fp-model precise  
@@ -102,8 +111,11 @@ rClrMono.o:
 	# @echo ALL_CFLAGS=$(ALL_CFLAGS)
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
 
+rClrMono$(SHLIB_EXT): rClrMono.o
+	$(CXX) $(GDEBUG_FLAGS) -std=c++11 -shared -Wl,-z,relro -o rClrMono$(SHLIB_EXT) rClrMono.o $(ALL_LIBS)
+
 printarch:
-	-@echo **Variable (information only for diagnosis purposes)**
+	-@echo **Variable information only for diagnosis purposes**
 	-@echo R_ARCH=$(R_ARCH)
 	-@echo OBJECTS=$(OBJECTS)
 	-@echo SHLIB_EXT=$(SHLIB_EXT)
@@ -125,9 +137,14 @@ rClrLib: rClrLibComp
 	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
 	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
 	-rm -f $(INSTDIR)/libs/*.*
+	-@echo PWD=$(PWD)
+	-@echo CLR_FACADE_BINS=$(CLR_FACADE_BINS)
 	-cp -u -p $(CLR_FACADE_BINS) $(INSTDIR)/libs
 
-rClrLibComp:
+rClrNugetRestore: rClr.cpp
+	-$(NUGET_CMD) restore $(SLN) ;
+
+rClrLibComp: rClrNugetRestore
 	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
 	
 

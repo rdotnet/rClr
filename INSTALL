@@ -37,7 +37,7 @@ perfMeasureFile <- list.files(system.file("tests", package = "rClr"), pattern = 
     full.names = TRUE)
 stopifnot(file.exists(perfMeasureFile))
 source(perfMeasureFile)
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
+library(rClrDevtools) # https://github.com/rdotnet/rClr-devtools
 # rClrDevtools::roxyRclr()
 rClrDevtools::vignettesRclr()
 ```

@@ -1,13 +1,13 @@
 Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
-Version: 0.8
-Date: 2015-11-01
+Version: 0.9.0
+Date: 2020-08-09
 Authors@R: c( person("Jean-Michel", "Perraud", email =
     "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
 Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
     <http://www.codeplex.com/site/users/view/evolvedmicrobe> [ctb] (fix for
-    finding the path to package libraries), R Core team [ctb] (showArgs
+    finding the path to package libraries), Pete Thompson <https://github.com/pete-thompson> [ctb], R Core team [ctb] (showArgs
     extracted from R extension manual)
 Maintainer: J-M <jean-michel.perraud@csiro.au>
 Description: rClr is a package for low-level access from R to a Common Language
@@ -21,10 +21,11 @@ VignetteBuilder: knitr
 Suggests:
     testthat,
     knitr,
+    formatR,
     xtable
-URL: http://rclr.codeplex.com
+URL: https://github.com/rdotnet/rClr
 License: LGPL-3
 Depends:
     R (>= 2.15.0),
     methods
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1

@@ -7,13 +7,16 @@ BuildConfiguration ?= Release
 MonoBuildConfiguration ?= MonoInstall
 MODE ?= Build
 BuildMonoSupport ?= False
-MSB_OPTIONS_CONSOLELOGGER ?= /consoleloggerparameters:ErrorsOnly 
+MSB_OPTIONS_CONSOLELOGGER ?= //consoleloggerparameters:ErrorsOnly 
 ## /consoleloggerparameters:ErrorsOnly;WarningsOnly;Verbosity=minimal
 
 SLN= rClr.sln
 
-# MSB=@MSBUILD_EXE_PATH@
-MSB=MSBuild.exe
+# NOTE: do NOT use a nuget.exe under c:\bin\ even if in your path
+# somehow nuget would not be found because /bin has a special meaning in RTools. 
+NUGET_CMD=nuget.exe 
+
+MSB=@MSBUILD_EXE_PATH@
 
 INSTDIR= ../inst
 
@@ -22,10 +25,10 @@ INSTDIR= ../inst
 DEBUG_BUILD_CMD ?= 
 
 MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) $(MSB_OPTIONS_CONSOLELOGGER)
-# ifneq "$(VS120COMNTOOLS)" ""
-# # work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
-# MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) /p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
-# endif
+ifneq "$(VS120COMNTOOLS)" ""
+# work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
+MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) //p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
+endif
 
 CLR_FACADE_BINS=ClrFacade.*
 RDOTNET_BINS=RDotNet.* DynamicInterop.*
@@ -36,11 +39,12 @@ RCLRMS=rClrMs
 # and R CMD check would fail with a misleading error message about not being a valid Win32 application.
 # CP_CMD=cp -u -p -f
 
-ROBOCP_CMD=cmd /c win_cp.cmd
+ROBOCP_CMD=cmd //c win_cp.cmd
 
-all: configinfo instdir rClrLib 
 
-# all: diagnose
+# all: configinfo instdir rClrLib 
+
+all: diagnose
 
 diagnose: detailedconfiginfo instdir rClrLib 
 
@@ -52,6 +56,7 @@ detailedconfiginfo:
 	-@echo Windows architecture "$(R_ARCH)"
 	-@echo "env variable TEMP is $(TEMP)"
 	-@echo "env variable TMP is $(TMP)"
+	-@echo BuildConfiguration=$(BuildConfiguration)
 	-@echo BuildMonoSupport=$(BuildMonoSupport)
 	-@echo Mono Build configuration "$(MonoBuildConfiguration)"
 	-@echo R_ARCH=$(R_ARCH)
@@ -61,14 +66,17 @@ detailedconfiginfo:
 	-@echo CXX=$(CXX)
 	-@echo ALL_CFLAGS=$(ALL_CFLAGS)
 	-@echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
-	-@echo build cmd line: $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="inserted" $(MSB_OPTIONS_EXTRA)
+	-@echo build cmd line: $(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="replaced_tgt_platform" $(MSB_OPTIONS_EXTRA);
 	-@echo **END Variable**
 
-rClrLibComp: rClr.cpp
+rClrNugetRestore: rClr.cpp
+	-$(NUGET_CMD) restore $(SLN) ;
+
+rClrLibComp: rClrNugetRestore
 	@for tgt_platform in x64 Win32; do \
-		$(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(BuildConfiguration) /p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
+		$(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
-	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) /p:Configuration=$(MonoBuildConfiguration) /p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
+	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) //p:Configuration=$(MonoBuildConfiguration) ///p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
 
 instdir:
 	@for r_architecture in x64 i386; do \
@@ -91,11 +99,11 @@ rClrLib: rClrLibComp
 	bin_dir=./$(MonoBuildConfiguration); \
 	RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
 	if [ "$(BuildMonoSupport)" = "True" ] ; then $(ROBOCP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ; fi ;
-	-$(ROBOCP_CMD) ./$(BuildConfiguration)/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
-	-$(ROBOCP_CMD) ./$(BuildConfiguration)/ $(INSTDIR)/libs/ $(RDOTNET_BINS)   
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)   
 
 clean: 
-	$(MSB) $(SLN) /t:Clean
+	$(MSB) $(SLN) //t:Clean
 
 distclean: clean
 	-rm -rf $(INSTDIR)

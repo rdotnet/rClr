@@ -1,6 +1,13 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
+0.8-01	2019-04-08	beta
+    o	pre-release, test on R 3.5.x which has significant underlying changes. Most of the changes required appeared to be in R.NET though rather than rClr. 
+	o	Move csproj to netstandard2 format and target.
+
+0.8-0	2015-11-01	beta
+    o	Tidy up build process and upgrade to latest recommended practices, notably with testthat
+
 0.7-9	2015-08-30	beta
     o	Update to use R.NET 1.6.5. Following up on a few requests, 
 	allow for backward compatibility down to 
