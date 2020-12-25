@@ -1,7 +1,10 @@
 NEWS/ChangeLog for rClr
 --------------------------
 
-0.8-01	2019-04-08	beta
+0.9-0	2020-10-05	
+    o	Release for R 4.0.x. Most of the changes required appeared to be in R.NET though rather than rClr. 
+
+0.8-1	2019-04-08	beta
     o	pre-release, test on R 3.5.x which has significant underlying changes. Most of the changes required appeared to be in R.NET though rather than rClr. 
 	o	Move csproj to netstandard2 format and target.
 
