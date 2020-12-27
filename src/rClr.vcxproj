@@ -191,6 +191,12 @@
     <ReferencePath>./libfiles/x64;$(RInstallPath)/bin/x64</ReferencePath>
     <TargetName>$(ProjectName)Ms</TargetName>
   </PropertyGroup>
+  <ItemDefinitionGroup>
+  <!-- we cannot do /MP if we use #import <mscorlib.tlb> with multiple obj files compilations -->
+    <ClCompile>
+        <MultiProcessorCompilation>false</MultiProcessorCompilation>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -261,6 +267,7 @@
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
       <AdditionalOptions>/TP %(AdditionalOptions)</AdditionalOptions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>NotSet</SubSystem>
