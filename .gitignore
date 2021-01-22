@@ -158,3 +158,4 @@ src/libfiles
 
 inst/libs/*.*
 inst/libs/i386/*.*
+.Rproj.user

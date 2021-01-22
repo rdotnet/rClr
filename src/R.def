@@ -82,3 +82,4 @@ Rf_cons
 Rf_defineVar
 Rf_inherits
 Rf_lcons
+EXTPTR_PTR

@@ -8,120 +8,92 @@ Accessing the Common Language Runtime (.NET or Mono) from the R statistical soft
 
 As of May 2019, on Windows Clr requires the .NET Framework (4.6.1+, 4.7.2+ recommended). Groundwork towards running on .NET Core started but it is unclear how to embed the .NET Core runtime into R.
 
-As of September 2015 using Mono on Windows is not maintained.
-
 ## Installing
 
-As of 2019-04, releases can be found via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases).
+Releases can be found via the [release tab of the rClr GitHub repository](https://github.com/Open-Systems-Pharmacology/rClr/releases).
 
 ### Pre-compiled binaries
 
-You can install pre-compiled rClr for Windows via the [release tab of the rClr GitHub repository](https://github.com/jmp75/rClr/releases). May 2019 has binary packages for R 3.4 and 3.5.
-
-`7z a rClr_windows_pkgs.7z` then `cd R_pkgs\bin\windows\contrib\3.5\` for R 3.5.x.
-
-You can use from the command line `R CMD INSTALL rclr_0.8.zip` where `R` points to one of the R.exe installed on your machine, or from R itself `install.packages('c:/path/to/rclr_0.8.zip')`
+You can install pre-compiled rClr for Windows 10 x64, Ubuntu 18, and CentOS 7 via the [release tab of the rClr GitHub repository](https://github.com/Open-Systems-Pharmacology/rClr/releases). Binary packages are available for R 3.6 and 4.x.
 
 ### From source
 
-If you want to compile from source, you may be interested in using the [testing branch](https://github.com/jmp75/rClr/tree/testing).
-
-rClr is not your average R package and requires a few more tools than is typical for most R packages.
+Compiling of the **master** branch from source has been tested under Windows 10 and Linux Ubuntu 18.
 
 #### Windows
 
-On Windows you will need a C# and C and/or Visual C++ compiler. Using the Visual Studio 2019 toolchain is recommended as of April 2019. Check the [visual studio download page](https://visualstudio.microsoft.com/downloads/) for options.
+On Windows you will need a C# and C and/or Visual C++ compiler. The current releases have been made using the Visual Studio 2019 toolchain. Check the [visual studio download page](https://visualstudio.microsoft.com/downloads/) for options.
 
-Under construction as of 2019-04:
+It is recommended to build the packages in RStudio.
 
-You should work from the windows command prompt. I normally use and love ConEmu but for odd reasons the package install fails with `/Rtools/bin/sh: ./configure.win: No such file or directory`.
+Following path variables must be present in your environment (see [How to set an environment variable in Windows 10](https://www.onmsft.com/how-to/how-to-set-an-environment-variable-in-windows-10))
 
-```bat
-REM IMPORTANT to not have nuget.exe or other commands under c:\bin; RTools mingw cannot find these commands
-set PATH=C:\cmd_bin;%PATH%
-set SRC_ROOT=c:\src\github_jm
-
-cd %SRC_ROOT%
-rm rClr*.zip rClr*.tar.gz
-
-set PKG_VERSION=0.8.3
-```
-
-Make sure we use a recent msbuild, otherwise there may be issues with targetting .NET netstandard2.0. `.\rClr\src\setup_vcpp.cmd` may help detect the most recent `msbuild.exe` you have if you have installed visual studio (unsure it works for Build Tools for Visual Studio). You can start a development prompt as a fallback if setup_vcpp fails to work on your machine.
-
-```bat
-REM https://github.com/jmp75/rClr/issues/42 may need to use VS2019
-.\rClr\src\setup_vcpp.cmd
-```
-
-After that `where msbuild` returns e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe`
-
-Optionally to `roxygenize` the package, launch R but from the same command prompt e.g.:
-
-```bat
-Rgui.bat
-```
-
-```R
-library(devtools)
-install_github("jmp75/rclr-devtools/packages/rClrDevtools")
-library(rClrDevtools) # https://github.com/jmp75/rClr-devtools
-roxyRclr('c:/src/github_jm/rClr')
-```
-
-back to windows cmd, to build the tarball:
-
-```bat
-set R_EXE="c:\Program Files\R\R-3.5.2\bin\x64\R.exe"
-set R_VANILLA=%R_EXE% --no-save --no-restore-data
-%R_VANILLA% CMD build rClr
-```
-
-```bat
-set R_REPO_DIR=c:\build\software\R_pkgs\
-```
-
-```bat
-set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.5\
-if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
-cd %R_WINBIN_REPO_DIR%
-rm *
-%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
-```
-
-and to build for R 3.4:
-
-```bat
-set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.4\
-if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
-set R_EXE="c:\Program Files\R\R-3.4.4\bin\x64\R.exe"
-set R_VANILLA=%R_EXE% --no-save --no-restore-data
-cd %R_WINBIN_REPO_DIR%
-rm *
-%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz
-
-cd %R_REPO_DIR%..
-7z a rClr_windows_pkgs.7z R_pkgs
-```
+- `MSBUILD_EXE_PATH` pointing to MSBuild.exe, e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe`
+- `VSCOMMON` pointing to the folder where Visual Studio common folder is located, e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7`. Alternatively, you can set the path in the file `configure.win'.
 
 #### Linux
 
-Installing on Linux is always installing from source anyway, be it from a tarball, cloning the repo, or using `devtools`.
+Install on Ubuntu 18.04. Mono is supported up to versiono 5.18, so make sure that mono 6 is not installed.
 
-A Linux distribution with R, g++ and the Mono toolchain (including xbuild) should work. Note that while a range of Mono versions in the 3.X series may work, I recommend you use versions 3.8 or above. This may require you to look for adequate versions (for instance Debian is lagging behind currently). You may want to have a look at the instructions at the [mono download page for Linux](http://www.mono-project.com/download/#download-lin) and use the Xamarin packages.
-
-#### Using devtools
-
-You should be able to install the package using the `install_github` function of the package `devtools`. The following commands have been tested successfully on Windows with VS2013 and Linux with Mono 3.10, on 2014-12-19.
-
-```R
-## Optionally you may remove a prior package
-remove.packages('rClr')
-library(devtools)
-install_github("jmp75/rClr", build_vignettes=TRUE)
+##### GIT
+```
+sudo apt install git
 ```
 
-NOTE: you must have a fully working devtools package. If devtools, on loading, reports a warning about not finding a suitable version of RTools (on Windows), this may prevent it from installing rClr. The issue has been seen for instance using devtools 1.7.0, installed from CRAN, via R 3.2.2. Package devtools 1.7.0 seems to require RTools 3.1, even when run from R 3.2.2. One way to overcome this is to install devtools from a more recent download, from its github repository.
+##### NUGET
+```
+sudo apt install nuget
+sudo nuget update -self
+```
+
+##### LIBS
+```
+sudo apt update
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install libssl-dev
+sudo apt install libxml2-dev
+```
+
+##### MONO
+
+```
+sudo apt install gnupg ca-certificates
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic/snapshots/5.18 main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+sudo apt update
+sudo apt install mono-complete
+```
+
+Check version with `mono -V`. It should read `5.18.xxx`
+
+
+##### .NET CORE SDK (For ubuntu 18.04..). 
+
+Install vary based on system. see https://aka.ms/dotnet-download
+(e.g. https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1910)
+
+
+```
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+sudo add-apt-repository universe
+sudo apt-get update
+sudo apt-get install apt-transport-https
+sudo apt-get update
+sudo apt-get install dotnet-sdk-3.1
+```
+
+Check version with `dotnet --version`. It should read `3.1.xxx`
+
+
+##### Install R Packages
+
+Within a R sesssion in a terminal
+
+```
+install.packages('devtools')
+```
 
 ## Getting started
 

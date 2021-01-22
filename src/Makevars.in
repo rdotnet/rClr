@@ -31,14 +31,12 @@ XBUILD=msbuild
 
 NUGET_CMD=nuget
 
-SLN=rClr_monodev.sln
-
 ######## O/S dependent config
 ifeq "$(R_OSTYPE)" "windows"
-## Note that as of 2015-08, the section for windows is not in active use. 
+SLN=rClr.sln
 
 ifeq "$(BUILDTYPE)" "Release"
-BuildConfiguration=MonoInstall
+BuildConfiguration=Release
 else
 BuildConfiguration=MonoInstallDebug
 endif  # ifeq "$(BUILDTYPE)" "Release"
@@ -64,6 +62,7 @@ endif  ## ifeq "$(R_ARCH)" "/x64"
 RCLRBINDIRFACADE= ./$(BuildConfiguration)
 
 else  ## the OS is not 'windows'
+SLN=rClr_monodev.sln
 ifeq "$(BUILDTYPE)" "Release"
 BuildConfiguration=Unix
 else
@@ -100,7 +99,7 @@ rClrMono.o:
 	$(CXX) -std=c++11 $(ALL_CPPFLAGS) $(ALL_CFLAGS) -c rClr.cpp -o rClrMono.o -lsupc++
 	###### NOTE:
 	# On a CentOS OS, I needed to use the following. The CPP and C flags would otherwise return two options not understood:
-	# -xHOST -fp-model precise  
+	# -xHOST -fp-model precise
 	# @echo ALL_CPPFLAGS=$(ALL_CPPFLAGS)
 	# @echo ALL_CFLAGS=$(ALL_CFLAGS)
 	# $(CXX) -std=c++11 -I/apps/R/3.1.1/lib64/R/include -DNDEBUG  -I/usr/local/include `pkg-config --cflags mono-2 glib-2.0` -g -D MONO_CLR -D MONO_INST -fpic  -O3 -openmp -c rClr.cpp -o rClrMono.o -lsupc++
@@ -125,7 +124,7 @@ instdir:
 rClrInstRclrMono: $(SHLIB)
 	cp -u -p rClr$(SHLIB_EXT) $(INSTDIR)/libs$(R_ARCH)
 
-rClrLib: rClrLibComp 
+rClrLib: rClrLibComp
 	if [ -e symbols.rds ] ; then cp -u -p symbols.rds $(INSTDIR)/libs$(R_ARCH) ; fi
 	# using rm -f to prevent the following, which seems to occur even when these should not be write-protected
 	#  cp: cannot create regular file `../inst/libs/ClrFacade.dll': Permission denied
@@ -137,7 +136,7 @@ rClrNugetRestore: rClr.cpp
 
 rClrLibComp: rClrNugetRestore
 	"$(XBUILD)" $(SLN) /t:$(MODE) $(SLNPROPERTIES)
-	
+
 
 
 

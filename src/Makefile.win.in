@@ -4,49 +4,40 @@
 
 # defaults the build configurations to the 'release' ones (i.e. no debug symbols)
 BuildConfiguration ?= Release
-MonoBuildConfiguration ?= MonoInstall
 MODE ?= Build
-BuildMonoSupport ?= False
-MSB_OPTIONS_CONSOLELOGGER ?= //consoleloggerparameters:ErrorsOnly 
+MSB_OPTIONS_CONSOLELOGGER ?= //consoleloggerparameters:ErrorsOnly
 ## /consoleloggerparameters:ErrorsOnly;WarningsOnly;Verbosity=minimal
 
 SLN= rClr.sln
 
 # NOTE: do NOT use a nuget.exe under c:\bin\ even if in your path
-# somehow nuget would not be found because /bin has a special meaning in RTools. 
-NUGET_CMD=nuget.exe 
+# somehow nuget would not be found because /bin has a special meaning in RTools.
+NUGET_CMD=nuget.exe
 
 MSB=@MSBUILD_EXE_PATH@
 
 INSTDIR= ../inst
 
 # This can be helpful to diagnose the msbuild procedure
-# DEBUG_BUILD_CMD=/v:diag
-DEBUG_BUILD_CMD ?= 
-
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) $(MSB_OPTIONS_CONSOLELOGGER)
-ifneq "$(VS120COMNTOOLS)" ""
-# work around issue with VS2013, see https://rclr.codeplex.com/workitem/9
-MSB_OPTIONS_EXTRA=$(DEBUG_BUILD_CMD) //p:VisualStudioVersion=12.0 $(MSB_OPTIONS_CONSOLELOGGER)
-endif
+DEBUG_BUILD_CMD ?=
 
 CLR_FACADE_BINS=ClrFacade.*
 RDOTNET_BINS=RDotNet.* DynamicInterop.*
 RCLRMS=rClrMs
 
-# I needed to use the -u -p options at some point to avoid odd cases where copying failed. 
-# For some odd reasons the files under /libs/ are copied with access rights such that they fail to load with dyn.load 
+# I needed to use the -u -p options at some point to avoid odd cases where copying failed.
+# For some odd reasons the files under /libs/ are copied with access rights such that they fail to load with dyn.load
 # and R CMD check would fail with a misleading error message about not being a valid Win32 application.
 # CP_CMD=cp -u -p -f
 
-ROBOCP_CMD=cmd /c win_cp.cmd
+ROBOCP_CMD=cmd //c win_cp.cmd
 
 
-# all: configinfo instdir rClrLib 
+# all: configinfo instdir rClrLib
 
 all: diagnose
 
-diagnose: detailedconfiginfo instdir rClrLib 
+diagnose: detailedconfiginfo instdir rClrLib
 
 configinfo:
 	-@echo Build configuration "$(BuildConfiguration)"
@@ -57,8 +48,6 @@ detailedconfiginfo:
 	-@echo "env variable TEMP is $(TEMP)"
 	-@echo "env variable TMP is $(TMP)"
 	-@echo BuildConfiguration=$(BuildConfiguration)
-	-@echo BuildMonoSupport=$(BuildMonoSupport)
-	-@echo Mono Build configuration "$(MonoBuildConfiguration)"
 	-@echo R_ARCH=$(R_ARCH)
 	-@echo OBJECTS=$(OBJECTS)
 	-@echo SHLIB_EXT=$(SHLIB_EXT)
@@ -76,7 +65,6 @@ rClrLibComp: rClrNugetRestore
 	@for tgt_platform in x64 Win32; do \
 		$(MSB) $(SLN) //t:$(MODE) //p:Configuration=$(BuildConfiguration) //p:Platform="$$tgt_platform" $(MSB_OPTIONS_EXTRA); \
 	done; \
-	if [ "$(BuildMonoSupport)" = "True" ] ; then $(MSB) $(SLN) /t:$(MODE) //p:Configuration=$(MonoBuildConfiguration) ///p:Platform="Win32" $(MSB_OPTIONS_EXTRA) ; fi
 
 instdir:
 	@for r_architecture in x64 i386; do \
@@ -85,7 +73,7 @@ instdir:
 		mkdir -p $(INSTDIR)/libs/$$r_architecture 2>/dev/null ; \
 	done;
 
-rClrLib: rClrLibComp 
+rClrLib: rClrLibComp
 	r_architecture=x64;\
 	RCLRBINDIR=./x64/$(BuildConfiguration);\
 	bin_dir=$$RCLRBINDIR; \
@@ -96,13 +84,10 @@ rClrLib: rClrLibComp
 	bin_dir=$$RCLRBINDIR; \
 	RCLRBINS="$(RCLRMS).dll $(RCLRMS).exp $(RCLRMS).lib $(RCLRMS).pdb" ; \
 	$(ROBOCP_CMD) $$bin_dir $(INSTDIR)/libs/$$r_architecture/ $$RCLRBINS;
-	bin_dir=./$(MonoBuildConfiguration); \
-	RCLRBINS="$$bin_dir/rClrMono.dll $$bin_dir/rClrMono.exp $$bin_dir/rClrMono.lib $$bin_dir/rClrMono.pdb" ; \
-	if [ "$(BuildMonoSupport)" = "True" ] ; then $(ROBOCP_CMD) $$RCLRBINS $(INSTDIR)/libs/i386/ ; fi ;
 	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
-	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)   
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)
 
-clean: 
+clean:
 	$(MSB) $(SLN) //t:Clean
 
 distclean: clean
