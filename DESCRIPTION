@@ -1,7 +1,7 @@
 Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
-Version: 0.9.0
+Version: 0.9.1
 Date: 2020-21-01
 Authors@R: c( person("Jean-Michel", "Perraud", email =
     "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
@@ -21,7 +21,8 @@ VignetteBuilder: knitr
 Suggests:
     testthat,
     knitr,
-    xtable
+    xtable,
+    markdown
 URL: https://github.com/jmp75/rClr
 License: LGPL-3
 Depends:

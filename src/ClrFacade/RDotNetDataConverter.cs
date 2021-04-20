@@ -26,12 +26,12 @@ namespace Rclr
                 string assmbPath = Assembly.GetAssembly(this.GetType()).Location;
                 assmbPath = Path.GetFullPath(assmbPath);
                 var libDir = Path.GetDirectoryName(assmbPath);
-      
+
                 if (NativeUtility.IsUnix)
                     dllName = Path.Combine(libDir, "rClr.so");
                 else
                 {
-                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", 
+                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386",
                         (isMonoRuntime() ? "rClrMono.dll" : "rClrMs.dll")
                     );
                 }
@@ -40,7 +40,7 @@ namespace Rclr
             DataConversionHelper.RclrNativeDll = new RclrUnmanagedDll(dllName);
 
             SetupREngine ();
-            // The Mono API already has some unhandled exception reporting. 
+            // The Mono API already has some unhandled exception reporting.
             // TODO Use the following if it works well for both CLRuntimes.
 #if !MONO
             // OBSOLETE? SetupExceptionHandling();
@@ -201,15 +201,15 @@ namespace Rclr
         /// Convert an object, if possible, using RDotNet capabilities
         /// </summary>
         /// <remarks>
-        /// If a conversion to an RDotNet SymbolicExpression was possible, 
+        /// If a conversion to an RDotNet SymbolicExpression was possible,
         /// this returns the IntPtr SafeHandle.DangerousGetHandle() to be passed to R.
-        /// If the object is null or such that no known conversion is possible, the same object 
+        /// If the object is null or such that no known conversion is possible, the same object
         /// as the input parameter is returned.
         /// </remarks>
         public object ConvertToR (object obj)
         {
             ClearSexpHandles();
-            if (obj == null) 
+            if (obj == null)
                 return null;
             var sexp = obj as SymbolicExpression;
             if (sexp != null)
@@ -239,7 +239,7 @@ namespace Rclr
         }
 
         /// <summary>
-        /// A list to reference to otherwise transient SEXP created by this class. 
+        /// A list to reference to otherwise transient SEXP created by this class.
         /// This is to prevent .NET and R to trigger GC before rClr function calls have returned to R.
         /// </summary>
         private static List<SymbolicExpression> handles = new List<SymbolicExpression>();
@@ -256,13 +256,13 @@ namespace Rclr
         public bool ConvertVectors { get; set; }
 
         /// <summary>
-        /// Gets/sets whether to convert non-primitive value types and vector thereof, e.g. TimeSpan and DateTime. 
+        /// Gets/sets whether to convert non-primitive value types and vector thereof, e.g. TimeSpan and DateTime.
         /// Most users should never need to modify the default.
         /// </summary>
-        public bool ConvertValueTypes 
-        { 
-            get; 
-            set; 
+        public bool ConvertValueTypes
+        {
+            get;
+            set;
         }
 
         private bool convertAdvancedTypes;
@@ -270,7 +270,7 @@ namespace Rclr
         /// <summary>
         /// Gets/sets whether to convert more complicated types such as dictionaries, arrays of reference types, etc.
         /// </summary>
-        public bool ConvertAdvancedTypes 
+        public bool ConvertAdvancedTypes
         {
             get { return convertAdvancedTypes; }
             set
@@ -375,7 +375,7 @@ namespace Rclr
         {
             var dict = (IDictionary<string, U>)obj;
             if (!converterFunctions.ContainsKey(typeof(U[])))
-                throw new NotSupportedException("Cannot convert a dictionary of type " + dict.GetType()); 
+                throw new NotSupportedException("Cannot convert a dictionary of type " + dict.GetType());
             var values = converterFunctions[typeof(U[])].Invoke(dict.Values.ToArray());
             SetAttribute(values, dict.Keys.ToArray());
             return values.AsList();
@@ -437,7 +437,7 @@ namespace Rclr
             char[] array = (char[])obj;
             return engine.CreateCharacterVector(Array.ConvertAll(array, x => x.ToString()));
         }
-        
+
         private SymbolicExpression ConvertArrayDateTime(object obj)
         {
             if (!ConvertVectors) return null;
@@ -455,7 +455,7 @@ namespace Rclr
             if (!ConvertValueTypes) return null;
             Complex[] array = (Complex[])obj;
             return engine.CreateComplexVector(array);
-        }        
+        }
 
         private SymbolicExpression ConvertArrayTimeSpan(object obj)
         {
@@ -564,7 +564,7 @@ namespace Rclr
             //var externalPtr = new ExternalPointer(engine, ptr);
             // At this point, we have a loop from managed to unmanaged to managed memory.
             //  ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
-            // This is not quite what we want to return: we need to produce an S4 object 
+            // This is not quite what we want to return: we need to produce an S4 object
             //  S4Object -> ExternalPointer -> externalptr -> ClrObjectHandle -> Variant(if Microsoft) -> obj
             // return CreateClrObj(externalPtr, obj.GetType().FullName);
         }
@@ -586,7 +586,7 @@ namespace Rclr
             get
             {
                 if (createClrS4Object == null)
-                    createClrS4Object = engine.Evaluate("invisible(getCurrentConvertedObject)").AsFunction();
+                    createClrS4Object = engine.Evaluate("invisible(rClr::getCurrentConvertedObject)").AsFunction();
                 return createClrS4Object;
             }
         }
