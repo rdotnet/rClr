@@ -47,9 +47,8 @@ fi
 ## Find the location of the MSBuild.exe executable.
 GET_MSBUILD_CMD=`echo ${RCLR_SRC_DIR}/get_msbuildpath.cmd | sed -e 's/\//\\\\/g'`
 # Do note that this one returns a slashified path already. See get_msbuildpath
-MSBUILD_EXE_SLASH=`cmd /c "$GET_MSBUILD_CMD"`
+MSBUILD_EXE_SLASH=`"$GET_MSBUILD_CMD"`
 # MSBUILD_EXE=`${RCLR_SRC_DIR}/get_msbuildpath.cmd`
-echo "$MSBUILD_EXE_SLASH"
 if [ $MSBUILD_EXE_SLASH != "MSBuild.exe" ]
 then
 	if [ ! -e $MSBUILD_EXE_SLASH ]
@@ -75,7 +74,7 @@ else
 	# create the RDll.lib and Mono.lib files for compiling with VC++. Do not assume they are set up (even if very likely for the CRAN winbuilder)
 	# Thanks to http://cygwin.com/ml/cygwin/2011-09/msg00232.html for how to call cmd files from sh.
 	CREATE_LIB_CMD=`echo ${RCLR_SRC_DIR}/create_lib.cmd | sed -e 's/\//\\\\/g'`
-	cmd /c "$CREATE_LIB_CMD"
+	"$CREATE_LIB_CMD"
 fi
 
 exit 0
