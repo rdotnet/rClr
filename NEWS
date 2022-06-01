@@ -1,77 +1,79 @@
 NEWS/ChangeLog for rClr
 --------------------------
+0.9.2 2022-28-04
+- Compiled with R4.2
 
 0.8-01	2019-04-08	beta
-    o	pre-release, test on R 3.5.x which has significant underlying changes. Most of the changes required appeared to be in R.NET though rather than rClr. 
+    o	pre-release, test on R 3.5.x which has significant underlying changes. Most of the changes required appeared to be in R.NET though rather than rClr.
 	o	Move csproj to netstandard2 format and target.
 
 0.8-0	2015-11-01	beta
     o	Tidy up build process and upgrade to latest recommended practices, notably with testthat
 
 0.7-9	2015-08-30	beta
-    o	Update to use R.NET 1.6.5. Following up on a few requests, 
-	allow for backward compatibility down to 
-	R 2.15.3 - While all relevant tests work, note that the level 
+    o	Update to use R.NET 1.6.5. Following up on a few requests,
+	allow for backward compatibility down to
+	R 2.15.3 - While all relevant tests work, note that the level
 	of testing is not on par with that on R 3.2.x.
 
 0.7-8	2015-08-04	beta
-    o	Update to use R.NET 1.6.5. Following up on a few requests, 
-	allow for backward compatibility down to 
-	R 2.15.3 - While all relevant tests work, note that the level 
+    o	Update to use R.NET 1.6.5. Following up on a few requests,
+	allow for backward compatibility down to
+	R 2.15.3 - While all relevant tests work, note that the level
 	of testing is not on par with that on R 3.2.x.
 
 0.7-4	2015-03-26  beta
-    o	Quite a few months and internal versions later, more than 
-	enough has been done to have a public release. The main change 
-	under the hood is the use by default of R.NET in preference to C, 
+    o	Quite a few months and internal versions later, more than
+	enough has been done to have a public release. The main change
+	under the hood is the use by default of R.NET in preference to C,
 	which has opened the conversion of more complicated data structures.
-	
+
 0.7-3	2015-01-15  beta
-    o	Make data conversion using R.NET the default. 
+    o	Make data conversion using R.NET the default.
     o	Feature parity on Linux and Windows
-	
+
 0.7-1	2014-12-11  beta
-    o	Quite a few months and internal versions later, more than 
-	enough has been done to have a public release. The main change 
-	under the hood is the use by default of R.NET in preference to C, 
+    o	Quite a few months and internal versions later, more than
+	enough has been done to have a public release. The main change
+	under the hood is the use by default of R.NET in preference to C,
 	which has opened the conversion of more complicated data structures.
-	o	One particularly noteworthy feature is the possibility to convert 
-	.NET objects into R data frames in pure C# (or any other .NET language). 
-	This is not directly apparent as a feature in rClr itself, but it supports the 
-	use case. More on these capabilities will come in the form of 
+	o	One particularly noteworthy feature is the possibility to convert
+	.NET objects into R data frames in pure C# (or any other .NET language).
+	This is not directly apparent as a feature in rClr itself, but it supports the
+	use case. More on these capabilities will come in the form of
 	additional documentation in subsequent releases.
-	o	Not quite ready functional on Mono, but expected to be at 
+	o	Not quite ready functional on Mono, but expected to be at
 	parity in upcoming releases.
-	
+
 0.6-1	2014-04-29  beta
     o	Update to use R.NET 1.5.11. This brings lots of performance
 	improvements as well as fixes done over the past months to R.NET.
-	While not all benefits will be immediately apparent, this is a 
+	While not all benefits will be immediately apparent, this is a
 	more solid foundation for future rClr versions.
-	
+
 0.5-2	2013-09-21  beta 5
-    o	Fix memory leaks for vectors created in R converted to .NET 
-	arrays. Proper memory release is confirmed for at least numeric, 
-	integer and character vector types. Part of this exercise, 
+    o	Fix memory leaks for vectors created in R converted to .NET
+	arrays. Proper memory release is confirmed for at least numeric,
+	integer and character vector types. Part of this exercise,
 	rClr has been accepted by Coverity Scan (https://scan.coverity.com).
-    I acknowledge Coverity for some helpful insights tracking defects in rClr.	
-    o	Useful exception handling on MS.NET CLR: print out the details 
-	of the innermost exception. This is a big improvement on the 
+    I acknowledge Coverity for some helpful insights tracking defects in rClr.
+    o	Useful exception handling on MS.NET CLR: print out the details
+	of the innermost exception. This is a big improvement on the
 	unhelpful HRESULT codes previously reported.
-    o	The hosting for the Mono runtime on Windows is included 
-	in this release. Do note that date-time handling is not 
+    o	The hosting for the Mono runtime on Windows is included
+	in this release. Do note that date-time handling is not
 	passing many tests with the Mono CLR.
-	
+
 0.5-1	2013-06-16  beta 4
     o	Adding package documentation using knitr and R-markdown
     o	clrNew now with arguments
     o	Some support for 'enum' types
-    o	Date-time handling is now using POSIXct classes instead of Date. 
-	The temporal resolution is thus much better, however beware that 
-	POSIXct is effectively a UTC time with a timezone conversion. 
+    o	Date-time handling is now using POSIXct classes instead of Date.
+	The temporal resolution is thus much better, however beware that
+	POSIXct is effectively a UTC time with a timezone conversion.
 	A lot of unit tests are in place around it, but date and time
 	zone is a complicated topic.
-    o	This release does not include Mono support; unfortunately 
-	this is not yet usable as it is too unstable. There has 
-	actually been major progress, but some new issues still 
+    o	This release does not include Mono support; unfortunately
+	this is not yet usable as it is too unstable. There has
+	actually been major progress, but some new issues still
 	emerged.
