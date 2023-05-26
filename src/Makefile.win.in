@@ -84,8 +84,8 @@ rClrLib: rClrLibComp
 	bin_dir=$$RCLRBINDIR; \
 	RCLRBINS="$(RCLRMS).dll $(RCLRMS).exp $(RCLRMS).lib $(RCLRMS).pdb" ; \
 	$(ROBOCP_CMD) $$bin_dir $(INSTDIR)/libs/$$r_architecture/ $$RCLRBINS;
-	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
-	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/netstandard2.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/net7.0/ $(INSTDIR)/libs/ $(CLR_FACADE_BINS)
+	-$(ROBOCP_CMD) ./ClrFacade/bin/$(BuildConfiguration)/net7.0/ $(INSTDIR)/libs/ $(RDOTNET_BINS)
 
 clean:
 	$(MSB) $(SLN) //t:Clean
