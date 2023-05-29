@@ -32,7 +32,7 @@ namespace Rclr
                 else
                 {
                     dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386",
-                        (isMonoRuntime() ? "rClrMono.dll" : "rClrMs.dll")
+                        ("rClrMs.dll")
                     );
                 }
             }
@@ -42,9 +42,9 @@ namespace Rclr
             SetupREngine ();
             // The Mono API already has some unhandled exception reporting.
             // TODO Use the following if it works well for both CLRuntimes.
-#if !MONO
+//#if !MONO
             // OBSOLETE? SetupExceptionHandling();
-#endif
+//#endif
             converterFunctions = new Dictionary<Type, Func<object, SymbolicExpression>>();
 
             ConvertVectors = true;
@@ -154,11 +154,6 @@ namespace Rclr
             converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
             converterFunctions.Add(typeof(TimeSpan[]), ConvertArrayTimeSpan);
             converterFunctions.Add(typeof(Complex[]), ConvertArrayComplex);
-        }
-
-        private bool isMonoRuntime()
-        {
-            return ClrFacade.IsMonoRuntime;
         }
 
         public void Error(string msg)

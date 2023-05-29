@@ -43,10 +43,8 @@ namespace Rclr
        
         public static IUnmanagedDll RclrNativeDll= null;
         static Int32 VariantClear(IntPtr pvarg)
-        {
-            if(ClrFacade.IsMonoRuntime)
-                throw new NotSupportedException("Variant clear can only work with Windows and the .NET CLR");
-            return VariantClearMs(pvarg);
+        { 
+           return VariantClearMs(pvarg);
         }
 
         [Obsolete("Could not make to work overall (it works itself, just not in the method is it associated with)", true)]
