@@ -12,5 +12,4 @@ r_get_sexp_type
 r_show_args
 r_get_object_direct
 clr_object_to_SEXP
-is_microsoft_clr
 use_rdotnet
