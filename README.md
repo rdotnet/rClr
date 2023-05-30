@@ -24,12 +24,31 @@ Compiling of the **master** branch from source has been tested under Windows 10 
 
 On Windows you will need a C# and C and/or Visual C++ compiler. The current releases have been made using the Visual Studio 2019 toolchain. Check the [visual studio download page](https://visualstudio.microsoft.com/downloads/) for options.
 
-It is recommended to build the packages in RStudio.
+It is recommended to build the packages in RStudio. With the existing state of the code, the package builds directly in R Studio using devtools. Just open the location of the repository in R Studio and run:
+
+```
+devtools::install()
+```
+
+or if you just want to build the tar without installing:
+
+```
+devtools::build()
+```
+
 
 Following path variables must be present in your environment (see [How to set an environment variable in Windows 10](https://www.onmsft.com/how-to/how-to-set-an-environment-variable-in-windows-10))
 
 - `MSBUILD_EXE_PATH` pointing to MSBuild.exe, e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe`
 - `VSCOMMON` pointing to the folder where Visual Studio common folder is located, e.g. `C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7`. Alternatively, you can set the path in the file `configure.win'.
+
+In order to set up the compilation from Visual Studio it is recommended to run the configuration.win batch file from the R Studio Terminal:
+
+```
+sh configure.win
+```
+
+IMPORTANT: make sure your path folder structure does not contain any spaces, since that would cause the above to not run.
 
 #### Linux
 
