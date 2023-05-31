@@ -40,7 +40,7 @@ sed -e "s/@R_INSTALL_PATH@/$R_HOME_BSLASH/" $RCLR_PROPS_INFILE > $RCLR_PROPS_FIL
 VS_COMNTOOLS=${VSCOMMON}
 if [ "$VS_COMNTOOLS" = "" ]
 then
-  VS_COMNTOOLS="C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7"
+  VS_COMNTOOLS="C:/Program Files/Microsoft Visual Studio/2022/Community/Common7"
 fi
 
 ## Detect if a sufficient toolchain is present to compile with visual studio

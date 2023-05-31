@@ -13,7 +13,7 @@ REM Inspired from: https://github.com/ctaggart  via https://github.com/Microsoft
 
 set VsDevCmdFile=\Common7\Tools\VsDevCmd.bat
 
-set progf=%ProgramFiles(x86)%\Microsoft Visual Studio\2019\
+set progf=%ProgramFiles%\Microsoft Visual Studio\2022\
 if exist "%progf%" (
     goto foundVsDevCmdFile
 )
