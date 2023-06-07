@@ -1,18 +1,18 @@
-# An internal variable that is set ot the name of the native library depending on its use of the Mono or MS.NET CLR 
+# An internal variable that is set ot the name of the native library depending on its use of the Mono or MS.NET CLR
 nativePkgName <- ''
 
 # An internal variable to buffer startup messages
 startupMsg <- ''
 
 #' rClr .onLoad
-#' 
-#' Function called when loading the rClr package with 'library'. 
-#' 
-#' The function looks by default for the rClr native library for the Mono runtime. 
-#' If the platform is Linux, this is the only option. If the platform is Windows, using the 
-#' Microsoft .NET runtime is an option. If the rClr native library for MS.NET is detected, 
+#'
+#' Function called when loading the rClr package with 'library'.
+#'
+#' The function looks by default for the rClr native library for the Mono runtime.
+#' If the platform is Linux, this is the only option. If the platform is Windows, using the
+#' Microsoft .NET runtime is an option. If the rClr native library for MS.NET is detected,
 #' the Microsoft .NET runtime is loaded in preference to Mono.
-#' 
+#'
 #' @param libname the path to the library from which the package is loaded
 #' @param pkgname the name of the package.
 #' @rdname dotOnLoad
@@ -29,7 +29,7 @@ startupMsg <- ''
   archLibPath <- file.path(rClrPkgDir, 'libs', Sys.getenv('R_ARCH'))
   srcPkgLibPath <- NULL
   if(!file.exists(archLibPath)) {
-    # It may be because this is loaded through the 'document' and 'load_all' functions from devtools, 
+    # It may be because this is loaded through the 'document' and 'load_all' functions from devtools,
     # in which case libname is something like "f:/codeplex"
     # try to cater for load_all behavior.
     if( 'rclr' %in% tolower(list.files(libname))) {
@@ -48,26 +48,16 @@ startupMsg <- ''
       if( Sys.which(msvcrFileName) == '') {
         stop(paste(msvcrFileName, "was not found on this Windows system.",
           "You are probably missing the Visual C++ Redistributable for Visual Studio 2019.",
-          "Go to https://visualstudio.microsoft.com/downloads/ and dowload 'Microsoft Visual C++ Redistributable for Visual Studio 2019'", 
+          "Go to https://visualstudio.microsoft.com/downloads/ and dowload 'Microsoft Visual C++ Redistributable for Visual Studio 2019'",
           sep="\n"))
       }
       if(!(msDll %in% dlls)) {
-        stop(paste('rClr library .NET framework not found - looked under', archLibPath, 'but not found in', paste(dlls, collapse=','))) 
+        stop(paste('rClr library .NET framework not found - looked under', archLibPath, 'but not found in', paste(dlls, collapse=',')))
       }
       appendStartupMsg('Loading the dynamic library for Microsoft .NET runtime...')
-      chname <- getFnameNoExt(msDll) 
-      loadAndInit(chname, pkgname, libname, srcPkgLibPath) 
-    } else if ( rclr_env=='Mono') {
-    # on Windows, but we are requesting to load Mono.
-      appendStartupMsg('Loading the dynamic library for Mono runtime...')
-      if(!(monoDll %in% dlls)) {
-        stop(paste('rClr library for Mono not found - looked under', archLibPath, 'but not found in', paste(dlls, collapse=','))) 
-      } else if (monoexepath=='') {
-        stop("mono.exe was not found by 'Sys.which'. You must add the mono bin directory (e.g. c:\\Program Files\\Mono-3.0.6\\bin) to your PATH environment variable")
-      } else {
-        chname <- getFnameNoExt(monoDll)
-        loadAndInit(chname, pkgname, libname, srcPkgLibPath) 
-      }
+      chname <- getFnameNoExt(msDll)
+      print("before loadAndInit")
+      loadAndInit(chname, pkgname, libname, srcPkgLibPath)
     }
   } else { # not on Windows.
     appendStartupMsg('Loading the dynamic library for Mono runtime...')
@@ -77,12 +67,12 @@ startupMsg <- ''
 }
 
 loadAndInit <- function(chname, pkgname, libname, srcPkgLibPath=NULL) {
-  assign("nativePkgName", chname, inherits=TRUE) 
-  # cater for devtools 'load_all'; library.dynam fails otherwise. 
+  assign("nativePkgName", chname, inherits=TRUE)
+  # cater for devtools 'load_all'; library.dynam fails otherwise.
   if(!is.null(srcPkgLibPath)) {
     ext <- .Platform$dynlib.ext
     # srcPkgLibPath ends with platform separator (e.g. '/')
-    f <- paste0(srcPkgLibPath, chname, ext)
+    f <- file.path(srcPkgLibPath, paste0(chname, ext))
     dyn.load(f)
   } else {
     library.dynam(chname, pkgname, libname)
@@ -90,7 +80,9 @@ loadAndInit <- function(chname, pkgname, libname, srcPkgLibPath=NULL) {
   # should the init of the mono runtime try to attach to a Monodevelop debugger?
   debug_flag=Sys.getenv('RCLR_DEBUG')
   clrInit(debug_flag!="")
+  print("after clrInit")
   appendStartupMsg(paste('Loaded Common Language Runtime version', getClrVersionString()))
+  print("before setRDotNet")
   setRDotNet(TRUE)
 }
 
@@ -100,21 +92,24 @@ appendStartupMsg <- function(msg) {
 
 #' Gets the version of the common language runtime in use
 #'
-#' Gets the version of the common language runtime in use. 
+#' Gets the version of the common language runtime in use.
 #'
 #' @return the version of the common language runtime in use
 #' @export
 getClrVersionString <- function() {
+  print("before getClrVersionString")
   v <- clrGet('System.Environment', 'Version')
+  print(v)
+  print("we got v")
   clrCall(v, 'ToString')
 }
 
 #' rClr .onAttach
-#' 
-#' Print startup messages from package onLoad 
-#' 
+#'
+#' Print startup messages from package onLoad
+#'
 #' Print startup messages from package onLoad (prevents a 'NOTE' on package check)
-#' 
+#'
 #' @rdname dotOnAttach
 #' @name dotOnAttach
 #' @param libname the path to the library from which the package is loaded

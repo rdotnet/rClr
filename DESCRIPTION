@@ -2,9 +2,13 @@ Package: rClr
 Type: Package
 Title: Accessing the Common Language Runtime (.NET/Mono) from R
 Version: 0.9.5
-Date: 2022-28-04
-Authors@R: c( person("Jean-Michel", "Perraud", email =
-    "jean-michel.perraud@csiro.au", role = c("aut", "cre")))
+Authors@R: c(person("Jean-Michel", "Perraud", email =
+    "jean-michel.perraud@csiro.au", role = c("aut", "cre")),
+    person("Open-Systems-Pharmacology Community", role = "cph"),
+      person("Michael", "Sevestre", role = c("aut", "cre"), email = "michael@design2code.ca"),
+      person("Pavel", "Balazki", role = "aut"),
+      person("Juri", "Solodenko", role = "aut", comment = c(ORCID = "0000-0001-6922-588X")),
+      person("Georgios", "Daskalakis", role = "aut"))
 Author: Jean-Michel Perraud [aut, cre], Kosei Abe, [aut] (R.NET), Nigel
     <http://www.codeplex.com/site/users/view/evolvedmicrobe> [ctb] (fix for
     finding the path to package libraries), R Core team [ctb] (showArgs
@@ -26,8 +30,8 @@ Suggests:
 URL: https://github.com/jmp75/rClr
 License: LGPL-3
 Depends:
-    R (>= 2.15.0),
+    R (>= 3.6),
     methods
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 SystemRequirements: GNU make
 NeedsCompilation: yes

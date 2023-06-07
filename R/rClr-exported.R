@@ -25,12 +25,13 @@ clrShutdown <- function() { # TODO: is this even possible given runtime's constr
 #' clrCallStatic(cTypename, "CreateStringDictionary")
 #' }
 setRDotNet <- function(setit=TRUE) {
+  print("during setRDotNet")
   invisible(clrCallStatic('Rclr.RDotNetDataConverter', 'SetRDotNet', setit))
 }
 
 #' Turn on/off the conversion of advanced data types with R.NET
 #'
-#' Turn on/off the conversion of advanced data types with R.NET. This will turn off the conversion of classes such as dictionaries into R lists, 
+#' Turn on/off the conversion of advanced data types with R.NET. This will turn off the conversion of classes such as dictionaries into R lists,
 #' as these are not bidirectional and you may want to see and manipulate external pointers to dictionaries in some circumstances.
 #'
 #' @param enable if true enable, otherwise disable
@@ -47,7 +48,7 @@ setConvertAdvancedTypes <- function(enable=TRUE) {
   invisible(clrCallStatic('Rclr.RDotNetDataConverter', 'SetConvertAdvancedTypes', enable))
 }
 
-#' Loads a Common Language assembly. 
+#' Loads a Common Language assembly.
 #'
 #' Loads an assembly. Note that this is loaded in the single application domain that is created by rClr, not a separate application domain.
 #'
@@ -63,7 +64,7 @@ setConvertAdvancedTypes <- function(enable=TRUE) {
 #' stopifnot( file.exists(f) )
 #' clrLoadAssembly(f)
 #' # Load an assembly from the global assembly cache (GAC)
-#' clrLoadAssembly("System.Windows.Presentation, 
+#' clrLoadAssembly("System.Windows.Presentation,
 #'   Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' # The use of partial assembly names is discouraged; nevertheless it is supported
 #' clrLoadAssembly("System.Web.Services")
@@ -103,7 +104,7 @@ clrReflect <- function( clrobj ) {
 
 #' Calls the ToString method of an object
 #'
-#' Calls the ToString method of an object as represented in the CLR. 
+#' Calls the ToString method of an object as represented in the CLR.
 #' This function is here to help quickly test object equivalence from the R interpreter, for instance on the tricky topic of date-time conversions
 #'
 #' @param x any R object, which is converted to a CLR object on which to call ToString
@@ -251,10 +252,10 @@ clrGetConstructors <- function( type ) {
   clrCallStatic(reflectionHelperTypeName, 'GetConstructors', type)
 }
 
-#' Gets the signature of a CLI object member 
+#' Gets the signature of a CLI object member
 #'
-#' Gets a string representation of the signature of a member (i.e. field, property, method). 
-#' Mostly used to interactively search for what arguments to pass to a method. 
+#' Gets a string representation of the signature of a member (i.e. field, property, method).
+#' Mostly used to interactively search for what arguments to pass to a method.
 #'
 #' @param clrobj CLR object
 #' @param memberName The exact name of the member (i.e. field, property, method) to search for
@@ -288,13 +289,13 @@ clrGetMemberSignature <- function( clrobj, memberName ) {
 #' (testObj <- clrNew(testClassName))
 #' # object with a constructor that has parameters
 #' (testObj <- clrNew(testClassName, as.integer(123)))
-#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, 
+#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0,
 #'   Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' f <- clrNew('System.Windows.Forms.Form')
 #' clrSet(f, 'Text', "Hello from '.NET'")
 #' clrCall(f, 'Show')
 #' }
-clrNew <- function(typename, ...) 
+clrNew <- function(typename, ...)
 {
   o<-.External("r_create_clr_object", typename, ..., PACKAGE=nativePkgName)
   if (is.null(o)) {
@@ -303,15 +304,15 @@ clrNew <- function(typename, ...)
   mkClrObjRef(o, clrtype=typename)
 }
 
-#' System function to get a direct access to an object 
+#' System function to get a direct access to an object
 #'
-#' This function needs to be exported, but is highly unlikely to be of any use to an end user, even an advanced one. 
-#' This is indirectly needed to unlock the benefits of using R.NET convert data structures between R and .NET. 
-#' Using this function is a critical part of solving the rather complicated issue rClr #33. 
+#' This function needs to be exported, but is highly unlikely to be of any use to an end user, even an advanced one.
+#' This is indirectly needed to unlock the benefits of using R.NET convert data structures between R and .NET.
+#' Using this function is a critical part of solving the rather complicated issue rClr #33.
 #'
 #' @return a CLR object
 #' @export
-getCurrentConvertedObject <- function() 
+getCurrentConvertedObject <- function()
 {
   o <-.External("r_get_object_direct", PACKAGE=nativePkgName)
   mkClrObjRef(o)
@@ -371,7 +372,7 @@ clrIs <- function(obj, type) {
 #' (testObj <- clrNew(testClassName))
 #' clrCall(testObj, 'GetFieldIntegerOne')
 #' ## derived from unit test for matching the right method (function) to call.
-#' f <- function(...){ paste( 'This called a method with arguments:', 
+#' f <- function(...){ paste( 'This called a method with arguments:',
 #'   paste(clrCallStatic('Rclr.TestMethodBinding', 'SomeStaticMethod', ...), collapse=', ')) }
 #' f(1:3)
 #' f(3)
@@ -380,7 +381,7 @@ clrIs <- function(obj, type) {
 #' f(3, 'a')
 #' f(list('a', 3))
 #' }
-clrCall <- function(obj,methodName,...) 
+clrCall <- function(obj,methodName,...)
 {
   interface="r_call_method"
   result <- NULL
@@ -403,8 +404,9 @@ clrCall <- function(obj,methodName,...)
 #' clrGet(testObj, 'FieldIntegerOne')
 #' clrGet(testClassName, 'StaticPropertyIntegerOne')
 #' }
-clrGet <- function(objOrType,name) 
+clrGet <- function(objOrType,name)
 {
+  print("HERE IT FAILS")
   return(clrCallStatic(clrFacadeTypeName, 'GetFieldOrProperty',objOrType, name))
 }
 
@@ -424,15 +426,15 @@ clrGet <- function(objOrType,name)
 #' clrReflect(testObj)
 #' clrSet(testObj, 'FieldIntegerOne', 42)
 #' clrSet(testClassName, 'StaticPropertyIntegerOne', 42)
-#' 
+#'
 #' # Using 'good old' Windows forms to say hello:
-#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0, 
+#' clrLoadAssembly("System.Windows.Forms, Version=2.0.0.0,
 #'   Culture=neutral, PublicKeyToken=b77a5c561934e089")
 #' f <- clrNew('System.Windows.Forms.Form')
 #' clrSet(f, 'Text', "Hello from '.NET'")
 #' clrCall(f, 'Show')
 #' }
-clrSet <- function(objOrType, name, value) 
+clrSet <- function(objOrType, name, value)
 {
   invisible(clrCallStatic(clrFacadeTypeName, 'SetFieldOrProperty',objOrType, name, value))
 }
@@ -447,7 +449,7 @@ clrSet <- function(objOrType, name, value)
 #' library(rClr)
 #' clrGetEnumNames('Rclr.TestEnum')
 #' }
-clrGetEnumNames <- function(enumType) 
+clrGetEnumNames <- function(enumType)
 {
   return(clrCallStatic(reflectionHelperTypeName, 'GetEnumNames',enumType))
 }
@@ -461,7 +463,7 @@ clrGetEnumNames <- function(enumType)
 #' @param enumtype type name, possibly namespace and assembly qualified type name, e.g. 'My.Namespace.MyClass,MyAssemblyName'.
 #' @param enumval the value to set the field with
 #' @export
-clrSetEnumProperty <- function(objOrType, name, enumtype, enumval)  
+clrSetEnumProperty <- function(objOrType, name, enumtype, enumval)
 {
   stop('Not yet implemented')
   return(clrCallStatic(reflectionHelperTypeName, 'SetEnumValue',objOrType, name, enumtype, enumval))
@@ -541,15 +543,22 @@ clrGetNativeLibName <- function() {
 #' cTypename <- "Rclr.TestCases"
 #' clrCallStatic(cTypename, "IsTrue", TRUE)
 #' }
-clrCallStatic <- function(typename, methodName,...) 
+clrCallStatic <- function(typename, methodName,...)
 {
+  print("trying go get the pointer")
+  print(paste0("typename: ", typename))
+  print(paste0("methodName: ", methodName))
+  print(paste0("PACKAGE: ", nativePkgName))
+  print(paste0("additional args: ", list(...)))
   extPtr <-.External("r_call_static_method", typename, methodName,..., PACKAGE=nativePkgName)
+  print("pointer is:")
+  print(extPtr)
   return(mkClrObjRef(extPtr))
 }
 
 #' Peek into the types of CLR objects arguments are converted to by rClr
 #'
-#' Advanced use only, to diagnose unexpected conditions in CLR method calls. Most users would not ever need it. 
+#' Advanced use only, to diagnose unexpected conditions in CLR method calls. Most users would not ever need it.
 #'
 #' @param ... method arguments passed to .External
 #' @return a character message with type information about each argument.
@@ -559,16 +568,16 @@ clrCallStatic <- function(typename, methodName,...)
 #' library(rClr)
 #' peekClrArgs("a", numeric(0))
 #' }
-peekClrArgs <- function(...) 
+peekClrArgs <- function(...)
 {
   extPtr <-.External("r_diagnose_parameters", ..., PACKAGE=nativePkgName)
   return(mkClrObjRef(extPtr))
 }
 
 #' Gets the static members for a type
-#' 
+#'
 #' Gets the static members for a type
-#' 
+#'
 #' @param objOrType a CLR object, or type name, possibly namespace and assembly qualified type name, e.g. 'My.Namespace.MyClass,MyAssemblyName'.
 #' @export
 #' @examples
@@ -580,15 +589,15 @@ peekClrArgs <- function(...)
 #' testObj <- clrNew(testClassName)
 #' clrGetStaticMembers(testObj)
 #' }
-clrGetStaticMembers <- function(objOrType) 
+clrGetStaticMembers <- function(objOrType)
 {
   list(Methods=clrGetStaticMethods(objOrType), Fields=clrGetStaticFields(objOrType), Properties=clrGetStaticProperties(objOrType))
 }
 
 #' Gets the static fields for a type
-#' 
+#'
 #' Gets the static fields for a type
-#' 
+#'
 #' @param objOrType a CLR object, or type name, possibly namespace and assembly qualified type name, e.g. 'My.Namespace.MyClass,MyAssemblyName'.
 #' @param contains a string that the property names returned must contain
 #' @export
@@ -597,9 +606,9 @@ clrGetStaticFields <- function( objOrType, contains = '') {
 }
 
 #' Gets the static members for a type
-#' 
+#'
 #' Gets the static members for a type
-#' 
+#'
 #' @inheritParams clrGetStaticFields
 #' @export
 clrGetStaticProperties <- function( objOrType, contains = '') {
@@ -607,7 +616,7 @@ clrGetStaticProperties <- function( objOrType, contains = '') {
 }
 
 #' Gets the static members for a type
-#' 
+#'
 #' @inheritParams clrGetStaticFields
 #' @export
 clrGetStaticMethods <- function( objOrType, contains = '') {
@@ -615,7 +624,7 @@ clrGetStaticMethods <- function( objOrType, contains = '') {
 }
 
 #' Gets the signature of a static member of a type
-#' 
+#'
 #' @param typename type name, possibly namespace and assembly qualified type name, e.g. 'My.Namespace.MyClass,MyAssemblyName'.
 #' @param memberName The exact name of the member (i.e. field, property, method) to search for
 #' @export
@@ -655,8 +664,8 @@ getSexpType <- function(sexp) {
 
 #' Peek into the structure of R objects 'as seen from C code'
 #'
-#' Inspect one or more R object to get information on its representation in the engine. 
-#' This function is mostly useful for R/rClr developers. It is derived from the 'showArgs' 
+#' Inspect one or more R object to get information on its representation in the engine.
+#' This function is mostly useful for R/rClr developers. It is derived from the 'showArgs'
 #' example in the R extension manual
 #'
 #' @param ... one or more R objects
@@ -669,7 +678,7 @@ inspectArgs <- function(...) {
 
 #' Get the COM variant type of a CLR object
 #'
-#' Get the COM variant type of a CLR object, e.g. "VT_ARRAY | VT_I8". This function only works when run on the Microsoft implementation of the CLR. 
+#' Get the COM variant type of a CLR object, e.g. "VT_ARRAY | VT_I8". This function only works when run on the Microsoft implementation of the CLR.
 #' This function is useful for advanced diagnosis; most users should never have to use it.
 #'
 #' @param objOrType a CLR object, or type name, possibly namespace and assembly qualified type name, e.g. 'My.Namespace.MyClass,MyAssemblyName'.
@@ -766,7 +775,7 @@ setClrRefClass <- function(typeName,
 
           # interfaces <- Map(function(interface) interface$getName(),
                            # as.list(class$getInterfaces()))
-                           
+
           # If the type is the type for an interface, then GetInterfacesFullnames will not return 'itself', so no need to deal with infinite recursion here.
           interfaces <- clrCallStatic(reflectionHelperTypeName, 'GetInterfacesFullnames', type)
 
@@ -782,7 +791,7 @@ setClrRefClass <- function(typeName,
            contains <- c(contains, "VIRTUAL")
 
           declaredMethods <- clrCallStatic(reflectionHelperTypeName, 'GetDeclaredMethodNames', type)
-           # Map(function(method) method$getName(), 
+           # Map(function(method) method$getName(),
                # Filter(notProtected, as.list(class$getDeclaredMethods())))
           declaredMethods <- unique(declaredMethods)
 

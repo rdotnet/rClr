@@ -23,7 +23,7 @@ clrInit <- function(debug=FALSE) {
 }
 
 checkIsExtPtr <- function(extPtr) {
-  stopifnot("externalptr" %in% class(extPtr)) 
+  stopifnot("externalptr" %in% class(extPtr))
 }
 
 getLibsPath <- function(pkgName) {
@@ -31,14 +31,14 @@ getLibsPath <- function(pkgName) {
   file.path(libLocation, 'libs')
 }
 
-#' Create if possible an S4 CLR object. 
+#' Create if possible an S4 CLR object.
 #'
-#' Create if possible and adequate the S4 object that wraps the external pointer to a CLR object. 
+#' Create if possible and adequate the S4 object that wraps the external pointer to a CLR object.
 #' Currently not exported, as this is unlikely to be recommended for use outside of unit tests and internal to rClr.
 #'
 #' @param obj the presumed external pointer.
 #' @param clrtype character; the name of the CLR type for the object. If NULL, rClr retrieves the type name.
-#' @return a cobjRef S4 object if the argument is indeed an external pointer, 
+#' @return a cobjRef S4 object if the argument is indeed an external pointer,
 #' otherwise returned unchanged if null or not an external pointer.
 #' @import methods
 mkClrObjRef <- function(obj, clrtype=NULL) {
