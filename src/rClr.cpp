@@ -1,3 +1,7 @@
+// we need to define this as of R 4.3.1 to avoid the C3646 compiler error because of the 
+// definition of complex in Rext/Complex.h
+#define R_LEGACY_RCOMPLEX
+
 #include "rClr.h"
 
 /////////////////////////////////////////

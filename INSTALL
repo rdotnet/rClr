@@ -13,7 +13,7 @@ Instructions
 
 "cmd"
 ```
-set R="c:\Program Files\R\R-3.0.1\bin\x64\R.exe"
+set R="c:\Program Files\R\R-4.0.1\bin\x64\R.exe"
 
 set BuildConfiguration=Debug
 set MonoBuildConfiguration=MonoInstallDebug

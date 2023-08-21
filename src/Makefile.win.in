@@ -3,7 +3,7 @@
 # rClr makefile specific for compilation on Windows, using the Visual CPP compiler.
 
 # defaults the build configurations to the 'release' ones (i.e. no debug symbols)
-BuildConfiguration ?= Release
+BuildConfiguration ?= Debug
 MODE ?= Build
 MSB_OPTIONS_CONSOLELOGGER ?= //consoleloggerparameters:ErrorsOnly
 ## /consoleloggerparameters:ErrorsOnly;WarningsOnly;Verbosity=minimal
